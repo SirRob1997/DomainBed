@@ -93,10 +93,10 @@ class ProDrop(ERM):
     def __init__(self, input_shape, num_classes, num_domains, hparams):
         super(ProDrop, self).__init__(input_shape, num_classes, num_domains, hparams)
 
-        self.num_prototypes = hparams['num_prototypes']
-        self.prototype_width = hparams['prototype_width']
-        self.prototype_height = hparams['prototype_height']
-        self.prototype_shape = torch.Size([self.num_prototypes, self.prototype_height, self.prototype_width])
+        self.num_prototypes = hparams['num_prototypes'] # In ProtoPNet: 2000
+        self.prototype_width = hparams['prototype_width'] # In ProtoPNet: 1
+        self.prototype_height = hparams['prototype_height'] # In ProtoPNet: 1
+        self.prototype_shape = torch.Size([self.num_prototypes, self.featurizer.n_outputs, self.prototype_height, self.prototype_width])
         self.pplayer = nn.PPLayer(self.prototype_shape, num_classes)
         self.classifier = nn.Linear(self.num_prototypes, num_classes, bias=False)
 

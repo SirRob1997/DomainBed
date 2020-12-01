@@ -177,7 +177,7 @@ class CosineClassifier(nn.Module):
 class PPLayer(nn.Module):
     """
     Input:
-        - prototype_shape: Input shape used for the prototypes
+        - prototype_shape: Input shape used for the prototypes [N, C, H, W]
         - num_classes: Number of classes, used for determining the overall number of prototypes
         - prototype_activation_function: can be 'log', 'linear', or any other function that converts distance to similarity score
         - epsilon: used for conversion from distance to similarity to avoid division by 0
@@ -191,7 +191,6 @@ class PPLayer(nn.Module):
         self.epsilon = epsilon
         self.prototype_activation_function = prototype_activation_function
 
-        # Don't make these a Tensor since it won't be automatically moved to GPU
         self.prototype_vectors = nn.Parameter(torch.rand(self.prototype_shape), requires_grad=True)
         self.ones = nn.Parameter(torch.ones(self.prototype_shape), requires_grad=False)
 
