@@ -48,6 +48,9 @@ def _hparams(algorithm, dataset, random_seed):
         _hparam('rsc_f_drop_factor', 1/3, lambda r: r.uniform(0, 0.5))
         _hparam('rsc_b_drop_factor', 1/3, lambda r: r.uniform(0, 0.5))
 
+    elif algorithm == "ProDrop":
+        pass
+
     elif algorithm == "SagNet":
         _hparam('sag_w_adv', 0.1, lambda r: 10**r.uniform(-2, 1))
 

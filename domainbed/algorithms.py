@@ -25,7 +25,8 @@ ALGORITHMS = [
     'SagNet',
     'ARM',
     'VREx',
-    'RSC'
+    'RSC',
+    'ProDrop'
 ]
 
 def get_algorithm_class(algorithm_name):
@@ -86,6 +87,16 @@ class ERM(Algorithm):
 
     def predict(self, x):
         return self.network(x)
+
+
+class ProDrop(ERM):
+    def __init__(self, input_shape, num_classes, num_domains, hparams):
+        super(ProDrop, self).__init__(input_shape, num_classes, num_domains, hparams)
+        self.classifier = networks.CosineClassifier(num_classes, channels=self.featurizer.n_outputs)
+
+    def predict(self, x):
+        return self.classifier(self.featurizer(x))
+
 
 
 class ARM(ERM):

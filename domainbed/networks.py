@@ -161,6 +161,18 @@ class ContextNet(nn.Module):
         return self.context_net(x)
 
 
+class CosineClassifier(nn.Module):
+    def __init__(self, classes, channels=512):
+        super().__init__()
+        self.channels = channels
+        self.cls = nn.Conv2d(channels, classes, 1, bias=False)
+        self.scaler = 10.
+
+    def forward(self, x):
+        x = F.normalize(x, p=2, dim=1)
+        return self.scaler * F.conv2d(x, F.normalize(self.cls.weight, dim=1, p=2))
+
+
 def Featurizer(input_shape, hparams):
     """Auto-select an appropriate featurizer for the given input shape."""
     if len(input_shape) == 1:
