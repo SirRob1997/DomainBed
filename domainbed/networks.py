@@ -178,7 +178,7 @@ class PPLayer(nn.Module):
     """
     Input:
         - prototype_shape: Input shape used for the prototypes [AMOUNT, C, PROTO_H, PROTO_W]
-        - num_classes: Number of classes, used for determining the overall number of prototypes
+        - num_classes: Number of classes, used for determining the number of prototypes for each class
         - prototype_activation_function: can be 'log', 'linear', or any other function that converts distance to similarity score
         - epsilon: used for conversion from distance to similarity to avoid division by 0
     """
@@ -210,7 +210,7 @@ class PPLayer(nn.Module):
         assert(self.num_prototypes % self.num_classes == 0)
 
         num_prototypes_per_class = self.num_prototypes / self.num_classes
-        self.prototype_class_labels = torch.LongTensor([current_class for current_class in range(self.num_classes) for i in range(num_prototypes_per_class)])
+        self.prototype_class_labels = torch.LongTensor([current_class for current_class in range(self.num_classes) for _ in range(num_prototypes_per_class)])
         class_identity = torch.nn.functional.one_hot(self.prototype_class_labels, self.num_classes)
         return class_identity
 
