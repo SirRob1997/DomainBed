@@ -177,7 +177,7 @@ class CosineClassifier(nn.Module):
 class PPLayer(nn.Module):
     """
     Input:
-        - prototype_shape: Input shape used for the prototypes [N, C, H, W]
+        - prototype_shape: Input shape used for the prototypes [AMOUNT, C, PROTO_H, PROTO_W]
         - num_classes: Number of classes, used for determining the overall number of prototypes
         - prototype_activation_function: can be 'log', 'linear', or any other function that converts distance to similarity score
         - epsilon: used for conversion from distance to similarity to avoid division by 0
