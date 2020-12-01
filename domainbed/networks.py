@@ -194,12 +194,25 @@ class PPLayer(nn.Module):
         self.prototype_vectors = nn.Parameter(torch.rand(self.prototype_shape), requires_grad=True)
         self.ones = nn.Parameter(torch.ones(self.prototype_shape), requires_grad=False)
 
+        self.prototype_class_identity = self.gen_class_identity()
+
     def forward(self, x):
         distances = self.prototype_distances(x)
         min_distances = -F.max_pool2d(-distances, kernel_size=(distances.size()[2], distances.size()[3]))
         min_distances = min_distances.view(-1, self.num_prototypes)
         prototype_activations = self.distance_2_similarity(min_distances)
         return prototype_activations
+
+    def gen_class_identity(self):
+        """
+        Generates the one-hot for prototype class correspondence
+        """
+        assert(self.num_prototypes % self.num_classes == 0)
+
+        num_prototypes_per_class = self.num_prototypes / self.num_classes
+        self.prototype_class_labels = torch.LongTensor([current_class for current_class in range(self.num_classes) for i in range(num_prototypes_per_class)])
+        class_identity = torch.nn.functional.one_hot(self.prototype_class_labels, self.num_classes)
+        return class_identity
 
     def input_features(self, x):
         """
@@ -237,6 +250,12 @@ class PPLayer(nn.Module):
             return -distances
         else:
             return self.prototype_activation_function(distances)
+
+    def prune_prototypes(self, prototypes_to_prune):
+        """
+        - prototypes_to_prune: list of indeces each in [0, current number of prototypes - 1] to be removed
+        """
+        pass
 
 
 
