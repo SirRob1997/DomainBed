@@ -173,6 +173,75 @@ class CosineClassifier(nn.Module):
         return self.scaler * F.conv2d(x, F.normalize(self.cls.weight, dim=1, p=2))
 
 
+
+class PPLayer(nn.Module):
+    """
+    Input:
+        - prototype_shape: Input shape used for the prototypes
+        - num_classes: Number of classes, used for determining the overall number of prototypes
+        - prototype_activation_function: can be 'log', 'linear', or any other function that converts distance to similarity score
+        - epsilon: used for conversion from distance to similarity to avoid division by 0
+    """
+
+    def __init__(self, prototype_shape, num_classes, prototype_activation_function='log', epsilon=1e-4):
+        super(PPLayer, self).__init__()
+        self.prototype_shape = prototype_shape
+        self.num_prototypes = prototype_shape[0]
+        self.num_classes = num_classes
+        self.epsilon = epsilon
+        self.prototype_activation_function = prototype_activation_function
+
+        # Don't make these a Tensor since it won't be automatically moved to GPU
+        self.prototype_vectors = nn.Parameter(torch.rand(self.prototype_shape), requires_grad=True)
+        self.ones = nn.Parameter(torch.ones(self.prototype_shape), requires_grad=False)
+
+    def forward(self, x):
+        distances = self.prototype_distances(x)
+        min_distances = -F.max_pool2d(-distances, kernel_size=(distances.size()[2], distances.size()[3]))
+        min_distances = min_distances.view(-1, self.num_prototypes)
+        prototype_activations = self.distance_2_similarity(min_distances)
+        return prototype_activations
+
+    def input_features(self, x):
+        """
+        Input features to the prototype layer, the original ProtoPNet uses some add_on_layers after the feature extractor
+        """
+        #x = self.add_on_layers(x)
+        return x
+
+    def _l2_convolution(self, x):
+        '''
+        apply self.prototype_vectors as l2-convolution filters on input x
+        '''
+        x2 = x ** 2
+        x2_patch_sum = F.conv2d(input=x2, weight=self.ones)
+        p2 = self.prototype_vectors ** 2
+        p2 = torch.sum(p2, dim=(1, 2, 3))                       # p2 is a vector of shape (num_prototypes,)
+        p2_reshape = p2.view(-1, 1, 1)                          # then we reshape it to (num_prototypes, 1, 1)
+        xp = F.conv2d(input=x, weight=self.prototype_vectors)
+        intermediate_result = - 2 * xp + p2_reshape             # use broadcast
+        distances = F.relu(x2_patch_sum + intermediate_result)  # x2_patch_sum and intermediate_result are of the same shape
+        return distances
+
+    def prototype_distances(self, x):
+        """
+        x are the features from the feature extractor, we call input_features to possibly pass additional layers in between
+        """
+        features = self.input_features(x)
+        distances = self._l2_convolution(features)
+        return distances
+
+    def distance_to_similarity(self, distances):
+        if self.prototype_activation_function == 'log':
+            return torch.log((distances + 1) / (distances + self.epsilon))
+        elif self.prototype_activation_function == 'linear':
+            return -distances
+        else:
+            return self.prototype_activation_function(distances)
+
+
+
+
 def Featurizer(input_shape, hparams):
     """Auto-select an appropriate featurizer for the given input shape."""
     if len(input_shape) == 1:
