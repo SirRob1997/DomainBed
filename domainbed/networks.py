@@ -251,28 +251,6 @@ class PPLayer(nn.Module):
         else:
             return self.prototype_activation_function(distances)
 
-    def prune_prototypes(self, prototypes_to_prune):
-        """
-        - prototypes_to_prune: list of indeces each in [0, current number of prototypes - 1] to be removed
-        """
-        prototypes_to_keep = list(set(range(self.num_prototypes)) - set(prototypes_to_prune))
-
-        self.prototype_vectors = nn.Parameter(self.prototype_vectors.data[prototypes_to_keep, ...],
-                                              requires_grad=True)
-
-        self.prototype_shape = list(self.prototype_vectors.size())
-        self.num_prototypes = self.prototype_shape[0]
-        self.ones = nn.Parameter(self.ones.data[prototypes_to_keep, ...],
-                                 requires_grad=False)
-        self.prototype_class_identity = self.prototype_class_identity[prototypes_to_keep, :]
-
-        # TODO: Is there a convenient way to change the linear layer without putting it in this class here?
-        # changing self.last_layer in place
-        # changing in_features and out_features make sure the numbers are consistent
-        #self.last_layer.in_features = self.num_prototypes
-        #self.last_layer.out_features = self.num_classes
-        #self.last_layer.weight.data = self.last_layer.weight.data[:, prototypes_to_keep]
-
 
 
 

@@ -102,6 +102,23 @@ class ProDrop(ERM):
 
         self.network = nn.Sequential(self.featurizer, self.pplayer, self.classifier)
 
+    def prune_prototypes(self, prototypes_to_prune):
+        """
+        - prototypes_to_prune: list of indeces each in [0, current number of prototypes - 1] to be removed
+        """
+        prototypes_to_keep = list(set(range(self.num_prototypes)) - set(prototypes_to_prune))
+
+        self.pplayer.prototype_vectors = nn.Parameter(self.pplayer.prototype_vectors.data[prototypes_to_keep, ...], requires_grad=True)
+
+        self.prototype_shape, self.pplayer.prototype_shape = list(self.pplayer.prototype_vectors.size())
+        self.num_prototypes, self.pplayer.num_prototypes = self.prototype_shape[0]
+        self.pplayer.ones = nn.Parameter(self.pplayer.ones.data[prototypes_to_keep, ...], requires_grad=False)
+        self.pplayer.prototype_class_identity = self.pplayer.prototype_class_identity[prototypes_to_keep, :]
+
+        self.classifier.in_features = self.num_prototypes
+        self.classifier.out_features = self.num_classes
+        self.classifier.weight.data = self.last_layer.weight.data[:, prototypes_to_keep]
+
     def update(self, minibatches):
         pass
 
