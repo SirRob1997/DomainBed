@@ -120,7 +120,15 @@ class ProDrop(ERM):
         self.classifier.weight.data = self.last_layer.weight.data[:, prototypes_to_keep]
 
     def update(self, minibatches):
-        pass
+        all_x = torch.cat([x for x, y in minibatches])
+        all_y = torch.cat([y for x, y in minibatches])
+        loss = F.cross_entropy(self.predict(all_x), all_y)
+
+        self.optimizer.zero_grad()
+        loss.backward()
+        self.optimizer.step()
+
+        return {'loss': loss.item()}
 
     def predict(self, x):
         return self.network(x)
