@@ -97,10 +97,14 @@ class ProDrop(ERM):
         self.prototype_width = hparams['prototype_width']
         self.prototype_height = hparams['prototype_height']
         self.prototype_shape = (self.num_prototypes, self.featurizer.n_outputs, self.prototype_height, self.prototype_width)
-        self.pplayer = nn.PPLayer(self.prototype_shape, num_classes)
+        self.pplayer = networks.PPLayer(self.prototype_shape, num_classes)
         self.classifier = nn.Linear(self.num_prototypes, num_classes, bias=False)
 
         self.network = nn.Sequential(self.featurizer, self.pplayer, self.classifier)
+        if self.featurizer.__class__.__name__ == "ResNet":
+            self.featurizer.network.avgpool = networks.Identity()
+            self.featurizer.flattenLayer = networks.Identity()
+            self.featurizer.dropout = networks.Identity()
 
     def prune_prototypes(self, prototypes_to_prune):
         """
