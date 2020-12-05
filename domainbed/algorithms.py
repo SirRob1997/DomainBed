@@ -126,7 +126,10 @@ class ProDrop(ERM):
     def update(self, minibatches):
         all_x = torch.cat([x for x, y in minibatches])
         all_y = torch.cat([y for x, y in minibatches])
-        loss = F.cross_entropy(self.predict(all_x), all_y)
+        features = self.featurizer(all_x)
+        prot_distances = self.pplayer(features)
+        outputs = self.classifier(prot_distances)
+        loss = F.cross_entropy(outputs, all_y)
 
         self.optimizer.zero_grad()
         loss.backward()
