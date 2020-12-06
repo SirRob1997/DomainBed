@@ -106,6 +106,13 @@ class ProDrop(ERM):
             self.featurizer.flattenLayer = networks.Identity()
             self.featurizer.dropout = networks.Identity()
 
+        self.optimizer = torch.optim.Adam(
+            self.network.parameters(),
+            lr=self.hparams["lr"],
+            weight_decay=self.hparams['weight_decay']
+        )
+
+
     def prune_prototypes(self, prototypes_to_prune):
         """
         - prototypes_to_prune: list of indeces each in [0, current number of prototypes - 1] to be removed
@@ -130,7 +137,8 @@ class ProDrop(ERM):
         prot_distances = self.pplayer(features)
         outputs = self.classifier(prot_distances)
         loss = F.cross_entropy(outputs, all_y)
-
+        print(self.pplayer.prototype_vectors.flatten())
+        input()
         self.optimizer.zero_grad()
         loss.backward()
         self.optimizer.step()
