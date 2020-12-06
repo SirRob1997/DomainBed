@@ -100,11 +100,12 @@ class ProDrop(ERM):
         self.pplayer = networks.PPLayer(self.prototype_shape, num_classes)
         self.classifier = nn.Linear(self.num_prototypes, num_classes, bias=False)
 
-        self.network = nn.Sequential(self.featurizer, self.pplayer, self.classifier)
         if self.featurizer.__class__.__name__ == "ResNet":
             self.featurizer.network.avgpool = networks.Identity()
             self.featurizer.flattenLayer = networks.Identity()
             self.featurizer.dropout = networks.Identity()
+
+        self.network = nn.Sequential(self.featurizer, self.pplayer, self.classifier)
 
         self.optimizer = torch.optim.Adam(
             self.network.parameters(),

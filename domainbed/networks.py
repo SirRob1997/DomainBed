@@ -207,6 +207,12 @@ class PPLayer(nn.Module):
         self.ones = nn.Parameter(torch.ones(self.prototype_shape), requires_grad=False)
 
         self.prototype_class_identity = self.gen_class_identity()
+        self.add_on_layers = nn.Sequential(
+                nn.Conv2d(in_channels=self.prototype_shape[1], out_channels=self.prototype_shape[1], kernel_size=1),
+                nn.ReLU(),
+                nn.Conv2d(in_channels=self.prototype_shape[1], out_channels=self.prototype_shape[1], kernel_size=1),
+                nn.Sigmoid()
+         )
 
     def forward(self, x):
         distances = self.prototype_distances(x)
@@ -230,7 +236,7 @@ class PPLayer(nn.Module):
         """
         Input features to the prototype layer, the original ProtoPNet uses some add_on_layers after the feature extractor
         """
-        #x = self.add_on_layers(x)
+        x = self.add_on_layers(x)
         return x
 
     def _l2_convolution(self, x):
