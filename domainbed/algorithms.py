@@ -137,8 +137,6 @@ class ProDrop(ERM):
         prot_distances = self.pplayer(features)
         outputs = self.classifier(prot_distances)
         loss = F.cross_entropy(outputs, all_y)
-        print(self.pplayer.prototype_vectors.flatten())
-        input()
         self.optimizer.zero_grad()
         loss.backward()
         self.optimizer.step()
