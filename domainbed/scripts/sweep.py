@@ -90,8 +90,8 @@ def all_test_env_combinations(n):
     assert(n >= 3)
     for i in range(n):
         yield [i]
-        for j in range(i+1, n):
-            yield [i, j]
+        #for j in range(i+1, n):
+        #    yield [i, j]
 
 def make_args_list(n_trials, dataset_names, algorithms, n_hparams, steps,
     data_dir, hparams):

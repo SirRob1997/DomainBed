@@ -97,12 +97,21 @@ class ProDrop(ERM):
         self.prototype_width = hparams['prototype_width']
         self.prototype_height = hparams['prototype_height']
         self.prototype_shape = (self.num_prototypes, self.featurizer.n_outputs, self.prototype_height, self.prototype_width)
-        self.pplayer = nn.PPLayer(self.prototype_shape, num_classes)
+        self.pplayer = networks.PPLayer(self.prototype_shape, num_classes)
         self.classifier = nn.Linear(self.num_prototypes, num_classes, bias=False)
 
-        self.network = nn.Sequential(self.featurizer, self.pplayer, self.classifier)
+        if self.featurizer.__class__.__name__ == "ResNet":
+            self.featurizer.network.avgpool = networks.Identity()
+            self.featurizer.flattenLayer = networks.Identity()
+            self.featurizer.dropout = networks.Identity()
 
-        # Set up weights of the classifier
+        self.network = nn.Sequential(self.featurizer, self.pplayer, self.classifier)
+        self.optimizer = torch.optim.Adam(
+            self.network.parameters(),
+            lr=self.hparams["lr"],
+            weight_decay=self.hparams['weight_decay']
+        )
+
         self._initialize_weights()
 
     def set_last_layer_incorrect_connection(self, incorrect_strength):
@@ -134,8 +143,10 @@ class ProDrop(ERM):
     def update(self, minibatches):
         all_x = torch.cat([x for x, y in minibatches])
         all_y = torch.cat([y for x, y in minibatches])
-        loss = F.cross_entropy(self.predict(all_x), all_y)
-
+        features = self.featurizer(all_x)
+        prot_distances = self.pplayer(features)
+        outputs = self.classifier(prot_distances)
+        loss = F.cross_entropy(outputs, all_y)
         self.optimizer.zero_grad()
         loss.backward()
         self.optimizer.step()

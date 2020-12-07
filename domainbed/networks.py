@@ -79,10 +79,22 @@ class ResNet(torch.nn.Module):
         self.freeze_bn()
         self.hparams = hparams
         self.dropout = nn.Dropout(hparams['resnet_dropout'])
+        self.flattenLayer = nn.Flatten()
 
     def forward(self, x):
         """Encode x into a feature vector of size n_outputs."""
-        return self.dropout(self.network(x))
+        x = self.network.conv1(x)
+        x = self.network.bn1(x)
+        x = self.network.relu(x)
+        x = self.network.maxpool(x)
+        x = self.network.layer1(x)
+        x = self.network.layer2(x)
+        x = self.network.layer3(x)
+        x = self.network.layer4(x)
+        x = self.network.avgpool(x)
+        x = self.flattenLayer(x)
+        x = self.dropout(x)
+        return x
 
     def train(self, mode=True):
         """
@@ -195,12 +207,18 @@ class PPLayer(nn.Module):
         self.ones = nn.Parameter(torch.ones(self.prototype_shape), requires_grad=False)
 
         self.prototype_class_identity = self.gen_class_identity()
+        self.add_on_layers = nn.Sequential(
+                nn.Conv2d(in_channels=self.prototype_shape[1], out_channels=self.prototype_shape[1], kernel_size=1),
+                nn.ReLU(),
+                nn.Conv2d(in_channels=self.prototype_shape[1], out_channels=self.prototype_shape[1], kernel_size=1),
+                nn.Sigmoid()
+         )
 
     def forward(self, x):
         distances = self.prototype_distances(x)
         min_distances = -F.max_pool2d(-distances, kernel_size=(distances.size()[2], distances.size()[3]))
         min_distances = min_distances.view(-1, self.num_prototypes)
-        prototype_activations = self.distance_2_similarity(min_distances)
+        prototype_activations = self.distance_to_similarity(min_distances)
         return prototype_activations
 
     def gen_class_identity(self):
@@ -219,7 +237,7 @@ class PPLayer(nn.Module):
         """
         Input features to the prototype layer, the original ProtoPNet uses some add_on_layers after the feature extractor
         """
-        #x = self.add_on_layers(x)
+        x = self.add_on_layers(x)
         return x
 
     def _l2_convolution(self, x):
@@ -228,12 +246,14 @@ class PPLayer(nn.Module):
         '''
         x2 = x ** 2
         x2_patch_sum = F.conv2d(input=x2, weight=self.ones)
+        #print("X2 path", x2_patch_sum.shape)
         p2 = self.prototype_vectors ** 2
         p2 = torch.sum(p2, dim=(1, 2, 3))                       # p2 is a vector of shape (num_prototypes,)
         p2_reshape = p2.view(-1, 1, 1)                          # then we reshape it to (num_prototypes, 1, 1)
         xp = F.conv2d(input=x, weight=self.prototype_vectors)
         intermediate_result = - 2 * xp + p2_reshape             # use broadcast
         distances = F.relu(x2_patch_sum + intermediate_result)  # x2_patch_sum and intermediate_result are of the same shape
+        #print("Distances", distances.shape)			# distances has shape ( , num_prototypes, Prot_H, Prot_W)
         return distances
 
     def prototype_distances(self, x):
