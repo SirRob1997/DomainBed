@@ -102,22 +102,34 @@ class ProDrop(ERM):
 
         self.network = nn.Sequential(self.featurizer, self.pplayer, self.classifier)
 
-    def prune_prototypes(self, prototypes_to_prune):
-        """
-        - prototypes_to_prune: list of indeces each in [0, current number of prototypes - 1] to be removed
-        """
-        prototypes_to_keep = list(set(range(self.num_prototypes)) - set(prototypes_to_prune))
+        # Set up weights of the classifier
+        self._initialize_weights()
 
-        self.pplayer.prototype_vectors = nn.Parameter(self.pplayer.prototype_vectors.data[prototypes_to_keep, ...], requires_grad=True)
+    def set_last_layer_incorrect_connection(self, incorrect_strength):
+        positive_one_weights_locations = torch.t(self.pplayer.prototype_class_identity) #TODO: check if transposed version here is correct
+        negative_one_weights_locations = 1 - positive_one_weights_locations
 
-        self.prototype_shape, self.pplayer.prototype_shape = list(self.pplayer.prototype_vectors.size())
-        self.num_prototypes, self.pplayer.num_prototypes = self.prototype_shape[0]
-        self.pplayer.ones = nn.Parameter(self.pplayer.ones.data[prototypes_to_keep, ...], requires_grad=False)
-        self.pplayer.prototype_class_identity = self.pplayer.prototype_class_identity[prototypes_to_keep, :]
+        correct_class_connection = 1
+        incorrect_class_connection = incorrect_strength
+        self.classifier.weight.data.copy_(
+            correct_class_connection * positive_one_weights_locations
+            + incorrect_class_connection * negative_one_weights_locations)
 
-        self.classifier.in_features = self.num_prototypes
-        self.classifier.out_features = self.num_classes
-        self.classifier.weight.data = self.last_layer.weight.data[:, prototypes_to_keep]
+    def _initialize_weights(self):
+        for m in self.pplayer.add_on_layers.modules():
+            if isinstance(m, nn.Conv2d):
+                # every init technique has an underscore _ in the name
+                nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
+
+                if m.bias is not None:
+                    nn.init.constant_(m.bias, 0)
+
+            elif isinstance(m, nn.BatchNorm2d):
+                nn.init.constant_(m.weight, 1)
+                nn.init.constant_(m.bias, 0)
+
+        self.set_last_layer_incorrect_connection(incorrect_strength=-0.5)
+
 
     def update(self, minibatches):
         all_x = torch.cat([x for x, y in minibatches])

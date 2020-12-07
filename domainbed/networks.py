@@ -209,9 +209,10 @@ class PPLayer(nn.Module):
         """
         assert(self.num_prototypes % self.num_classes == 0)
 
-        num_prototypes_per_class = self.num_prototypes / self.num_classes
-        self.prototype_class_labels = torch.LongTensor([current_class for current_class in range(self.num_classes) for _ in range(num_prototypes_per_class)])
-        class_identity = torch.nn.functional.one_hot(self.prototype_class_labels, self.num_classes)
+        num_prototypes_per_class = self.num_prototypes // self.num_classes
+        class_identity = torch.zeros(self.num_prototypes, self.num_classes)
+        for j in range(self.num_prototypes):
+            class_identity[j, j // num_prototypes_per_class] = 1
         return class_identity
 
     def input_features(self, x):
