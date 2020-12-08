@@ -213,12 +213,14 @@ class PPLayer(nn.Module):
                 nn.Conv2d(in_channels=self.prototype_shape[1], out_channels=self.prototype_shape[1], kernel_size=1),
                 nn.Sigmoid()
          )
+        self.min_distances = 0
 
     def forward(self, x):
         distances = self.prototype_distances(x)
         min_distances = -F.max_pool2d(-distances, kernel_size=(distances.size()[2], distances.size()[3]))
         min_distances = min_distances.view(-1, self.num_prototypes)
         prototype_activations = self.distance_to_similarity(min_distances)
+        self.min_distances = min_distances
         return prototype_activations
 
     def gen_class_identity(self):

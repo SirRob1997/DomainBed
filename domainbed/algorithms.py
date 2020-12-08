@@ -99,9 +99,13 @@ class ProDrop(ERM):
         self.prototype_shape = (self.num_prototypes, self.featurizer.n_outputs, self.prototype_height, self.prototype_width)
 
         self.pplayer = networks.PPLayer(self.prototype_shape, num_classes)
+        self.classifier = nn.Linear(self.num_prototypes, num_classes, bias=False)
         self._initialize_weights()
 
-        self.classifier = nn.Linear(self.num_prototypes, num_classes, bias=False)
+        self.ce_factor = hparams['ce_factor']
+        self.cl_factor = hparams['cl_factor']
+        self.sep_factor = hparams['sep_factor']
+        self.l1_factor = hparams['l1_factor']
 
         # Remove AvgPool, Flatten and Droput for ResNet
         if self.featurizer.__class__.__name__ == "ResNet":
@@ -150,40 +154,34 @@ class ProDrop(ERM):
         features = self.featurizer(all_x)
         prot_distances = self.pplayer(features)
         outputs = self.classifier(prot_distances)
-        loss = F.cross_entropy(outputs, all_y)
+        ce_loss = F.cross_entropy(outputs, all_y)
 
         max_dist = (self.prototype_shape[1]
                     * self.prototype_shape[2]
                     * self.prototype_shape[3])
 
-        # prototypes_of_correct_class is a tensor of shape batch_size * num_prototypes
         # calculate cluster cost
-        print(self.pplayer.prototype_class_identity)
-        #prototypes_of_correct_class = torch.t(pplayer.prototype_class_identity[:, label]).cuda()
-        #inverted_distances, _ = torch.max((max_dist - min_distances) * prototypes_of_correct_class, dim=1)
-        #cluster_cost = torch.mean(max_dist - inverted_distances)
+        prototypes_of_correct_class = torch.t(self.pplayer.prototype_class_identity[:, all_y]).cuda() # [N, num_prototypes]
+        inverted_distances, _ = torch.max((max_dist - self.pplayer.min_distances) * prototypes_of_correct_class, dim=1) # [N]
+        cluster_loss = torch.mean(max_dist - inverted_distances) 
 
         # calculate separation cost
-        #prototypes_of_wrong_class = 1 - prototypes_of_correct_class
-        #inverted_distances_to_nontarget_prototypes, _ = torch.max((max_dist - min_distances) * prototypes_of_wrong_class, dim=1)
-        #separation_cost = torch.mean(max_dist - inverted_distances_to_nontarget_prototypes)
+        prototypes_of_wrong_class = 1 - prototypes_of_correct_class
+        inverted_distances_to_nontarget_prototypes, _ = torch.max((max_dist - self.pplayer.min_distances) * prototypes_of_wrong_class, dim=1)
+        separation_loss = torch.mean(max_dist - inverted_distances_to_nontarget_prototypes)
+        
+        # L1 mask
+        l1_mask = 1 - torch.t(self.pplayer.prototype_class_identity).cuda()
+        l1 = (self.classifier.weight * l1_mask).norm(p=1)
 
-        # calculate avg cluster cost
-        #avg_separation_cost = torch.sum(min_distances * prototypes_of_wrong_class, dim=1) / torch.sum(prototypes_of_wrong_class, dim=1)
-        #avg_separation_cost = torch.mean(avg_separation_cost)
-
-        #if use_l1_mask:
-        #    l1_mask = 1 - torch.t(model.module.prototype_class_identity).cuda()
-        #    l1 = (model.module.last_layer.weight * l1_mask).norm(p=1)
-        #else:
-        #    l1 = model.module.last_layer.weight.norm(p=1)
-
+        # Overall loss
+        loss = self.ce_factor * ce_loss + self.cl_factor * cluster_loss + self.sep_factor * separation_loss + self.l1_factor * l1
 
         self.optimizer.zero_grad()
         loss.backward()
         self.optimizer.step()
 
-        return {'loss': loss.item()}
+        return {'ce_loss': ce_loss.item(), 'cl_loss': cluster_loss.item(), 'sp_loss': separation_loss.item(), 'loss': loss.item()}
 
     def predict(self, x):
         return self.network(x)
