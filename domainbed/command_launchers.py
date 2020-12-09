@@ -52,7 +52,7 @@ def slurm_launcher(commands):
 SLURM_REGISTRY = {
     'cpus-per-task': 1,
     'nodes': 1,                                         # Requests that cores are on one node
-    'time': '0-03:00',                                  # Max time per task, here 3 hours
+    'time': '0-07:00',                                  # Max time per task, here 7 hours
     'partition': 'gpu-2080ti-dev',
 #    'partition': 'gpu-v100',
     'gres': "gpu:1",
