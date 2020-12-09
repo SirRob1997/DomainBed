@@ -211,7 +211,9 @@ class PPLayer(nn.Module):
                 nn.Conv2d(in_channels=self.prototype_shape[1], out_channels=self.prototype_shape[1], kernel_size=1),
                 nn.ReLU(),
                 nn.Conv2d(in_channels=self.prototype_shape[1], out_channels=self.prototype_shape[1], kernel_size=1),
-                nn.Sigmoid()
+                nn.Sigmoid(),
+                nn.AdaptiveAvgPool2d((1,1)),
+                nn.Flatten()
          )
         self.min_distances = 0
 
