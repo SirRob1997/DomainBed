@@ -99,8 +99,8 @@ class ProDrop(ERM):
         self.prototype_shape = (self.num_prototypes, self.featurizer.n_outputs, self.prototype_height, self.prototype_width)
 
         self.pplayer = networks.PPLayer(self.prototype_shape, num_classes)
-        self.classifier = nn.Linear(self.num_prototypes, num_classes, bias=False)
-        self._initialize_weights()
+        #self.classifier = nn.Linear(self.num_prototypes, num_classes, bias=False)
+        #self._initialize_weights()
 
         self.ce_factor = hparams['ce_factor']
         self.cl_factor = hparams['cl_factor']
@@ -159,9 +159,7 @@ class ProDrop(ERM):
         outputs = self.classifier(add_on_features)
         ce_loss = F.cross_entropy(outputs, all_y)
 
-        #max_dist = (self.prototype_shape[1]
-                    * self.prototype_shape[2]
-                    * self.prototype_shape[3])
+        #max_dist = (self.prototype_shape[1] * self.prototype_shape[2] * self.prototype_shape[3])
 
         # calculate cluster cost
         #prototypes_of_correct_class = torch.t(self.pplayer.prototype_class_identity[:, all_y]).cuda() # [N, num_prototypes]
