@@ -114,11 +114,17 @@ class ProDrop(ERM):
             self.featurizer.dropout = networks.Identity()
 
         self.network = nn.Sequential(self.featurizer, self.pplayer, self.classifier)
+        #self.optimizer = torch.optim.Adam(
+        #    self.network.parameters(),
+        #    lr=self.hparams["lr"],
+        #    weight_decay=self.hparams['weight_decay']
+        #)
         self.optimizer = torch.optim.Adam(
-            self.network.parameters(),
+            (list(self.featurizer.parameters()) + list(self.pplayer.parameters())),
             lr=self.hparams["lr"],
             weight_decay=self.hparams['weight_decay']
         )
+
 
 
 
