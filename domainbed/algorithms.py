@@ -154,7 +154,6 @@ class ProDrop(ERM):
         features = self.featurizer(all_x)
         prot_distances = self.pplayer(features)
         outputs = self.classifier(prot_distances)
-        outputs = self.classifier(add_on_features)
         ce_loss = F.cross_entropy(outputs, all_y)
 
         #max_dist = (self.prototype_shape[1] * self.prototype_shape[2] * self.prototype_shape[3])
