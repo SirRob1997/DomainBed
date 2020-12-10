@@ -99,8 +99,8 @@ class ProDrop(ERM):
         self.prototype_shape = (self.num_prototypes, self.featurizer.n_outputs, self.prototype_height, self.prototype_width)
 
         self.pplayer = networks.PPLayer(self.prototype_shape, num_classes)
-        #self.classifier = nn.Linear(self.num_prototypes, num_classes, bias=False)
-        #self._initialize_weights()
+        self.classifier = nn.Linear(self.num_prototypes, num_classes, bias=False)
+        self._initialize_weights()
 
         self.ce_factor = hparams['ce_factor']
         self.cl_factor = hparams['cl_factor']
@@ -113,8 +113,7 @@ class ProDrop(ERM):
             self.featurizer.flattenLayer = networks.Identity()
             self.featurizer.dropout = networks.Identity()
 
-        #self.network = nn.Sequential(self.featurizer, self.pplayer, self.classifier)
-        self.network = nn.Sequential(self.featurizer, self.pplayer.add_on_layers, self.classifier)
+        self.network = nn.Sequential(self.featurizer, self.pplayer, self.classifier)
         self.optimizer = torch.optim.Adam(
             self.network.parameters(),
             lr=self.hparams["lr"],
@@ -153,9 +152,8 @@ class ProDrop(ERM):
         all_x = torch.cat([x for x, y in minibatches])
         all_y = torch.cat([y for x, y in minibatches])
         features = self.featurizer(all_x)
-        #prot_distances = self.pplayer(features)
-        add_on_features = self.pplayer.add_on_layers(features)
-        #outputs = self.classifier(prot_distances)
+        prot_distances = self.pplayer(features)
+        outputs = self.classifier(prot_distances)
         outputs = self.classifier(add_on_features)
         ce_loss = F.cross_entropy(outputs, all_y)
 

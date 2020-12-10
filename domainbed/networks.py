@@ -212,8 +212,6 @@ class PPLayer(nn.Module):
                 nn.ReLU(),
                 nn.Conv2d(in_channels=self.prototype_shape[1], out_channels=self.prototype_shape[1], kernel_size=1),
                 nn.Sigmoid(),
-                nn.AdaptiveAvgPool2d((1,1)),
-                nn.Flatten()
          )
         self.min_distances = 0
 
@@ -250,14 +248,12 @@ class PPLayer(nn.Module):
         '''
         x2 = x ** 2
         x2_patch_sum = F.conv2d(input=x2, weight=self.ones)
-        #print("X2 path", x2_patch_sum.shape)
         p2 = self.prototype_vectors ** 2
         p2 = torch.sum(p2, dim=(1, 2, 3))                       # p2 is a vector of shape (num_prototypes,)
         p2_reshape = p2.view(-1, 1, 1)                          # then we reshape it to (num_prototypes, 1, 1)
         xp = F.conv2d(input=x, weight=self.prototype_vectors)
         intermediate_result = - 2 * xp + p2_reshape             # use broadcast
         distances = F.relu(x2_patch_sum + intermediate_result)  # x2_patch_sum and intermediate_result are of the same shape
-        #print("Distances", distances.shape)			# distances has shape ( , num_prototypes, Prot_H, Prot_W)
         return distances
 
     def prototype_distances(self, x):
