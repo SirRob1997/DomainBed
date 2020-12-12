@@ -97,15 +97,16 @@ class ProDrop(ERM):
         self.prototype_width = hparams['prototype_width']
         self.prototype_height = hparams['prototype_height']
         self.prototype_shape = (self.num_prototypes, self.featurizer.n_outputs, self.prototype_height, self.prototype_width)
-
-        self.pplayer = networks.PPLayer(self.prototype_shape, num_classes)
-        self.classifier = nn.Linear(self.num_prototypes, num_classes, bias=False)
-        self._initialize_weights()
-
+        self.additional_losses = hparams['additional_losses']
         self.ce_factor = hparams['ce_factor']
         self.cl_factor = hparams['cl_factor']
         self.sep_factor = hparams['sep_factor']
         self.l1_factor = hparams['l1_factor']
+        self.end_to_end = hparams['end_to_end']
+
+        self.pplayer = networks.PPLayer(self.prototype_shape, num_classes)
+        self.classifier = nn.Linear(self.num_prototypes, num_classes, bias=False)
+        self._initialize_weights()
 
         # Remove AvgPool, Flatten and Droput for ResNet
         if self.featurizer.__class__.__name__ == "ResNet":
@@ -114,19 +115,22 @@ class ProDrop(ERM):
             self.featurizer.dropout = networks.Identity()
 
         self.network = nn.Sequential(self.featurizer, self.pplayer, self.classifier)
-        #self.optimizer = torch.optim.Adam(
-        #    self.network.parameters(),
-        #    lr=self.hparams["lr"],
-        #    weight_decay=self.hparams['weight_decay']
-        #)
-        self.optimizer = torch.optim.Adam(
-            (list(self.featurizer.parameters()) + list(self.pplayer.parameters())),
-            lr=self.hparams["lr"],
-            weight_decay=self.hparams['weight_decay']
-        )
-
-
-
+        if self.end_to_end:
+            self.optimizer = torch.optim.Adam(
+                self.network.parameters(),
+                lr=self.hparams["lr"],
+                weight_decay=self.hparams['weight_decay'])
+        else:
+            self.current_step = 0
+            self.warmup_steps = self.hparams['warmup_steps']
+            self.optimizer = torch.optim.Adam(
+                self.network.parameters(),
+                lr=self.hparams["lr"],
+                weight_decay=self.hparams['weight_decay'])
+            self.pplayer_optimizer = torch.optim.Adam(
+                self.pplayer.parameters(),
+                lr=self.hparams["pp_lr"],
+                weight_decay=self.hparams['pp_weight_decay'])
 
     def set_last_layer_incorrect_connection(self, incorrect_strength):
         positive_one_weights_locations = torch.t(self.pplayer.prototype_class_identity)
@@ -162,32 +166,46 @@ class ProDrop(ERM):
         outputs = self.classifier(prot_distances)
         ce_loss = F.cross_entropy(outputs, all_y)
 
-        #max_dist = (self.prototype_shape[1] * self.prototype_shape[2] * self.prototype_shape[3])
+        # Decision on whether we want to add other losses to the CE loss
+        if self.additional_losses:
+            max_dist = (self.prototype_shape[1] * self.prototype_shape[2] * self.prototype_shape[3])
 
-        # calculate cluster cost
-        #prototypes_of_correct_class = torch.t(self.pplayer.prototype_class_identity[:, all_y]).cuda() # [N, num_prototypes]
-        #inverted_distances, _ = torch.max((max_dist - self.pplayer.min_distances) * prototypes_of_correct_class, dim=1) # [N]
-        #cluster_loss = torch.mean(max_dist - inverted_distances) 
+            # calculate cluster cost
+            prototypes_of_correct_class = torch.t(self.pplayer.prototype_class_identity[:, all_y]).cuda() # [N, num_prototypes]
+            inverted_distances, _ = torch.max((max_dist - self.pplayer.min_distances) * prototypes_of_correct_class, dim=1) # [N]
+            cluster_loss = torch.mean(max_dist - inverted_distances)
 
-        # calculate separation cost
-        #prototypes_of_wrong_class = 1 - prototypes_of_correct_class
-        #inverted_distances_to_nontarget_prototypes, _ = torch.max((max_dist - self.pplayer.min_distances) * prototypes_of_wrong_class, dim=1)
-        #separation_loss = torch.mean(max_dist - inverted_distances_to_nontarget_prototypes)
+            # calculate separation cost
+            prototypes_of_wrong_class = 1 - prototypes_of_correct_class
+            inverted_distances_to_nontarget_prototypes, _ = torch.max((max_dist - self.pplayer.min_distances) * prototypes_of_wrong_class, dim=1)
+            separation_loss = torch.mean(max_dist - inverted_distances_to_nontarget_prototypes)
         
-        # L1 mask
-        #l1_mask = 1 - torch.t(self.pplayer.prototype_class_identity).cuda()
-        #l1 = (self.classifier.weight * l1_mask).norm(p=1)
+            # L1 mask
+            l1_mask = 1 - torch.t(self.pplayer.prototype_class_identity).cuda()
+            l1 = (self.classifier.weight * l1_mask).norm(p=1)
 
-        # Overall loss
-        #loss = self.ce_factor * ce_loss + self.cl_factor * cluster_loss + self.sep_factor * separation_loss + self.l1_factor * l1
-        loss = ce_loss
-        
-        self.optimizer.zero_grad()
-        loss.backward()
-        self.optimizer.step()
+            # Overall loss
+            loss = self.ce_factor * ce_loss + self.cl_factor * cluster_loss + self.sep_factor * separation_loss + self.l1_factor * l1
+        else:
+            loss = ce_loss
+
+        # Decision on whether to train end-to-end or with warmup steps
+        if self.end_to_end:
+            self.optimizer.zero_grad()
+            loss.backward()
+            self.optimizer.step()
+        else:
+            self.current_step += 1
+            if self.current_step <= self.warmup_steps:
+                self.pplayer_optimizer.zero_grad()
+                loss.backward()
+                self.pplayer_optimizer.step()
+            else:
+                self.optimizer.zero_grad()
+                loss.backward()
+                self.optimizer.step()
 
         return {'loss': loss.item()}
-        #return {'ce_loss': ce_loss.item(), 'cl_loss': cluster_loss.item(), 'sp_loss': separation_loss.item(), 'loss': loss.item()}
 
     def predict(self, x):
         return self.network(x)
