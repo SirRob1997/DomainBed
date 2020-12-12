@@ -49,7 +49,7 @@ def _hparams(algorithm, dataset, random_seed):
         _hparam('rsc_b_drop_factor', 1/3, lambda r: r.uniform(0, 0.5))
 
     elif algorithm == "ProDrop":
-        _hparam('num_prototypes_per_class', 10, lambda r: 10)
+        _hparam('num_prototypes_per_class', 40, lambda r: 40)
         _hparam('prototype_width', 1, lambda r: 1)
         _hparam('prototype_height', 1, lambda r: 1)
         _hparam('ce_factor', 1, lambda r: 1)
