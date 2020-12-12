@@ -115,6 +115,9 @@ class ProDrop(ERM):
             self.featurizer.dropout = networks.Identity()
 
         self.network = nn.Sequential(self.featurizer, self.pplayer, self.classifier)
+
+        if self.hparams['freeze_classifier']: self.freeze_parameters(self.classifier)
+
         if self.end_to_end:
             self.optimizer = torch.optim.Adam(
                 self.network.parameters(),
@@ -131,6 +134,10 @@ class ProDrop(ERM):
                 self.pplayer.parameters(),
                 lr=self.hparams["pp_lr"],
                 weight_decay=self.hparams['pp_weight_decay'])
+
+    def freeze_parameters(self, module):
+        for param in module.parameters():
+            param.requires_grad = False
 
     def set_last_layer_incorrect_connection(self, incorrect_strength):
         positive_one_weights_locations = torch.t(self.pplayer.prototype_class_identity)
