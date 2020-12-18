@@ -126,6 +126,7 @@ class ProDrop(ERM):
         else:
             self.current_step = 0
             self.warmup_steps = self.hparams['warmup_steps']
+            self.cooldown_steps = self.hparams['cooldown_steps']
             self.optimizer = torch.optim.Adam(
                 self.network.parameters(),
                 lr=self.hparams["lr"],
@@ -134,6 +135,9 @@ class ProDrop(ERM):
                 self.pplayer.parameters(),
                 lr=self.hparams["pp_lr"],
                 weight_decay=self.hparams['pp_weight_decay'])
+            self.classifier_optimizer = torch.optim.Adam(
+                self.classifier.parameters(),
+                lr=self.hparams["cl_lr"])
 
     def freeze_parameters(self, module):
         for param in module.parameters():
@@ -207,6 +211,10 @@ class ProDrop(ERM):
                 self.pplayer_optimizer.zero_grad()
                 loss.backward()
                 self.pplayer_optimizer.step()
+            elif self.current_step >= 5001 - self.cooldown_steps:
+                self.classifier_optimizer.zero_grad()
+                loss.backward()
+                self.classifier_optimizer.step()
             else:
                 self.optimizer.zero_grad()
                 loss.backward()

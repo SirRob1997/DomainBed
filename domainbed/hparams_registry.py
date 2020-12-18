@@ -62,6 +62,8 @@ def _hparams(algorithm, dataset, random_seed):
         _hparam('pp_lr', 3e-3, lambda r: 3e-3)
         _hparam('pp_weight_decay', 1e-3, lambda r: 1e-3)
         _hparam('warmup_steps', 100, lambda r: 100)
+        _hparam('cooldown_steps', 100, lambda r: 100)
+        _hparam('cl_lr', 1e-4, lambda r: 1e-4)
 
     elif algorithm == "SagNet":
         _hparam('sag_w_adv', 0.1, lambda r: 10**r.uniform(-2, 1))
