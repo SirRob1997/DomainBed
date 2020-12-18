@@ -124,8 +124,9 @@ class ProDrop(ERM):
                 lr=self.hparams["lr"],
                 weight_decay=self.hparams['weight_decay'])
         else:
-            self.current_step = 0
+            self.register_buffer('update_count', torch.tensor([0]))
             self.warmup_steps = self.hparams['warmup_steps']
+            self.optimize_classifier = self.hparams['optimize_classifier']
             self.cooldown_steps = self.hparams['cooldown_steps']
             self.optimizer = torch.optim.Adam(
                 self.network.parameters(),
@@ -206,12 +207,12 @@ class ProDrop(ERM):
             loss.backward()
             self.optimizer.step()
         else:
-            self.current_step += 1
-            if self.current_step <= self.warmup_steps:
+            self.update_count += 1
+            if self.update_count.item() <= self.warmup_steps:
                 self.pplayer_optimizer.zero_grad()
                 loss.backward()
                 self.pplayer_optimizer.step()
-            elif self.current_step >= 5001 - self.cooldown_steps:
+            elif (self.update_count.item() >= 5001 - self.cooldown_steps) and self.optimize_classifier:
                 self.classifier_optimizer.zero_grad()
                 loss.backward()
                 self.classifier_optimizer.step()
