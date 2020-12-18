@@ -221,6 +221,8 @@ class ProDrop(ERM):
                 if self.frozen_classifier:
                     self.unfreeze_parameters(self.classifier)
                     self.frozen_classifier = False
+                    self.freeze_parameters(self.featurizer)
+                    self.freeze_parameters(self.pplayer)
                 self.classifier_optimizer.zero_grad()
                 loss.backward()
                 self.classifier_optimizer.step()
