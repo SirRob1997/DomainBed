@@ -203,11 +203,11 @@ class ProDrop(ERM):
             cpt_loss = self.pplayer.cpt_loss
 
             # L1 mask
-            l1_mask = 1 - torch.t(self.pplayer.prototype_class_identity).cuda()
-            l1 = (self.classifier.weight * l1_mask).norm(p=1)
+            #l1_mask = 1 - torch.t(self.pplayer.prototype_class_identity).cuda()
+            #l1 = (self.classifier.weight * l1_mask).norm(p=1)
 
             # Overall loss
-            loss = self.ce_factor * ce_loss + self.cl_factor * cluster_loss + self.sep_factor * separation_loss + self.cpt_factor * cpt_loss + self.l1_factor * l1
+            loss = self.ce_factor * ce_loss + self.cl_factor * cluster_loss + self.sep_factor * separation_loss + self.cpt_factor * cpt_loss 
         else:
             loss = ce_loss
 
