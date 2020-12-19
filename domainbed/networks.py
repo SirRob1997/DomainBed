@@ -235,7 +235,7 @@ class PPLayer(nn.Module):
         column_tensor = torch.arange(0, rows).cuda().repeat(num_samples, num_prototypes, rows, 1)
         row_tensor = torch.arange(0, cols).view(-1,1).cuda().repeat(num_samples, num_prototypes, 1, cols)
         factor_mask = (row_tensor - max_row_indeces)**2 + (column_tensor - max_column_indeces)**2
-        return (sim * factor_mask).sum()
+        return (sim * factor_mask).sum() / num_samples
 
     def gen_class_identity(self):
         """
