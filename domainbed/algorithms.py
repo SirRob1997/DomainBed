@@ -102,6 +102,7 @@ class ProDrop(ERM):
         self.cl_factor = hparams['cl_factor']
         self.sep_factor = hparams['sep_factor']
         self.l1_factor = hparams['l1_factor']
+        self.cpt_factor = hparams['cpt_factor']
         self.end_to_end = hparams['end_to_end']
 
         self.pplayer = networks.PPLayer(self.prototype_shape, num_classes)
@@ -197,13 +198,16 @@ class ProDrop(ERM):
             prototypes_of_wrong_class = 1 - prototypes_of_correct_class
             inverted_distances_to_nontarget_prototypes, _ = torch.max((max_dist - self.pplayer.min_distances) * prototypes_of_wrong_class, dim=1)
             separation_loss = torch.mean(max_dist - inverted_distances_to_nontarget_prototypes)
-        
+            
+            # get the current cpt loss
+            cpt_loss = self.pplayer.cpt_loss
+
             # L1 mask
             l1_mask = 1 - torch.t(self.pplayer.prototype_class_identity).cuda()
             l1 = (self.classifier.weight * l1_mask).norm(p=1)
 
             # Overall loss
-            loss = self.ce_factor * ce_loss + self.cl_factor * cluster_loss + self.sep_factor * separation_loss + self.l1_factor * l1
+            loss = self.ce_factor * ce_loss + self.cl_factor * cluster_loss + self.sep_factor * separation_loss + self.cpt_factor * cpt_loss + self.l1_factor * l1
         else:
             loss = ce_loss
 

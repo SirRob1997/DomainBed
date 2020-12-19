@@ -226,12 +226,16 @@ class PPLayer(nn.Module):
         return prototype_activations
 
     def calculate_compactness_loss(self, distances):
-        values, indeces = torch.topk(distances.view(distances.shape[0], distances.shape[1], -1), 1, dim=2)
-        correct_indeces = misc.unravel_index(indeces, distances.shape)
-        print("distances", distances.shape, distances[0][0])
-        print("indeces", indeces.shape, indeces[0][0])
-        print("correct indeces", correct_indeces.shape, correct_indeces[0][0])
-        input()
+        sim = self.distance_to_similarity(distances)
+        num_samples, num_prototypes, rows, cols = sim.shape
+        values, indeces = torch.topk(sim.view(num_samples, num_prototypes, -1), 1, dim=2)
+        correct_indeces = misc.unravel_index(indeces, sim.shape).squeeze()
+        max_row_indeces = correct_indeces[:, :, 2].unsqueeze(-1).unsqueeze(-1).repeat(1, 1, rows, cols)
+        max_column_indeces = correct_indeces[:, :, 3].unsqueeze(-1).unsqueeze(-1).repeat(1, 1, rows, cols)
+        column_tensor = torch.arange(0, rows).repeat(num_samples, num_prototypes, rows, 1).cuda()
+        row_tensor = torch.arange(0, cols).view(-1,1).repeat(num_samples, num_prototypes, 1, cols).cuda()
+        factor_mask = (row_tensor - max_row_indeces)**2 + (column_tensor - max_column_indeces)**2
+        return (sim * factor_mask).sum()
 
     def gen_class_identity(self):
         """
