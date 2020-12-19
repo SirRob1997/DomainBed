@@ -180,8 +180,8 @@ class ProDrop(ERM):
         all_x = torch.cat([x for x, y in minibatches])
         all_y = torch.cat([y for x, y in minibatches])
         features = self.featurizer(all_x)
-        prot_distances = self.pplayer(features)
-        outputs = self.classifier(prot_distances)
+        prot_activations = self.pplayer(features)
+        outputs = self.classifier(prot_activations)
         ce_loss = F.cross_entropy(outputs, all_y)
 
         # Decision on whether we want to add other losses to the CE loss

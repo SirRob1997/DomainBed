@@ -41,6 +41,17 @@ def pdb():
     print("Launching PDB, enter 'n' to step to parent function.")
     pdb.set_trace()
 
+def unravel_index(indices, shape):
+    """
+    Torch implementation of numpy.unravel.index
+    """
+    coord = []
+    for dim in reversed(shape):
+        coord.append(indices % dim)
+        indices = indices // dim
+    coord = torch.stack(coord[::-1], dim=-1)
+    return coord
+
 def seed_hash(*args):
     """
     Derive an integer hash from all args, for use as a random seed.

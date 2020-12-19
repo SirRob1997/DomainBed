@@ -214,14 +214,24 @@ class PPLayer(nn.Module):
                 nn.Sigmoid(),
          )
         self.min_distances = 0
+        self.cpt_loss = 0
 
     def forward(self, x):
         distances = self.prototype_distances(x)
+        self.cpt_loss = self.calculate_compactness_loss(distances)
         min_distances = -F.max_pool2d(-distances, kernel_size=(distances.size()[2], distances.size()[3]))
         min_distances = min_distances.view(-1, self.num_prototypes)
         prototype_activations = self.distance_to_similarity(min_distances)
         self.min_distances = min_distances
         return prototype_activations
+
+    def calculate_compactness_loss(self, distances):
+        values, indeces = torch.topk(distances.view(distances.shape[0], distances.shape[1], -1), 1, dim=2)
+        correct_indeces = misc.unravel_index(indeces, distances.shape)
+        print("distances", distances.shape, distances[0][0])
+        print("indeces", indeces.shape, indeces[0][0])
+        print("correct indeces", correct_indeces.shape, correct_indeces[0][0])
+        input()
 
     def gen_class_identity(self):
         """
