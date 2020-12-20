@@ -218,7 +218,7 @@ class PPLayer(nn.Module):
 
     def forward(self, x):
         distances = self.prototype_distances(x)
-        self.cpt_loss = self.calculate_compactness_loss(distances)
+        #self.cpt_loss = self.calculate_compactness_loss(distances)
         min_distances = -F.max_pool2d(-distances, kernel_size=(distances.size()[2], distances.size()[3]))
         min_distances = min_distances.view(-1, self.num_prototypes)
         prototype_activations = self.distance_to_similarity(min_distances)
