@@ -4,6 +4,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.autograd as autograd
+import itertools
 
 import copy
 import numpy as np
@@ -93,7 +94,9 @@ class ProDrop(ERM):
     def __init__(self, input_shape, num_classes, num_domains, hparams):
         super(ProDrop, self).__init__(input_shape, num_classes, num_domains, hparams)
 
-        self.num_prototypes = hparams['num_prototypes_per_class'] * num_classes
+        self.num_classes = num_classes
+        self.num_prototypes_per_class = hparams['num_prototypes_per_class'] 
+        self.num_prototypes = self.num_prototypes_per_class  * num_classes
         self.prototype_width = hparams['prototype_width']
         self.prototype_height = hparams['prototype_height']
         self.prototype_shape = (self.num_prototypes, self.featurizer.n_outputs, self.prototype_height, self.prototype_width)
@@ -103,6 +106,7 @@ class ProDrop(ERM):
         self.sep_factor = hparams['sep_factor']
         self.l1_factor = hparams['l1_factor']
         self.cpt_factor = hparams['cpt_factor']
+        self.intra_factor = hparams['intra_factor']
         self.end_to_end = hparams['end_to_end']
 
         self.pplayer = networks.PPLayer(self.prototype_shape, num_classes)
@@ -175,6 +179,15 @@ class ProDrop(ERM):
                 nn.init.constant_(m.bias, 0)
 
         self.set_last_layer_incorrect_connection(incorrect_strength=-0.5)
+ 
+    def calculate_intra_loss(self, prototypes):
+        # takes as input a tensor of shape [num_classes, num_prototypes_per_class, K] which has all prototypes associated with that class
+        loss = 0
+        for class_i in range(prototypes.shape[0]):
+            distances = F.pdist(prototypes[class_i, :], p=2)
+            similarities = self.pplayer.distance_to_similarity(distances) # this uses the same similarity as the pplayer, default log
+            loss += similarities.sum() / len(similarities)
+        return loss
 
 
     def update(self, minibatches):
@@ -200,7 +213,8 @@ class ProDrop(ERM):
             separation_loss = torch.mean(max_dist - inverted_distances_to_nontarget_prototypes)
 
             # calculate the intra class prototype distance
-            print(prototypes_of_correct_class)
+            reshaped_prototypes = self.pplayer.prototype_vectors.view(self.num_classes, self.num_prototypes_per_class, -1)
+            intra_loss = self.calculate_intra_loss(reshaped_prototypes)
 
             # get the current cpt loss
             #cpt_loss = self.pplayer.cpt_loss
@@ -210,7 +224,7 @@ class ProDrop(ERM):
             #l1 = (self.classifier.weight * l1_mask).norm(p=1)
 
             # Overall loss
-            loss = self.ce_factor * ce_loss + self.cl_factor * cluster_loss + self.sep_factor * separation_loss
+            loss = self.ce_factor * ce_loss + self.cl_factor * cluster_loss + self.sep_factor * separation_loss + self.intra_factor * intra_loss
         else:
             loss = ce_loss
 
@@ -239,7 +253,7 @@ class ProDrop(ERM):
                 loss.backward()
                 self.optimizer.step()
 
-        return {'loss': loss.item()}
+        return {'loss': loss.item(), 'intra_loss': intra_loss.item()}
 
     def predict(self, x):
         return self.network(x)
