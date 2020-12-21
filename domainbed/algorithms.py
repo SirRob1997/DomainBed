@@ -198,7 +198,10 @@ class ProDrop(ERM):
             prototypes_of_wrong_class = 1 - prototypes_of_correct_class
             inverted_distances_to_nontarget_prototypes, _ = torch.max((max_dist - self.pplayer.min_distances) * prototypes_of_wrong_class, dim=1)
             separation_loss = torch.mean(max_dist - inverted_distances_to_nontarget_prototypes)
-            
+
+            # calculate the intra class prototype distance
+            print(prototypes_of_correct_class)
+
             # get the current cpt loss
             #cpt_loss = self.pplayer.cpt_loss
 
