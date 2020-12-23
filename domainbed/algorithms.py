@@ -185,7 +185,7 @@ class ProDrop(ERM):
         loss = 0
         for class_i in range(prototypes.shape[0]):
             distances = F.pdist(prototypes[class_i, :], p=2)
-            similarities = self.pplayer.distance_to_similarity(distances) # this uses the same similarity as the pplayer, default log
+            similarities = -distances # this uses the same similarity as the pplayer, default log
             loss += similarities.sum() / len(similarities)
         return loss
 
@@ -253,7 +253,7 @@ class ProDrop(ERM):
                 loss.backward()
                 self.optimizer.step()
 
-        return {'loss': loss.item(), 'intra_loss': intra_loss.item()}
+        return {'loss': loss.item()}
 
     def predict(self, x):
         return self.network(x)
