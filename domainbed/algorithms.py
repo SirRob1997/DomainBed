@@ -289,9 +289,9 @@ class ProDropEnsamble(ERM):
             self.featurizer.flattenLayer = networks.Identity()
             self.featurizer.dropout = networks.Identity()
 
-        self.pplayers = [networks.PPLayer(self.prototype_shape, num_classes) for _ in range(num_domains)]
-        self.classifiers = [nn.Linear(self.num_prototypes, num_classes, bias=False) for _ in range(num_domains)]
-        self.aggregation_layer = nn.Linear(num_domains * num_classes, num_classes, bias=False)
+        self.pplayers = [networks.PPLayer(self.prototype_shape, num_classes).cuda() for _ in range(num_domains)]
+        self.classifiers = [nn.Linear(self.num_prototypes, num_classes, bias=False).cuda() for _ in range(num_domains)]
+        self.aggregation_layer = nn.Linear(num_domains * num_classes, num_classes, bias=False).cuda()
 
         self._initialize_ensamble_weights()
 
@@ -384,12 +384,78 @@ class ProDropEnsamble(ERM):
         self.aggregation_layer.weight.data.copy_(weights)
 
     def update(self, minibatches):
-        pass
+        features = [self.featurizer(xi) for xi, _ in minibatches]
+        targets = [yi for _, yi in minibatches]
+        prot_activations = [domain_pplayer(features[domain]) for domain, domain_pplayer in enumerate(self.pplayers)]
+        domain_outputs = [classifier(prot_activations[domain]) for domain, classifier in enumerate(self.classifiers)]
+
+        ce_loss = 0
+        cluster_loss = 0 
+        separation_loss = 0
+        for domain, domain_output in enumerate(domain_outputs):
+            self.set_aggregation_weights(correct_strength=1, domain=domain)
+
+            # Fill the domain_output vectors up to size num_classes * num_domains by setting all other domain predictions to 0
+            b_domain_class = torch.zeros(domain_output.shape[0], self.num_classes * domain).cuda() 
+            a_domain_class = torch.zeros(domain_output.shape[0], self.num_classes * (self.num_domains - domain - 1)).cuda() 
+            domain_output = torch.cat((b_domain_class, domain_output, a_domain_class), 1)
+            output = self.aggregation_layer(domain_output)
+            ce_loss += F.cross_entropy(output, targets[domain])
+
+            # Decision on whether we want to add other losses to the CE loss
+            if self.additional_losses:
+                max_dist = (self.prototype_shape[1] * self.prototype_shape[2] * self.prototype_shape[3])
+            
+                # calculate cluster cost
+                prototypes_of_correct_class = torch.t(self.pplayers[domain].prototype_class_identity[:, targets[domain]]).cuda() 
+                inverted_distances, _ = torch.max((max_dist - self.pplayers[domain].min_distances) * prototypes_of_correct_class, dim=1)
+                cluster_loss += torch.mean(max_dist - inverted_distances)
+
+                # calculate separation cost
+                prototypes_of_wrong_class = 1 - prototypes_of_correct_class
+                inverted_distances_to_nontarget_prototypes, _ = torch.max((max_dist - self.pplayers[domain].min_distances) * prototypes_of_wrong_class, dim=1)
+                separation_loss += torch.mean(max_dist - inverted_distances_to_nontarget_prototypes)
+
+
+        if self.additional_losses:
+            loss = self.ce_factor * ce_loss + self.cl_factor * cluster_loss + self.sep_factor * separation_loss
+        else:
+            loss = ce_loss
+
+        # Decision on whether to train end-to-end or with warmup steps
+        if self.end_to_end:
+            self.optimizer.zero_grad()
+            loss.backward()
+            self.optimizer.step()
+        else:
+            self.update_count += 1
+            if self.update_count.item() <= self.warmup_steps:
+                self.pplayer_optimizer.zero_grad()
+                loss.backward()
+                self.pplayer_optimizer.step()
+            elif (self.update_count.item() >= 5001 - self.cooldown_steps) and self.optimize_classifier:
+                if self.frozen_classifier:
+                    self.unfreeze_parameters(self.classifier)
+                    self.frozen_classifier = False
+                    self.freeze_parameters(self.featurizer)
+                    self.freeze_parameters(self.pplayer)
+                self.classifier_optimizer.zero_grad()
+                loss.backward()
+                self.classifier_optimizer.step()
+            else:
+                self.optimizer.zero_grad()
+                loss.backward()
+                self.optimizer.step()
+        return {'loss': loss.item()}
 
     def predict(self, x):
-        pass
-        set_aggregation_weights(correct_strength=1/self.num_domains)
-
+        self.set_aggregation_weights(correct_strength=1/self.num_domains)
+        features = self.featurizer(x)
+        prot_activations = [domain_pplayer(features) for domain_pplayer in self.pplayers]
+        domain_outputs = [classifier(prot_activations[domain]) for domain, classifier in enumerate(self.classifiers)]
+        domain_outputs = torch.cat(domain_outputs, 1)
+        return self.aggregation_layer(domain_outputs)
+        
 
 
 
