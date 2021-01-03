@@ -263,7 +263,7 @@ class ProDrop(ERM):
 
 class ProDropEnsamble(ERM):
     def __init__(self, input_shape, num_classes, num_domains, hparams):
-        super(ProDrop, self).__init__(input_shape, num_classes, num_domains, hparams)
+        super(ProDropEnsamble, self).__init__(input_shape, num_classes, num_domains, hparams)
 
 
         self.num_classes = num_classes
@@ -290,15 +290,29 @@ class ProDropEnsamble(ERM):
 
         self.pplayers = [networks.PPLayer(self.prototype_shape, num_classes) for _ in range(num_domains)]
         self.classifiers = [nn.Linear(self.num_prototypes, num_classes, bias=False) for _ in range(num_domains)]
-        self.aggregation_layer = nn.Linear(num_domains * num_classes, num_classes)
+        self.aggregation_layer = nn.Linear(num_domains * num_classes, num_classes, bias=False)
 
         self._initialize_ensamble_weights()
+
+        if self.hparams['freeze_classifier']:
+            for classifier in self.classifiers: 
+                self.freeze_parameters(classifier)
+                self.frozen_classifier = True
+
+        pplayers_params = list()
+        for pplayer in self.pplayers:
+            pplayers_params += list(pplayer.parameters()) 
+
+        classifiers_params = list()
+        for classifier in self.classifiers:
+            classifiers_params += list(classifier.parameters())
+
 
         if self.end_to_end:
             self.optimizer = torch.optim.Adam(
                 (list(self.featurizer.parameters()) +
-                 list(pplayer.parameters() for pplayer in self.pplayers) +
-                 list(classifier.parameters() for classifier in self.classifiers)) ,
+                 pplayers_params +
+                 classifiers_params) ,
                 lr=self.hparams["lr"],
                 weight_decay=self.hparams['weight_decay'])
         else:
@@ -308,16 +322,16 @@ class ProDropEnsamble(ERM):
             self.cooldown_steps = self.hparams['cooldown_steps']
             self.optimizer = torch.optim.Adam(
                 (list(self.featurizer.parameters()) +
-                 list(pplayer.parameters() for pplayer in self.pplayers) +
-                 list(classifier.parameters() for classifier in self.classifiers)),
+                 pplayers_params +
+                classifiers_params),
                 lr=self.hparams["lr"],
                 weight_decay=self.hparams['weight_decay'])
             self.pplayer_optimizer = torch.optim.Adam(
-                list(pplayer.parameters() for pplayer in self.pplayers),
+                pplayers_params,
                 lr=self.hparams["pp_lr"],
                 weight_decay=self.hparams['pp_weight_decay'])
             self.classifier_optimizer = torch.optim.Adam(
-                list(classifier.parameters() for classifier in self.classifiers),
+                classifiers_params,
                 lr=self.hparams["cl_lr"])
 
     def _initialize_ensamble_weights(self):
@@ -345,6 +359,14 @@ class ProDropEnsamble(ERM):
         classifier.weight.data.copy_(
             correct_class_connection * positive_one_weights_locations
             + incorrect_class_connection * negative_one_weights_locations)
+
+    def freeze_parameters(self, module):
+        for param in module.parameters():
+            param.requires_grad = False
+
+    def unfreeze_parameters(self, module):
+        for param in module.parameters():
+            param.requires_grad = True
 
     def set_aggregation_weights(self, domain, incorrect_strength):
         pass
