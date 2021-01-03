@@ -334,9 +334,9 @@ class ProDropEnsamble(ERM):
                     nn.init.constant_(m.weight, 1)
                     nn.init.constant_(m.bias, 0)
 
-            self.set_ensemble_last_layer_incorrect_connection(domain_layer, classifier, incorrect_strength=-0.5)
+            self.set_ensemble_classifier_incorrect_connection(domain_layer, classifier, incorrect_strength=-0.5)
 
-    def set_ensemble_last_layer_incorrect_connection(self, domain_layer, classifier, incorrect_strength):
+    def set_ensemble_classifier_incorrect_connection(self, domain_layer, classifier, incorrect_strength):
         positive_one_weights_locations = torch.t(domain_layer.prototype_class_identity)
         negative_one_weights_locations = 1 - positive_one_weights_locations
 
@@ -346,7 +346,7 @@ class ProDropEnsamble(ERM):
             correct_class_connection * positive_one_weights_locations
             + incorrect_class_connection * negative_one_weights_locations)
 
-    def set_aggregation_weights(self, incorrect_strength):
+    def set_aggregation_weights(self, domain, incorrect_strength):
         pass
 
     def update(self, minibatches):
