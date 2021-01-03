@@ -267,6 +267,7 @@ class ProDropEnsamble(ERM):
 
 
         self.num_classes = num_classes
+        self.num_domains = num_domains
         self.num_prototypes_per_class = hparams['num_prototypes_per_class']
         self.num_prototypes = self.num_prototypes_per_class * num_classes
         self.prototype_width = hparams['prototype_width']
@@ -306,7 +307,6 @@ class ProDropEnsamble(ERM):
         classifiers_params = list()
         for classifier in self.classifiers:
             classifiers_params += list(classifier.parameters())
-
 
         if self.end_to_end:
             self.optimizer = torch.optim.Adam(
@@ -368,14 +368,27 @@ class ProDropEnsamble(ERM):
         for param in module.parameters():
             param.requires_grad = True
 
-    def set_aggregation_weights(self, domain, incorrect_strength):
-        pass
+    def set_aggregation_weights(self, correct_strength = 1, incorrect_strength = 0, domain=None):
+        if domain is not None:
+            b_non_selected = torch.zeros(self.num_classes, self.num_classes).repeat(1, domain)
+            a_non_selected = torch.zeros(self.num_classes, self.num_classes).repeat(1, self.num_domains - domain - 1)
+            weights = torch.eye(self.num_classes)
+            weights = torch.cat((b_non_selected, weights, a_non_selected), 1)
+        else:
+            weights = torch.eye(self.num_classes).repeat(1,self.num_domains)
+
+        if correct_strength != 1:
+            weights[weights==1] = correct_strength
+        if incorrect_strength != 0:
+            weights[weights==0] = incorrect_strength
+        self.aggregation_layer.weight.data.copy_(weights)
 
     def update(self, minibatches):
         pass
 
     def predict(self, x):
         pass
+        set_aggregation_weights(correct_strength=1/self.num_domains)
 
 
 
