@@ -27,7 +27,8 @@ ALGORITHMS = [
     'ARM',
     'VREx',
     'RSC',
-    'ProDrop'
+    'ProDrop',
+    'ProDropEnsamble'
 ]
 
 def get_algorithm_class(algorithm_name):
@@ -257,6 +258,103 @@ class ProDrop(ERM):
 
     def predict(self, x):
         return self.network(x)
+
+
+
+class ProDropEnsamble(ERM):
+    def __init__(self, input_shape, num_classes, num_domains, hparams):
+        super(ProDrop, self).__init__(input_shape, num_classes, num_domains, hparams)
+
+
+        self.num_classes = num_classes
+        self.num_prototypes_per_class = hparams['num_prototypes_per_class']
+        self.num_prototypes = self.num_prototypes_per_class * num_classes
+        self.prototype_width = hparams['prototype_width']
+        self.prototype_height = hparams['prototype_height']
+        self.prototype_shape = (
+        self.num_prototypes, self.featurizer.n_outputs, self.prototype_height, self.prototype_width)
+        self.additional_losses = hparams['additional_losses']
+        self.ce_factor = hparams['ce_factor']
+        self.cl_factor = hparams['cl_factor']
+        self.sep_factor = hparams['sep_factor']
+        self.l1_factor = hparams['l1_factor']
+        self.cpt_factor = hparams['cpt_factor']
+        self.intra_factor = hparams['intra_factor']
+        self.end_to_end = hparams['end_to_end']
+
+        # Remove AvgPool, Flatten and Droput for ResNet
+        if self.featurizer.__class__.__name__ == "ResNet":
+            self.featurizer.network.avgpool = networks.Identity()
+            self.featurizer.flattenLayer = networks.Identity()
+            self.featurizer.dropout = networks.Identity()
+
+        self.pplayers = [networks.PPLayer(self.prototype_shape, num_classes) for _ in range(num_domains)]
+        self.classifiers = [nn.Linear(self.num_prototypes, num_classes, bias=False) for _ in range(num_domains)]
+        self.aggregation_layer = nn.Linear(num_domains * num_classes, num_classes)
+
+        self._initialize_ensamble_weights()
+
+        if self.end_to_end:
+            self.optimizer = torch.optim.Adam(
+                (list(self.featurizer.parameters()) +
+                 list(pplayer.parameters() for pplayer in self.pplayers) +
+                 list(classifier.parameters() for classifier in self.classifiers)) ,
+                lr=self.hparams["lr"],
+                weight_decay=self.hparams['weight_decay'])
+        else:
+            self.register_buffer('update_count', torch.tensor([0]))
+            self.warmup_steps = self.hparams['warmup_steps']
+            self.optimize_classifier = self.hparams['optimize_classifier']
+            self.cooldown_steps = self.hparams['cooldown_steps']
+            self.optimizer = torch.optim.Adam(
+                (list(self.featurizer.parameters()) +
+                 list(pplayer.parameters() for pplayer in self.pplayers) +
+                 list(classifier.parameters() for classifier in self.classifiers)),
+                lr=self.hparams["lr"],
+                weight_decay=self.hparams['weight_decay'])
+            self.pplayer_optimizer = torch.optim.Adam(
+                list(pplayer.parameters() for pplayer in self.pplayers),
+                lr=self.hparams["pp_lr"],
+                weight_decay=self.hparams['pp_weight_decay'])
+            self.classifier_optimizer = torch.optim.Adam(
+                list(classifier.parameters() for classifier in self.classifiers),
+                lr=self.hparams["cl_lr"])
+
+    def _initialize_ensamble_weights(self):
+        for domain_layer, classifier in zip(self.pplayers, self.classifiers):
+            for m in domain_layer.add_on_layers.modules():
+                if isinstance(m, nn.Conv2d):
+                    # every init technique has an underscore _ in the name
+                    nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
+
+                    if m.bias is not None:
+                        nn.init.constant_(m.bias, 0)
+
+                elif isinstance(m, nn.BatchNorm2d):
+                    nn.init.constant_(m.weight, 1)
+                    nn.init.constant_(m.bias, 0)
+
+            self.set_ensemble_last_layer_incorrect_connection(domain_layer, classifier, incorrect_strength=-0.5)
+
+    def set_ensemble_last_layer_incorrect_connection(self, domain_layer, classifier, incorrect_strength):
+        positive_one_weights_locations = torch.t(domain_layer.prototype_class_identity)
+        negative_one_weights_locations = 1 - positive_one_weights_locations
+
+        correct_class_connection = 1
+        incorrect_class_connection = incorrect_strength
+        classifier.weight.data.copy_(
+            correct_class_connection * positive_one_weights_locations
+            + incorrect_class_connection * negative_one_weights_locations)
+
+    def set_aggregation_weights(self, incorrect_strength):
+        pass
+
+    def update(self, minibatches):
+        pass
+
+    def predict(self, x):
+        pass
+
 
 
 
