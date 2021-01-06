@@ -292,6 +292,7 @@ class ProDropEnsamble(ERM):
         self.pplayers = [networks.PPLayer(self.prototype_shape, num_classes).cuda() for _ in range(num_domains)]
         self.classifiers = [nn.Linear(self.num_prototypes, num_classes, bias=False).cuda() for _ in range(num_domains)]
         self.aggregation_layer = nn.Linear(num_domains * num_classes, num_classes, bias=False).cuda()
+        self.domain_predictor = nn.Linear(self.featurizer.n_outputs, num_domains)
 
         self._initialize_ensamble_weights()
 
@@ -311,6 +312,7 @@ class ProDropEnsamble(ERM):
         if self.end_to_end:
             self.optimizer = torch.optim.Adam(
                 (list(self.featurizer.parameters()) +
+                list(self.domain_predictor.parameters()) +
                  pplayers_params +
                  classifiers_params) ,
                 lr=self.hparams["lr"],
@@ -322,6 +324,7 @@ class ProDropEnsamble(ERM):
             self.cooldown_steps = self.hparams['cooldown_steps']
             self.optimizer = torch.optim.Adam(
                 (list(self.featurizer.parameters()) +
+                 list(self.domain_predictor.parameters()) +
                  pplayers_params +
                 classifiers_params),
                 lr=self.hparams["lr"],
@@ -385,6 +388,7 @@ class ProDropEnsamble(ERM):
 
     def update(self, minibatches):
         features = [self.featurizer(xi) for xi, _ in minibatches]
+        domain_weights = [self.domain_predictor(xi) for xi, _ in minibatches] # weights
         targets = [yi for _, yi in minibatches]
         prot_activations = [domain_pplayer(features[domain]) for domain, domain_pplayer in enumerate(self.pplayers)]
         domain_outputs = [classifier(prot_activations[domain]) for domain, classifier in enumerate(self.classifiers)]
