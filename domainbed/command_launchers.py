@@ -64,7 +64,6 @@ SLURM_REGISTRY = {
 
 PROJECT_DIR = "DomainBed/"
 SCRIPT_NAME = "command"
-
 REGISTRY = {
     'local': local_launcher,
     'dummy': dummy_launcher,
