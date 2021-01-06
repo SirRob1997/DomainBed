@@ -372,7 +372,7 @@ class ProDropEnsamble(ERM):
         for param in module.parameters():
             param.requires_grad = True
 
-    def set_aggregation_weights(self, correct_strength, incorrect_strength = 0):
+    def set_aggregation_weights_learned(self, correct_strength, incorrect_strength = 0):
         full_weights = torch.tensor([]).cuda()
         for domain in range(self.num_domains):
             weights = torch.eye(self.num_classes).cuda().repeat(1,self.num_domains)
@@ -384,6 +384,23 @@ class ProDropEnsamble(ERM):
             full_weights = torch.cat((full_weights, weights), 0)
 
         self.aggregation_layer.weight.data.copy_(weights)
+
+
+    def set_aggregation_weights(self, correct_strength = 1, incorrect_strength = 0, domain=None):
+        if domain is not None:
+            b_non_selected = torch.zeros(self.num_classes, self.num_classes).repeat(1, domain)
+            a_non_selected = torch.zeros(self.num_classes, self.num_classes).repeat(1, self.num_domains - domain - 1)
+            weights = torch.eye(self.num_classes)
+            weights = torch.cat((b_non_selected, weights, a_non_selected), 1)
+        else:
+            weights = torch.eye(self.num_classes).repeat(1,self.num_domains)
+
+        if correct_strength != 1:
+            weights[weights==1] = correct_strength
+        if incorrect_strength != 0:
+            weights[weights==0] = incorrect_strength
+        self.aggregation_layer.weight.data.copy_(weights)
+
 
     def update(self, minibatches):
         features = [self.featurizer(xi) for xi, _ in minibatches]
@@ -401,7 +418,7 @@ class ProDropEnsamble(ERM):
         domain_loss = F.cross_entropy(torch.stack(domain_weights), domain_correspondence)
 
         for domain, domain_output in enumerate(domain_outputs):
-            self.set_aggregation_weights(correct_strength=domain_weights[domain])
+            self.set_aggregation_weights(correct_strength=1, domain=domain)
 
             # Fill the domain_output vectors up to size num_classes * num_domains by setting all other domain predictions to 0
             b_domain_class = torch.zeros(domain_output.shape[0], self.num_classes * domain).cuda() 
@@ -459,7 +476,7 @@ class ProDropEnsamble(ERM):
     def predict(self, x):
         features = self.featurizer(x)
         domain_weights = F.softmax(torch.mean(self.domain_predictor(features.view(features.shape[0], -1)), dim=0), dim=0)
-        self.set_aggregation_weights(correct_strength=domain_weights) 
+        self.set_aggregation_weights_learned(correct_strength=domain_weights) 
         prot_activations = [domain_pplayer(features) for domain_pplayer in self.pplayers]
         domain_outputs = [classifier(prot_activations[domain]) for domain, classifier in enumerate(self.classifiers)]
         domain_outputs = torch.cat(domain_outputs, 1)
