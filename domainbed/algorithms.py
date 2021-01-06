@@ -375,15 +375,15 @@ class ProDropEnsamble(ERM):
     def set_aggregation_weights_learned(self, correct_strength, incorrect_strength = 0):
         full_weights = torch.tensor([]).cuda()
         for domain in range(self.num_domains):
-            weights = torch.eye(self.num_classes).cuda().repeat(1,self.num_domains)
+            weights = torch.eye(self.num_classes).cuda()
             weights[weights==1] = correct_strength[domain]
 
             if incorrect_strength != 0:
                 weights[weights==0] = incorrect_strength
 
-            full_weights = torch.cat((full_weights, weights), 0)
+            full_weights = torch.cat((full_weights, weights), 1)
 
-        self.aggregation_layer.weight.data.copy_(weights)
+        self.aggregation_layer.weight.data.copy_(full_weights)
 
 
     def set_aggregation_weights(self, correct_strength = 1, incorrect_strength = 0, domain=None):
