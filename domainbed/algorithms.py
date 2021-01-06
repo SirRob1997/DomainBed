@@ -387,7 +387,8 @@ class ProDropEnsamble(ERM):
 
     def update(self, minibatches):
         features = [self.featurizer(xi) for xi, _ in minibatches]
-        domain_weights = [F.softmax(torch.mean(self.domain_predictor(f1.view(f1.shape[0], -1)), dim=0), dim=0) for f1 in features] # weights
+        features_detached = [f1.detach() for fi in features]
+        domain_weights = [F.softmax(torch.mean(self.domain_predictor(f1.view(f1.shape[0], -1)), dim=0), dim=0) for f1 in features_detached] # weights
         targets = [yi for _, yi in minibatches]
         prot_activations = [domain_pplayer(features[domain]) for domain, domain_pplayer in enumerate(self.pplayers)]
         domain_outputs = [classifier(prot_activations[domain]) for domain, classifier in enumerate(self.classifiers)]
