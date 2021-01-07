@@ -408,45 +408,47 @@ class ProDropEnsamble(ERM):
         features_detached = [fi.detach() for fi in features]
         domain_weights = [F.softmax(self.domain_predictor(f1.view(f1.shape[0], -1)), dim=1) for f1 in features_detached] # weights
         targets = [yi for _, yi in minibatches]
-        prot_activations = [domain_pplayer(features[domain]) for domain, domain_pplayer in enumerate(self.pplayers)]
-        domain_outputs = [classifier(prot_activations[domain]) for domain, classifier in enumerate(self.classifiers)]
 
-        ce_loss = 0
-        cluster_loss = 0 
-        separation_loss = 0
-
-        domain_correspondence = torch.LongTensor([domain for domain in range(len(targets)) for sample in targets[domain]]).cuda()
+        domain_correspondence = torch.LongTensor([domain for domain in range(len(targets)) for _ in targets[domain]]).cuda()
         domain_loss = F.cross_entropy(torch.stack(domain_weights).view(-1, self.num_domains), domain_correspondence)
 
         domain_agnostic = bool(random.getrandbits(1))
         if domain_agnostic:
             self.set_aggregation_weights(correct_strength=1, domain=None)
-        
-
-
-        for domain, domain_output in enumerate(domain_outputs):
-            self.set_aggregation_weights(correct_strength=1, domain=domain)
-
-            # Fill the domain_output vectors up to size num_classes * num_domains by setting all other domain predictions to 0
-            b_domain_class = torch.zeros(domain_output.shape[0], self.num_classes * domain).cuda() 
-            a_domain_class = torch.zeros(domain_output.shape[0], self.num_classes * (self.num_domains - domain - 1)).cuda() 
-            domain_output = torch.cat((b_domain_class, domain_output, a_domain_class), 1)
-            output = self.aggregation_layer(domain_output)
-            ce_loss += F.cross_entropy(output, targets[domain])
-
-            # Decision on whether we want to add other losses to the CE loss
-            if self.additional_losses:
-                max_dist = (self.prototype_shape[1] * self.prototype_shape[2] * self.prototype_shape[3])
+            all_features = torch.cat(features)
             
-                # calculate cluster cost
-                prototypes_of_correct_class = torch.t(self.pplayers[domain].prototype_class_identity[:, targets[domain]]).cuda() 
-                inverted_distances, _ = torch.max((max_dist - self.pplayers[domain].min_distances) * prototypes_of_correct_class, dim=1)
-                cluster_loss += torch.mean(max_dist - inverted_distances)
 
-                # calculate separation cost
-                prototypes_of_wrong_class = 1 - prototypes_of_correct_class
-                inverted_distances_to_nontarget_prototypes, _ = torch.max((max_dist - self.pplayers[domain].min_distances) * prototypes_of_wrong_class, dim=1)
-                separation_loss += torch.mean(max_dist - inverted_distances_to_nontarget_prototypes)
+
+
+        else:
+            prot_activations = [domain_pplayer(features[domain]) for domain, domain_pplayer in enumerate(self.pplayers)]
+            domain_outputs = [classifier(prot_activations[domain]) for domain, classifier in enumerate(self.classifiers)]
+            ce_loss = 0
+            cluster_loss = 0
+            separation_loss = 0
+            for domain, domain_output in enumerate(domain_outputs):
+                self.set_aggregation_weights(correct_strength=1, domain=domain)
+
+                # Fill the domain_output vectors up to size num_classes * num_domains by setting all other domain predictions to 0
+                b_domain_class = torch.zeros(domain_output.shape[0], self.num_classes * domain).cuda()
+                a_domain_class = torch.zeros(domain_output.shape[0], self.num_classes * (self.num_domains - domain - 1)).cuda()
+                domain_output = torch.cat((b_domain_class, domain_output, a_domain_class), 1)
+                output = self.aggregation_layer(domain_output)
+                ce_loss += F.cross_entropy(output, targets[domain])
+
+                # Decision on whether we want to add other losses to the CE loss
+                if self.additional_losses:
+                    max_dist = (self.prototype_shape[1] * self.prototype_shape[2] * self.prototype_shape[3])
+
+                    # calculate cluster cost
+                    prototypes_of_correct_class = torch.t(self.pplayers[domain].prototype_class_identity[:, targets[domain]]).cuda()
+                    inverted_distances, _ = torch.max((max_dist - self.pplayers[domain].min_distances) * prototypes_of_correct_class, dim=1)
+                    cluster_loss += torch.mean(max_dist - inverted_distances)
+
+                    # calculate separation cost
+                    prototypes_of_wrong_class = 1 - prototypes_of_correct_class
+                    inverted_distances_to_nontarget_prototypes, _ = torch.max((max_dist - self.pplayers[domain].min_distances) * prototypes_of_wrong_class, dim=1)
+                    separation_loss += torch.mean(max_dist - inverted_distances_to_nontarget_prototypes)
 
 
         if self.additional_losses:
