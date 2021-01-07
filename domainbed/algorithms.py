@@ -405,7 +405,7 @@ class ProDropEnsamble(ERM):
     def update(self, minibatches):
         features = [self.featurizer(xi) for xi, _ in minibatches]
         features_detached = [fi.detach() for fi in features]
-        domain_weights = [F.softmax(torch.mean(self.domain_predictor(f1.view(f1.shape[0], -1)), dim=0), dim=0) for f1 in features_detached] # weights
+        domain_weights = [F.softmax(self.domain_predictor(f1.view(f1.shape[0], -1)), dim=1) for f1 in features_detached] # weights
         targets = [yi for _, yi in minibatches]
         prot_activations = [domain_pplayer(features[domain]) for domain, domain_pplayer in enumerate(self.pplayers)]
         domain_outputs = [classifier(prot_activations[domain]) for domain, classifier in enumerate(self.classifiers)]
@@ -414,8 +414,8 @@ class ProDropEnsamble(ERM):
         cluster_loss = 0 
         separation_loss = 0
 
-        domain_correspondence = torch.LongTensor([domain for domain in range(len(targets))]).cuda()
-        domain_loss = F.cross_entropy(torch.stack(domain_weights), domain_correspondence)
+        domain_correspondence = torch.LongTensor([domain for domain in range(len(targets)) for sample in targets[domain]]).cuda()
+        domain_loss = F.cross_entropy(torch.stack(domain_weights).view(-1, self.num_domains), domain_correspondence)
 
         for domain, domain_output in enumerate(domain_outputs):
             self.set_aggregation_weights(correct_strength=1, domain=domain)
@@ -475,10 +475,13 @@ class ProDropEnsamble(ERM):
 
     def predict(self, x):
         features = self.featurizer(x)
-        domain_weights = F.softmax(torch.mean(self.domain_predictor(features.view(features.shape[0], -1)), dim=0), dim=0)
-        self.set_aggregation_weights_learned(correct_strength=domain_weights) 
+        domain_weights = F.softmax(self.domain_predictor(features.view(features.shape[0], -1)), dim=1)
+        self.set_aggregation_weights(correct_strength=1, domain=None) 
         prot_activations = [domain_pplayer(features) for domain_pplayer in self.pplayers]
         domain_outputs = [classifier(prot_activations[domain]) for domain, classifier in enumerate(self.classifiers)]
+        for sample, sample_weights in enumerate(domain_weights):
+            for domain, domain_weight in enumerate(sample_weights):
+                domain_outputs[domain][sample] *= domain_weight
         domain_outputs = torch.cat(domain_outputs, 1)
         return self.aggregation_layer(domain_outputs)
         
