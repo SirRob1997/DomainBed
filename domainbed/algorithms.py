@@ -412,13 +412,30 @@ class ProDropEnsamble(ERM):
         domain_correspondence = torch.LongTensor([domain for domain in range(len(targets)) for _ in targets[domain]]).cuda()
         domain_loss = F.cross_entropy(torch.stack(domain_weights).view(-1, self.num_domains), domain_correspondence)
 
-        domain_agnostic = bool(random.getrandbits(1))
+        domain_agnostic = random.choice([True, False])
         if domain_agnostic:
-            self.set_aggregation_weights(correct_strength=1, domain=None)
+            self.set_aggregation_weights(correct_strength=1/self.num_domains, domain=None)
             all_features = torch.cat(features)
-            
+            prot_activations = [domain_pplayer(all_features) for domain, domain_pplayer in enumerate(self.pplayers)]
+            domain_outputs = [classifier(prot_activations[domain]) for domain, classifier in enumerate(self.classifiers)]
+            output = self.aggregation_layer(torch.cat(domain_outputs, dim=1))
+            ce_loss = F.cross_entropy(output, torch.cat(targets))
 
+            cluster_loss = 0
+            separation_loss = 0
+            for domain, domain_output in enumerate(domain_outputs):
+                if self.additional_losses:
+                    max_dist = (self.prototype_shape[1] * self.prototype_shape[2] * self.prototype_shape[3])
 
+                    # calculate cluster cost
+                    prototypes_of_correct_class = torch.t(self.pplayers[domain].prototype_class_identity[:, torch.cat(targets)]).cuda()
+                    inverted_distances, _ = torch.max((max_dist - self.pplayers[domain].min_distances) * prototypes_of_correct_class, dim=1)
+                    cluster_loss += torch.mean(max_dist - inverted_distances)
+
+                    # calculate separation cost
+                    prototypes_of_wrong_class = 1 - prototypes_of_correct_class
+                    inverted_distances_to_nontarget_prototypes, _ = torch.max((max_dist - self.pplayers[domain].min_distances) * prototypes_of_wrong_class, dim=1)
+                    separation_loss += torch.mean(max_dist - inverted_distances_to_nontarget_prototypes)
 
         else:
             prot_activations = [domain_pplayer(features[domain]) for domain, domain_pplayer in enumerate(self.pplayers)]
