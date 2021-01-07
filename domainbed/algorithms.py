@@ -8,6 +8,7 @@ import itertools
 
 import copy
 import numpy as np
+import random
 
 from domainbed import networks
 from domainbed.lib.misc import random_pairs_of_minibatches
@@ -416,6 +417,12 @@ class ProDropEnsamble(ERM):
 
         domain_correspondence = torch.LongTensor([domain for domain in range(len(targets)) for sample in targets[domain]]).cuda()
         domain_loss = F.cross_entropy(torch.stack(domain_weights).view(-1, self.num_domains), domain_correspondence)
+
+        domain_agnostic = bool(random.getrandbits(1))
+        if domain_agnostic:
+            self.set_aggregation_weights(correct_strength=1, domain=None)
+        
+
 
         for domain, domain_output in enumerate(domain_outputs):
             self.set_aggregation_weights(correct_strength=1, domain=domain)
