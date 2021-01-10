@@ -242,10 +242,11 @@ class PPLayer(nn.Module):
     def gen_domain_identity(self):
         assert(self.num_prototypes % self.num_domains == 0)
 
-        num_prototypes_per_domain = self.num_prototypes // self.num_domains
-        domain_identity = torch.zeros(self.num_prototypes, self.num_domains)
-        for j in range(self.num_prototypes):
-            domain_identity[j, j // num_prototypes_per_domain] = 1
+        num_prototypes_per_class = self.num_prototypes // self.num_classes
+        domain_identity = torch.zeros(num_prototypes_per_class, self.num_domains).cuda()
+        for j in range(num_prototypes_per_class):
+            domain_identity[j, (j // (num_prototypes_per_class // self.num_domains))] = 1
+        domain_identity = domain_identity.repeat(self.num_classes, 1)
         return domain_identity
 
     def gen_class_identity(self):

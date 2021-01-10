@@ -96,6 +96,7 @@ class ProDrop(ERM):
         super(ProDrop, self).__init__(input_shape, num_classes, num_domains, hparams)
 
         self.num_classes = num_classes
+        self.num_domains = num_domains
         self.num_prototypes_per_class = hparams['num_prototypes_per_class'] 
         self.num_prototypes = self.num_prototypes_per_class * num_classes * num_domains
         self.prototype_width = hparams['prototype_width']
@@ -201,31 +202,37 @@ class ProDrop(ERM):
 
         # Decision on whether we want to add other losses to the CE loss
         if self.additional_losses:
-            max_dist = (self.prototype_shape[1] * self.prototype_shape[2] * self.prototype_shape[3])
+            cluster_loss = 0
+            separation_loss = 0
+            for domain in range(self.num_domains):
+                max_dist = (self.prototype_shape[1] * self.prototype_shape[2] * self.prototype_shape[3])
 
-            # calculate cluster cost
-            prototypes_of_correct_class = torch.t(self.pplayer.prototype_class_identity[:, all_y]).cuda() # [N, num_prototypes]
-            inverted_distances, _ = torch.max((max_dist - self.pplayer.min_distances) * prototypes_of_correct_class, dim=1) # [N]
-            cluster_loss = torch.mean(max_dist - inverted_distances)
+                # calculate cluster cost
+                prototypes_of_correct_class = torch.t(self.pplayer.prototype_class_identity[:, all_y]).cuda() # [N, num_prototypes]
+                prototypes_of_correct_domain = torch.t(self.pplayer.prototype_domain_identity[:, domain]).cuda().repeat(prototypes_of_correct_class.shape[0], 1)
+                correct_prototypes = prototypes_of_correct_class * prototypes_of_correct_domain
+                inverted_distances, _ = torch.max((max_dist - self.pplayer.min_distances) * correct_prototypes, dim=1) # [N]
+                cluster_loss += torch.mean(max_dist - inverted_distances)
 
-            # calculate separation cost
-            prototypes_of_wrong_class = 1 - prototypes_of_correct_class
-            inverted_distances_to_nontarget_prototypes, _ = torch.max((max_dist - self.pplayer.min_distances) * prototypes_of_wrong_class, dim=1)
-            separation_loss = torch.mean(max_dist - inverted_distances_to_nontarget_prototypes)
+                # calculate separation cost
+                wrong_prototypes = 1 - correct_prototypes
+                incorrect_prototypes_domain = wrong_prototypes * prototypes_of_correct_domain # Currently only cosiders the other classes of that domain as wrong prototypes
+                inverted_distances_to_nontarget_prototypes, _ = torch.max((max_dist - self.pplayer.min_distances) * incorrect_prototypes_domain, dim=1)
+                separation_loss += torch.mean(max_dist - inverted_distances_to_nontarget_prototypes)
 
-            # calculate the intra class prototype distance
-            reshaped_prototypes = self.pplayer.prototype_vectors.view(self.num_classes, self.num_prototypes_per_class, -1)
-            intra_loss = self.calculate_intra_loss(reshaped_prototypes)
+                # calculate the intra class prototype distance
+                #reshaped_prototypes = self.pplayer.prototype_vectors.view(self.num_classes, self.num_prototypes_per_class, -1)
+                #intra_loss = self.calculate_intra_loss(reshaped_prototypes)
 
-            # get the current cpt loss
-            #cpt_loss = self.pplayer.cpt_loss
+                # get the current cpt loss
+                #cpt_loss = self.pplayer.cpt_loss
 
-            # L1 mask
-            #l1_mask = 1 - torch.t(self.pplayer.prototype_class_identity).cuda()
-            #l1 = (self.classifier.weight * l1_mask).norm(p=1)
+                # L1 mask
+                #l1_mask = 1 - torch.t(self.pplayer.prototype_class_identity).cuda()
+                #l1 = (self.classifier.weight * l1_mask).norm(p=1)
 
-            # Overall loss
-            loss = self.ce_factor * ce_loss + self.cl_factor * cluster_loss + self.sep_factor * separation_loss + self.intra_factor * intra_loss
+                # Overall loss
+            loss = self.ce_factor * ce_loss + self.cl_factor * cluster_loss + self.sep_factor * separation_loss 
         else:
             loss = ce_loss
 
