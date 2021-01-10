@@ -195,11 +195,12 @@ class PPLayer(nn.Module):
         - epsilon: used for conversion from distance to similarity to avoid division by 0
     """
 
-    def __init__(self, prototype_shape, num_classes, prototype_activation_function='log', epsilon=1e-4):
+    def __init__(self, prototype_shape, num_classes, num_domains, prototype_activation_function='log', epsilon=1e-4):
         super(PPLayer, self).__init__()
         self.prototype_shape = prototype_shape
         self.num_prototypes = prototype_shape[0]
         self.num_classes = num_classes
+        self.num_domains = num_domains
         self.epsilon = epsilon
         self.prototype_activation_function = prototype_activation_function
 
@@ -207,6 +208,7 @@ class PPLayer(nn.Module):
         self.ones = nn.Parameter(torch.ones(self.prototype_shape), requires_grad=False)
 
         self.prototype_class_identity = self.gen_class_identity()
+        self.prototype_domain_identity = self.gen_domain_identity()
         self.add_on_layers = nn.Sequential(
                 nn.Conv2d(in_channels=self.prototype_shape[1], out_channels=self.prototype_shape[1], kernel_size=1),
                 nn.ReLU(),
@@ -237,6 +239,15 @@ class PPLayer(nn.Module):
         factor_mask = (row_tensor - max_row_indeces)**2 + (column_tensor - max_column_indeces)**2
         return (sim * factor_mask).sum() / num_samples
 
+    def gen_domain_identity(self):
+        assert(self.num_prototypes % self.num_domains == 0)
+
+        num_prototypes_per_domain = self.num_prototypes // self.num_domains
+        domain_identity = torch.zeros(self.num_prototypes, self.num_domains)
+        for j in range(self.num_prototypes):
+            domain_identity[j, j // num_prototypes_per_domain] = 1
+        return domain_identity
+
     def gen_class_identity(self):
         """
         Generates the one-hots for prototype class correspondence
@@ -266,7 +277,7 @@ class PPLayer(nn.Module):
         p2 = torch.sum(p2, dim=(1, 2, 3))                       # p2 is a vector of shape (num_prototypes,)
         p2_reshape = p2.view(-1, 1, 1)                          # then we reshape it to (num_prototypes, 1, 1)
         xp = F.conv2d(input=x, weight=self.prototype_vectors)
-        intermediate_result = - 2 * xp + p2_reshape             # use broadcast
+        intermediate_result = - 2 * xp + p2_reshape
         distances = F.relu(x2_patch_sum + intermediate_result)  # x2_patch_sum and intermediate_result are of the same shape
         return distances
 

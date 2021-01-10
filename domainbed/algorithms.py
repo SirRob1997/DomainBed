@@ -97,7 +97,7 @@ class ProDrop(ERM):
 
         self.num_classes = num_classes
         self.num_prototypes_per_class = hparams['num_prototypes_per_class'] 
-        self.num_prototypes = self.num_prototypes_per_class  * num_classes
+        self.num_prototypes = self.num_prototypes_per_class * num_classes * num_domains
         self.prototype_width = hparams['prototype_width']
         self.prototype_height = hparams['prototype_height']
         self.prototype_shape = (self.num_prototypes, self.featurizer.n_outputs, self.prototype_height, self.prototype_width)
@@ -110,7 +110,7 @@ class ProDrop(ERM):
         self.intra_factor = hparams['intra_factor']
         self.end_to_end = hparams['end_to_end']
 
-        self.pplayer = networks.PPLayer(self.prototype_shape, num_classes)
+        self.pplayer = networks.PPLayer(self.prototype_shape, num_classes, num_domains)
         self.classifier = nn.Linear(self.num_prototypes, num_classes, bias=False)
         self._initialize_weights()
 
