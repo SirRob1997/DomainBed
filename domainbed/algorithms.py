@@ -102,6 +102,7 @@ class ProDrop(ERM):
         self.prototype_height = hparams['prototype_height']
         self.prototype_shape = (self.num_prototypes, self.featurizer.n_outputs, self.prototype_height, self.prototype_width)
         self.additional_losses = hparams['additional_losses']
+        self.self_challenging = hparams['self_challenging']
         self.ce_factor = hparams['ce_factor']
         self.cl_factor = hparams['cl_factor']
         self.sep_factor = hparams['sep_factor']

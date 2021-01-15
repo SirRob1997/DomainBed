@@ -53,6 +53,7 @@ def _hparams(algorithm, dataset, random_seed):
         _hparam('prototype_width', 1, lambda r: 1)
         _hparam('prototype_height', 1, lambda r: 1)
         _hparam('additional_losses', True, lambda r: True)
+        _hparam('self_challenging', True, lambda r: True)
         _hparam('freeze_classifier', True, lambda r: True)
         _hparam('ce_factor', 1, lambda r: 1)
         _hparam('cl_factor', 0.7, lambda r: 0.7)
