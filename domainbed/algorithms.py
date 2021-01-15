@@ -215,8 +215,8 @@ class ProDrop(ERM):
             separation_loss = torch.mean(max_dist - inverted_distances_to_nontarget_prototypes)
 
             # calculate the intra class prototype distance
-            reshaped_prototypes = self.pplayer.prototype_vectors.view(self.num_classes, self.num_prototypes_per_class, -1)
-            intra_loss = self.calculate_intra_loss(reshaped_prototypes)
+            #reshaped_prototypes = self.pplayer.prototype_vectors.view(self.num_classes, self.num_prototypes_per_class, -1)
+            #intra_loss = self.calculate_intra_loss(reshaped_prototypes)
 
             # get the current cpt loss
             #cpt_loss = self.pplayer.cpt_loss
@@ -226,7 +226,7 @@ class ProDrop(ERM):
             #l1 = (self.classifier.weight * l1_mask).norm(p=1)
 
             # Overall loss
-            loss = self.ce_factor * ce_loss + self.cl_factor * cluster_loss + self.sep_factor * separation_loss + self.intra_factor * intra_loss
+            loss = self.ce_factor * ce_loss + self.cl_factor * cluster_loss + self.sep_factor * separation_loss 
         else:
             loss = ce_loss
 
