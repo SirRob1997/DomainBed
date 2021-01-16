@@ -208,7 +208,7 @@ class ProDrop(ERM):
             quantile_b = torch.quantile(before_vector, 1 - self.drop_b)
             mask_b = before_vector.lt(quantile_b).float().view(-1,1).repeat(1, prot_activations.shape[1]) # 0 for samples to apply masking, highest values in before_vector i.e. highest confidence on correct class 
             quantile_f = torch.quantile(prot_activations, 1 - self.drop_f, dim=1, keepdim=True)
-            mask_f = prot_activations.gt(quantile_f).float() # 0 for prototype activations to apply masking, highest values in prot_activations, i.e. the highest similarity prototypes
+            mask_f = prot_activations.lt(quantile_f).float() # 0 for prototype activations to apply masking, highest values in prot_activations, i.e. the highest similarity prototypes
             mask = torch.logical_or(mask_b, mask_f).float()
             muted_outputs = self.classifier(prot_activations * mask)
             ce_loss = F.cross_entropy(muted_outputs, all_y)
