@@ -103,6 +103,8 @@ class ProDrop(ERM):
         self.prototype_shape = (self.num_prototypes, self.featurizer.n_outputs, self.prototype_height, self.prototype_width)
         self.additional_losses = hparams['additional_losses']
         self.self_challenging = hparams['self_challenging']
+        self.drop_b = hparams['drop_b']
+        self.drop_f = hparams['drop_f']
         self.ce_factor = hparams['ce_factor']
         self.cl_factor = hparams['cl_factor']
         self.sep_factor = hparams['sep_factor']
@@ -195,10 +197,23 @@ class ProDrop(ERM):
     def update(self, minibatches):
         all_x = torch.cat([x for x, y in minibatches])
         all_y = torch.cat([y for x, y in minibatches])
+        all_o = F.one_hot(all_y, self.num_classes)
         features = self.featurizer(all_x)
         prot_activations = self.pplayer(features)
         outputs = self.classifier(prot_activations)
-        ce_loss = F.cross_entropy(outputs, all_y)
+        if self.self_challenging:
+            all_s = F.softmax(outputs, dim=1)
+            before_vector = (all_s * all_o).sum(1)
+            before_vector = torch.where(before_vector > 0, before_vector, torch.zeros(before_vector.shape).cuda())
+            quantile_b = torch.quantile(before_vector, 1 - self.drop_b)
+            mask_b = before_vector.lt(quantile_b).float().view(-1,1).repeat(1, prot_activations.shape[1]) # 0 for samples to apply masking, highest values in before_vector i.e. highest confidence on correct class 
+            quantile_f = torch.quantile(prot_activations, 1 - self.drop_f, dim=1, keepdim=True)
+            mask_f = prot_activations.gt(quantile_f).float() # 0 for prototype activations to apply masking, highest values in prot_activations, i.e. the highest similarity prototypes
+            mask = torch.logical_or(mask_b, mask_f).float()
+            muted_outputs = self.classifier(prot_activations * mask)
+            ce_loss = F.cross_entropy(muted_outputs, all_y)
+        else:
+            ce_loss = F.cross_entropy(outputs, all_y)
 
         # Decision on whether we want to add other losses to the CE loss
         if self.additional_losses:

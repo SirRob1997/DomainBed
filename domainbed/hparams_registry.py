@@ -55,6 +55,8 @@ def _hparams(algorithm, dataset, random_seed):
         _hparam('additional_losses', True, lambda r: True)
         _hparam('self_challenging', True, lambda r: True)
         _hparam('freeze_classifier', True, lambda r: True)
+        _hparam('drop_b', 1/3, lambda r: 1/3)
+        _hparam('drop_f', 1/3, lambda r: 1/3)
         _hparam('ce_factor', 1, lambda r: 1)
         _hparam('cl_factor', 0.7, lambda r: 0.7)
         _hparam('sep_factor', -0.08, lambda r: -0.08)
