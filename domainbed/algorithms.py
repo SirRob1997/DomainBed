@@ -193,12 +193,15 @@ class ProDrop(ERM):
 
 
     def update(self, minibatches):
-        all_x = torch.cat([x for x, y in minibatches])
-        all_y = torch.cat([y for x, y in minibatches])
-        features = self.featurizer(all_x)
-        prot_activations = self.pplayer(features)
-        outputs = self.classifier(prot_activations)
-        ce_loss = F.cross_entropy(outputs, all_y)
+        #all_x = torch.cat([x for x, y in minibatches])
+        y = [y for _, y in minibatches]
+        features = [self.featurizer(x) for x,_ in minibatches]
+        prot_activations = [self.pplayer(feature) for feature in features]
+        ce_loss = 0
+        for domain, domain_activation in enumerate(prot_activations):
+            masked_activation = domain_activation * self.pplayer.prototype_domain_identity[:,domain]
+            outputs = self.classifier(masked_activation) 
+            ce_loss += F.cross_entropy(outputs, y[domain])
 
         # Decision on whether we want to add other losses to the CE loss
         if self.additional_losses:
@@ -208,7 +211,7 @@ class ProDrop(ERM):
                 max_dist = (self.prototype_shape[1] * self.prototype_shape[2] * self.prototype_shape[3])
 
                 # calculate cluster cost
-                prototypes_of_correct_class = torch.t(self.pplayer.prototype_class_identity[:, all_y]).cuda() # [N, num_prototypes]
+                prototypes_of_correct_class = torch.t(self.pplayer.prototype_class_identity[:, y[domain]]).cuda() # [N, num_prototypes]
                 prototypes_of_correct_domain = torch.t(self.pplayer.prototype_domain_identity[:, domain]).cuda().repeat(prototypes_of_correct_class.shape[0], 1)
                 correct_prototypes = prototypes_of_correct_class * prototypes_of_correct_domain
                 inverted_distances, _ = torch.max((max_dist - self.pplayer.min_distances) * correct_prototypes, dim=1) # [N]
