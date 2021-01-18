@@ -202,15 +202,19 @@ class ProDrop(ERM):
         prot_activations = self.pplayer(features)
         outputs = self.classifier(prot_activations)
         if self.self_challenging:
+            mask_p = torch.t(self.pplayer.prototype_class_identity[:, all_y]).cuda().bool() # prototypes which correspond to the class
+            reduced_activations = prot_activations * mask_p
+            quantile_f = torch.quantile(reduced_activations, 1 - (self.drop_f * (self.num_prototypes_per_class / self.num_prototypes)), dim=1, keepdim=True)
+            mask_f = reduced_activations.lt(quantile_f) # 0 for prototype activations to apply masking, highest values in prot_activations, i.e. the highest similarity prototypes
             all_s = F.softmax(outputs, dim=1)
             before_vector = (all_s * all_o).sum(1)
             before_vector = torch.where(before_vector > 0, before_vector, torch.zeros(before_vector.shape).cuda())
             quantile_b = torch.quantile(before_vector, 1 - self.drop_b)
-            mask_b = before_vector.lt(quantile_b).float().view(-1,1).repeat(1, prot_activations.shape[1]) # 0 for samples to apply masking, highest values in before_vector i.e. highest confidence on correct class 
-            quantile_f = torch.quantile(prot_activations, 1 - self.drop_f, dim=1, keepdim=True)
-            mask_f = prot_activations.lt(quantile_f).float() # 0 for prototype activations to apply masking, highest values in prot_activations, i.e. the highest similarity prototypes
-            mask = torch.logical_or(mask_b, mask_f).float()
+            mask_b = before_vector.lt(quantile_b).view(-1,1).repeat(1, prot_activations.shape[1]) # 0 for samples to apply masking, highest values in before_vector i.e. highest confidence on correct class 
+            mask = torch.logical_or(mask_f, ~mask_p)
+            mask = torch.logical_or(mask, mask_b).float()
             muted_outputs = self.classifier(prot_activations * mask)
+            #print("Masked out values for this batch:", (mask.shape[1]) - torch.count_nonzero(mask, dim=1))
             ce_loss = F.cross_entropy(muted_outputs, all_y)
         else:
             ce_loss = F.cross_entropy(outputs, all_y)
