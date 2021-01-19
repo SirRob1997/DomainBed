@@ -9,6 +9,7 @@ import itertools
 import copy
 import numpy as np
 
+from domainbed import datasets
 from domainbed import networks
 from domainbed.lib.misc import random_pairs_of_minibatches
 
@@ -195,13 +196,14 @@ class ProDrop(ERM):
 
 
     def update(self, minibatches):
+        self.update_count += 1
         all_x = torch.cat([x for x, y in minibatches])
         all_y = torch.cat([y for x, y in minibatches])
         all_o = F.one_hot(all_y, self.num_classes)
         features = self.featurizer(all_x)
         prot_activations = self.pplayer(features)
         outputs = self.classifier(prot_activations)
-        if self.self_challenging:
+        if self.self_challenging and self.update_count.item() >= datasets.MultipleDomainDataset.N_STEPS * 0.2:
             mask_p = torch.t(self.pplayer.prototype_class_identity[:, all_y]).cuda().bool() # prototypes which correspond to the class
             reduced_activations = prot_activations * mask_p
             quantile_f = torch.quantile(reduced_activations, 1 - (self.drop_f * (self.num_prototypes_per_class / self.num_prototypes)), dim=1, keepdim=True)
@@ -255,7 +257,6 @@ class ProDrop(ERM):
             loss.backward()
             self.optimizer.step()
         else:
-            self.update_count += 1
             if self.update_count.item() <= self.warmup_steps:
                 self.pplayer_optimizer.zero_grad()
                 loss.backward()
