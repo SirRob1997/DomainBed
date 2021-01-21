@@ -70,14 +70,29 @@ class ERM(Algorithm):
                                   hparams)
         self.featurizer = networks.Featurizer(input_shape, self.hparams)
         self.classifier = nn.Linear(self.featurizer.n_outputs, num_classes)
-        self.network = nn.Sequential(self.featurizer, self.classifier)
+        self.add_on_layers = nn.Sequential(
+                nn.Conv2d(in_channels=self.featurizer.n_outputs, out_channels=self.featurizer.n_outputs, kernel_size=1),
+                nn.ReLU(),
+                nn.Conv2d(in_channels=self.featurizer.n_outputs, out_channels=self.featurizer.n_outputs, kernel_size=1),
+                nn.Sigmoid(),
+         )
+
+        # Remove AvgPool, Flatten and Droput for ResNet
+        if self.featurizer.__class__.__name__ == "ResNet":
+            self.featurizer.network.avgpool = networks.Identity()
+            self.featurizer.flattenLayer = networks.Identity()
+            self.featurizer.dropout = networks.Identity()
+
+        self.network = nn.Sequential(self.featurizer, self.add_on_layers, self.classifier)
         self.optimizer = torch.optim.Adam(
             self.network.parameters(),
             lr=self.hparams["lr"],
             weight_decay=self.hparams['weight_decay']
         )
+        self.register_buffer('update_count', torch.tensor([0]))
 
     def update(self, minibatches):
+        self.update_count += 1
         all_x = torch.cat([x for x,y in minibatches])
         all_y = torch.cat([y for x,y in minibatches])
         loss = F.cross_entropy(self.predict(all_x), all_y)
@@ -89,7 +104,12 @@ class ERM(Algorithm):
         return {'loss': loss.item()}
 
     def predict(self, x):
-        return self.network(x)
+        x = self.featurizer(x)
+        x = self.add_on_layers(x)
+        x = nn.AdaptiveAvgPool2d((1, 1))
+        x = x.flatten()
+        x = self.classifier(x)
+        return x
 
 
 class ProDrop(ERM):
@@ -183,7 +203,7 @@ class ProDrop(ERM):
                 nn.init.constant_(m.weight, 1)
                 nn.init.constant_(m.bias, 0)
 
-        self.set_last_layer_incorrect_connection(incorrect_strength=-0.5)
+        self.set_last_layer_incorrect_connection(incorrect_strength=0)
  
     def calculate_intra_loss(self, prototypes):
         # takes as input a tensor of shape [num_classes, num_prototypes_per_class, K] which has all prototypes associated with that class
@@ -203,7 +223,7 @@ class ProDrop(ERM):
         features = self.featurizer(all_x)
         prot_activations = self.pplayer(features)
         outputs = self.classifier(prot_activations)
-        if self.self_challenging and self.update_count.item() >= datasets.MultipleDomainDataset.N_STEPS * 0.2:
+        if self.self_challenging:
             mask_p = torch.t(self.pplayer.prototype_class_identity[:, all_y]).cuda().bool() # prototypes which correspond to the class
             reduced_activations = prot_activations * mask_p
             quantile_f = torch.quantile(reduced_activations, 1 - (self.drop_f * (self.num_prototypes_per_class / self.num_prototypes)), dim=1, keepdim=True)
