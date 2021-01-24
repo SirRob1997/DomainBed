@@ -70,6 +70,7 @@ def _hparams(algorithm, dataset, random_seed):
         _hparam('optimize_classifier', False, lambda r: False)
         _hparam('cooldown_steps', 100, lambda r: 100)
         _hparam('cl_lr', 1e-4, lambda r: 1e-4)
+        _hparam('negative_weight', -1.0, lambda r: -1.0)
 
     elif algorithm == "SagNet":
         _hparam('sag_w_adv', 0.1, lambda r: 10**r.uniform(-2, 1))

@@ -135,6 +135,7 @@ class ProDrop(ERM):
         self.cpt_factor = hparams['cpt_factor']
         self.intra_factor = hparams['intra_factor']
         self.end_to_end = hparams['end_to_end']
+        self.negative_weight = hparams['negative_weight']
 
         self.pplayer = networks.PPLayer(self.prototype_shape, num_classes)
         self.classifier = nn.Linear(self.num_prototypes, num_classes, bias=False)
@@ -205,7 +206,7 @@ class ProDrop(ERM):
                 nn.init.constant_(m.weight, 1)
                 nn.init.constant_(m.bias, 0)
 
-        self.set_last_layer_incorrect_connection(incorrect_strength=0)
+        self.set_last_layer_incorrect_connection(incorrect_strength=self.negative_weight)
  
     def calculate_intra_loss(self, prototypes):
         # takes as input a tensor of shape [num_classes, num_prototypes_per_class, K] which has all prototypes associated with that class
@@ -235,8 +236,7 @@ class ProDrop(ERM):
             before_vector = torch.where(before_vector > 0, before_vector, torch.zeros(before_vector.shape).cuda())
             quantile_b = torch.quantile(before_vector, 1 - self.drop_b)
             mask_b = before_vector.lt(quantile_b).view(-1,1).repeat(1, prot_activations.shape[1]) # 0 for samples to apply masking, highest values in before_vector i.e. highest confidence on correct class 
-            mask = torch.logical_or(mask_f, ~mask_p)
-            mask = torch.logical_or(mask, mask_b).float()
+            mask = torch.logical_or(mask_f, mask_b).float()
             muted_outputs = self.classifier(prot_activations * mask)
             #print("Masked out values for this batch:", (mask.shape[1]) - torch.count_nonzero(mask, dim=1))
             ce_loss = F.cross_entropy(muted_outputs, all_y)
