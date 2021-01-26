@@ -1,0 +1,3613 @@
+Total records: 4080
+Model selection: training-domain validation set
+trial_seed: 2
+	{'val_acc': 0.9625915660789678, 'test_acc': 0.7337786259541985}
+		hparams:
+			additional_losses: True
+			batch_size: 37
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 2.95623643291898e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.0
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 0.0002016579493930936
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/8e1ac4240b83b06bbc326b010abdd345
+	{'val_acc': 0.9560363005416663, 'test_acc': 0.698791348600509}
+		hparams:
+			additional_losses: True
+			batch_size: 39
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 1.6979523566141523e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.0
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 2.7644358744009473e-05
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/f12f51a073d7bc28202b3c61f3aa4c69
+	{'val_acc': 0.9533885231438779, 'test_acc': 0.7598600508905853}
+		hparams:
+			additional_losses: True
+			batch_size: 32
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 5e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.0
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 0.0
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/61e6dcb07d6ca130866f9d0f1fabcb48
+	{'val_acc': 0.9490250894361987, 'test_acc': 0.7541348600508906}
+		hparams:
+			additional_losses: True
+			batch_size: 24
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 2.259509333895171e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.1
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 0.0038093795402535276
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/4ea2ec50289aeb4e139829da540e8577
+	{'val_acc': 0.948087566742677, 'test_acc': 0.6930661577608143}
+		hparams:
+			additional_losses: True
+			batch_size: 35
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 5.203148467315319e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.0
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 1.5941595326730853e-05
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/d35a50c7ec080946dcb3fff6d100d126
+	{'val_acc': 0.946788292889489, 'test_acc': 0.6587150127226463}
+		hparams:
+			additional_losses: True
+			batch_size: 29
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 2.3636153892690768e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.0
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 3.365802104690301e-05
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/a52dbefdc7b18428556f886ac0c8699c
+	{'val_acc': 0.9464998388069117, 'test_acc': 0.7248727735368957}
+		hparams:
+			additional_losses: True
+			batch_size: 18
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 3.282920045772228e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.0
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 2.900002872985468e-05
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/cc31628ce13bc119a0506c370c798e58
+	{'val_acc': 0.94440108561011, 'test_acc': 0.7172391857506362}
+		hparams:
+			additional_losses: True
+			batch_size: 24
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 2.1059719178287245e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.5
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 1.0226894592810383e-06
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/b7808b46777f17c4ad78d0a26d90841d
+	{'val_acc': 0.9428513566142952, 'test_acc': 0.7449109414758269}
+		hparams:
+			additional_losses: True
+			batch_size: 21
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 3.25301517026644e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.1
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 0.007328859252981211
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/02276e69a11639c558317bba7636935d
+	{'val_acc': 0.9417377916309149, 'test_acc': 0.6902035623409669}
+		hparams:
+			additional_losses: True
+			batch_size: 22
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 4.451235671690321e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.1
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 7.61339855085641e-06
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/e9ee3dcaefbd4158f2111fc724cb99ac
+	{'val_acc': 0.9389888331918695, 'test_acc': 0.5995547073791349}
+		hparams:
+			additional_losses: True
+			batch_size: 25
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 1.0061945703598755e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.0
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 0.0003150750110930775
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/3ca99dd8e52b4eff2ac083ed4ba31b03
+	{'val_acc': 0.9368098171408422, 'test_acc': 0.7388676844783715}
+		hparams:
+			additional_losses: True
+			batch_size: 13
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 3.5948054187960416e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.5
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 3.2409030903340844e-06
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/7efcf7b348a5acf5d769a84a30097fdc
+	{'val_acc': 0.9358765594216453, 'test_acc': 0.6701653944020356}
+		hparams:
+			additional_losses: True
+			batch_size: 18
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 1.3982210782681486e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.0
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 0.0002915412147288415
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/e249af807da7cd5d57488b94320b218c
+	{'val_acc': 0.9313440700568645, 'test_acc': 0.7624045801526718}
+		hparams:
+			additional_losses: True
+			batch_size: 15
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 6.768725917122619e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.5
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 2.692204119563736e-06
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/56bb2a7bc4adce7f8182d0564b1655e7
+	{'val_acc': 0.9305600864390375, 'test_acc': 0.7111959287531806}
+		hparams:
+			additional_losses: True
+			batch_size: 10
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 6.456280188921339e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.0
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 0.005463379786545902
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/0cd17d4207dbc572e5e7c5c96c53443a
+	{'val_acc': 0.9133676099621959, 'test_acc': 0.6272264631043257}
+		hparams:
+			additional_losses: True
+			batch_size: 9
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 4.151959487063697e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.5
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 5.08174262971335e-05
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/e885b5001c0c16e4227b560bc6832e93
+	{'val_acc': 0.8980753620337533, 'test_acc': 0.6743002544529262}
+		hparams:
+			additional_losses: True
+			batch_size: 10
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 7.625215427542097e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.1
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 0.00047223799345445756
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/4a7ab21106effe142f259f510c1151d1
+	{'val_acc': 0.8942818707140918, 'test_acc': 0.6685750636132316}
+		hparams:
+			additional_losses: True
+			batch_size: 8
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 5.9943608091645206e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.5
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 0.00048345143761565696
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/64cfbfa0203632b42625ca1d27deab9f
+	{'val_acc': 0.7640037042918322, 'test_acc': 0.5750636132315522}
+		hparams:
+			additional_losses: True
+			batch_size: 9
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 0.00015197093111758464
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.5
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 1.0329604555494109e-06
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/cf3ea516c4141e4b2b6a5e1965a5d02b
+	{'val_acc': 0.7260756943054938, 'test_acc': 0.566793893129771}
+		hparams:
+			additional_losses: True
+			batch_size: 10
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 0.00021342049430752089
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.5
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 3.621412012322581e-05
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/07674526a8e2da89bc0b09c408bd7e5c
+trial_seed: 1
+	{'val_acc': 0.956440315615608, 'test_acc': 0.7989821882951654}
+		hparams:
+			additional_losses: True
+			batch_size: 32
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 5e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.0
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 0.0
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/670e5f42ef692e8805557038e455c6d7
+	{'val_acc': 0.9474373615004335, 'test_acc': 0.7487277353689568}
+		hparams:
+			additional_losses: True
+			batch_size: 33
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 4.057057661309337e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.1
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 4.206907223916248e-05
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/44ff2af393c8c637b11984b654ece8a7
+	{'val_acc': 0.9365705927496771, 'test_acc': 0.6402671755725191}
+		hparams:
+			additional_losses: True
+			batch_size: 16
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 1.8411898397443895e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.1
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 0.0016077694551523362
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/285f371d935b571650c8c213676a5804
+	{'val_acc': 0.9354655785705667, 'test_acc': 0.7283715012722646}
+		hparams:
+			additional_losses: True
+			batch_size: 33
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 9.123844754558304e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.5
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 0.00023343984082907065
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/4b59f4d069c079f29d65b4d7b2354aa7
+	{'val_acc': 0.9318791418479573, 'test_acc': 0.7293256997455471}
+		hparams:
+			additional_losses: True
+			batch_size: 10
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 5.079846025444368e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.1
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 4.634713155314057e-05
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/b768ea81bf4b8952685749dc54de8596
+	{'val_acc': 0.930602350353313, 'test_acc': 0.7700381679389313}
+		hparams:
+			additional_losses: True
+			batch_size: 13
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 5.410293091771717e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.0
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 1.63495416553105e-06
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/dc0b0829d102d2905dd18539969f6820
+	{'val_acc': 0.9305798679947692, 'test_acc': 0.7166030534351145}
+		hparams:
+			additional_losses: True
+			batch_size: 14
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 4.166942477516309e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.1
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 0.001044686433104056
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/6be8ae22e677765c4fd25b2a01c3545c
+	{'val_acc': 0.9295620824470215, 'test_acc': 0.7175572519083969}
+		hparams:
+			additional_losses: True
+			batch_size: 11
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 5.323285967621206e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.5
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 2.046120234156778e-06
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/382eb903b7dc1a1dff19e429ee213bf5
+	{'val_acc': 0.9243793878399972, 'test_acc': 0.746501272264631}
+		hparams:
+			additional_losses: True
+			batch_size: 21
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 0.00011281359420053416
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.1
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 5.000446907120253e-05
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/5535b36c5370c106f9e3facc251112e2
+	{'val_acc': 0.923011081884045, 'test_acc': 0.72264631043257}
+		hparams:
+			additional_losses: True
+			batch_size: 9
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 3.800456552908177e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.0
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 1.447522981440824e-05
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/ea64d1349e796866dd5b6cc90496bd6e
+	{'val_acc': 0.9224973558201967, 'test_acc': 0.6339058524173028}
+		hparams:
+			additional_losses: True
+			batch_size: 8
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 2.2352558725944602e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.5
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 1.9967320578799288e-06
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/3954c9cd8cfb0aa16905d598def57188
+	{'val_acc': 0.9155915907303109, 'test_acc': 0.7064249363867684}
+		hparams:
+			additional_losses: True
+			batch_size: 8
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 1.3826168925328977e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.0
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 3.615900325399353e-06
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/e476732a42411992ab7e230cfae8d028
+	{'val_acc': 0.9090983706630165, 'test_acc': 0.7334605597964376}
+		hparams:
+			additional_losses: True
+			batch_size: 12
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 9.698409695305606e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.0
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 0.00979495527815601
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/08b854f6277286ea701d15123e90b9bc
+	{'val_acc': 0.7473179672460817, 'test_acc': 0.5817430025445293}
+		hparams:
+			additional_losses: True
+			batch_size: 35
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 0.0003107262669977512
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.5
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 5.072722794666653e-06
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/b301069687258dfc6d6ab231c0af287f
+	{'val_acc': 0.7237799806318025, 'test_acc': 0.5877862595419847}
+		hparams:
+			additional_losses: True
+			batch_size: 10
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 0.0002383446436179699
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.1
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 6.431270010222042e-05
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/bea801a7257a7c257b16df3005f89d62
+	{'val_acc': 0.721310946326685, 'test_acc': 0.5594783715012722}
+		hparams:
+			additional_losses: True
+			batch_size: 16
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 0.00026243770328490603
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.5
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 4.1401051799998815e-06
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/9ed61fe0b3b70ea6d5ce3ba679cb2a01
+	{'val_acc': 0.7036539734774073, 'test_acc': 0.5244910941475827}
+		hparams:
+			additional_losses: True
+			batch_size: 19
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 0.0002748180350891229
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.0
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 1.9000025480760227e-05
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/94dae9ff0ede0f987f71863f7ab7aabd
+	{'val_acc': 0.6806521952855205, 'test_acc': 0.5903307888040712}
+		hparams:
+			additional_losses: True
+			batch_size: 18
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 0.0002692684204277505
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.5
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 3.539788355410888e-06
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/f414d3313d297e70fd8b6b8190133e17
+	{'val_acc': 0.6617750956616014, 'test_acc': 0.5884223918575063}
+		hparams:
+			additional_losses: True
+			batch_size: 17
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 0.00030305970528800703
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.5
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 1.033510591502665e-05
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/8b62d1b75c2bb2d080c4dda662ab9f0d
+	{'val_acc': 0.5572995755088782, 'test_acc': 0.44688295165394404}
+		hparams:
+			additional_losses: True
+			batch_size: 8
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 0.00028242988155030726
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.0
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 1.0915251755880437e-06
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/c3ae0e0253c32355fb5672607cb3e11d
+trial_seed: 0
+	{'val_acc': 0.9436112728464455, 'test_acc': 0.7763994910941476}
+		hparams:
+			additional_losses: True
+			batch_size: 32
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 5e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.0
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 0.0
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/f2f2f63a951a7197259e7e0416c88220
+	{'val_acc': 0.9435957562650388, 'test_acc': 0.7194656488549618}
+		hparams:
+			additional_losses: True
+			batch_size: 18
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 3.1375153221880086e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.0
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 6.326696718610415e-06
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/557a46bf87ca3814901717b9e8fad784
+	{'val_acc': 0.9426330504101612, 'test_acc': 0.6771628498727735}
+		hparams:
+			additional_losses: True
+			batch_size: 39
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 2.7028930742148706e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.5
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 0.00044832883881609976
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/6d29a2e34218cacb54b466fad15d2d81
+	{'val_acc': 0.9411930324042531, 'test_acc': 0.7560432569974554}
+		hparams:
+			additional_losses: True
+			batch_size: 34
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 6.801736841150391e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.0
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 1.046949588651311e-05
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/247cff20d4550905153a5e29bab5b35b
+	{'val_acc': 0.940340037539282, 'test_acc': 0.6507633587786259}
+		hparams:
+			additional_losses: True
+			batch_size: 43
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 1.164032944108835e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.0
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 0.0008766809489187495
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/2c38e22ee5231ed2a37c645ab858c464
+	{'val_acc': 0.9344055291085437, 'test_acc': 0.7433206106870229}
+		hparams:
+			additional_losses: True
+			batch_size: 25
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 5.6841898471378446e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.5
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 0.005100223533962902
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/76ec6aa7a816a8715858459286b2f072
+	{'val_acc': 0.9303080671248981, 'test_acc': 0.7076972010178118}
+		hparams:
+			additional_losses: True
+			batch_size: 19
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 6.641171042858528e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.0
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 0.0010784038403040138
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/21cfb4e577ae1b57371e21d70d8057fc
+	{'val_acc': 0.9288723140933146, 'test_acc': 0.6100508905852418}
+		hparams:
+			additional_losses: True
+			batch_size: 17
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 1.1153365745631524e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.1
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 2.9162717441192257e-05
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/d9003b1f3a5630761e3d4ecb4e746e57
+	{'val_acc': 0.9282360612609649, 'test_acc': 0.7188295165394402}
+		hparams:
+			additional_losses: True
+			batch_size: 13
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 2.827610691196775e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.5
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 2.240269970837554e-05
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/9d56554d504d9b8761239bc2ab764463
+	{'val_acc': 0.9254855386504071, 'test_acc': 0.7232824427480916}
+		hparams:
+			additional_losses: True
+			batch_size: 15
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 4.568050316192287e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.5
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 7.934460670892474e-06
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/a4ec5f1f5ac3fa9d6f4efd22cc07bb44
+	{'val_acc': 0.9211248057455398, 'test_acc': 0.7073791348600509}
+		hparams:
+			additional_losses: True
+			batch_size: 14
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 6.238845035844661e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.0
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 0.0038261244966893123
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/ca518baae2c805660d42576424df00b5
+	{'val_acc': 0.9081651337994397, 'test_acc': 0.7385496183206107}
+		hparams:
+			additional_losses: True
+			batch_size: 40
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 0.0001653813153854724
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.5
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 2.7643974709171963e-05
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/e4218df01484c43556c481a89bf3be70
+	{'val_acc': 0.9080088730653127, 'test_acc': 0.7099236641221374}
+		hparams:
+			additional_losses: True
+			batch_size: 32
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 0.00016629177873519647
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.5
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 1.1975155295174919e-06
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/b48d1dae7f5d6fd93e88369aa68839a8
+	{'val_acc': 0.9029878199424193, 'test_acc': 0.691793893129771}
+		hparams:
+			additional_losses: True
+			batch_size: 9
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 5.160583788372758e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.5
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 3.538451007661713e-05
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/105c91c1b034b3e56e689031bb6af050
+	{'val_acc': 0.8676653442952141, 'test_acc': 0.6692111959287532}
+		hparams:
+			additional_losses: True
+			batch_size: 12
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 0.0001336817295222666
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.1
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 1.696474495087739e-05
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/759e0622f99c780ee435bea1e9b5f78d
+	{'val_acc': 0.8617393658131253, 'test_acc': 0.6428117048346056}
+		hparams:
+			additional_losses: True
+			batch_size: 17
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 0.00013965806120050562
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.0
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 0.007283936884822311
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/fe7e3f6bbddfd58a7a6d646abcccfd28
+	{'val_acc': 0.8211143487375864, 'test_acc': 0.6154580152671756}
+		hparams:
+			additional_losses: True
+			batch_size: 20
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 0.00019308401339890416
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.1
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 1.4236172918593402e-05
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/d393c4d2cd03c8c09a60a8d9ff5dad33
+	{'val_acc': 0.8156796139608021, 'test_acc': 0.6542620865139949}
+		hparams:
+			additional_losses: True
+			batch_size: 27
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 0.000211416337488096
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.1
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 2.812885384798702e-06
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/0cf9887a16aa5e701d586717d9164dd7
+	{'val_acc': 0.7704631903935009, 'test_acc': 0.6055979643765903}
+		hparams:
+			additional_losses: True
+			batch_size: 37
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 0.0002870784006422287
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.5
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 0.0006183744461455339
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/74425823da8f3a3a956c6e14c4b7c34d
+	{'val_acc': 0.5630340159753217, 'test_acc': 0.4481552162849873}
+		hparams:
+			additional_losses: True
+			batch_size: 8
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 0.00024427949008037697
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.0
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 0.0001792475881200468
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/827c96561c9d85dd65b45b077a5f1f5d
+Model selection: leave-one-domain-out cross-validation
+trial_seed: 2
+trial_seed: 1
+trial_seed: 0
+Model selection: test-domain validation set (oracle)
+trial_seed: 2
+	{'val_acc': 0.7719745222929937, 'test_acc': 0.7757633587786259}
+		hparams:
+			additional_losses: True
+			batch_size: 18
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 3.282920045772228e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.0
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 2.900002872985468e-05
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/cc31628ce13bc119a0506c370c798e58
+	{'val_acc': 0.7719745222929937, 'test_acc': 0.7598600508905853}
+		hparams:
+			additional_losses: True
+			batch_size: 32
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 5e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.0
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 0.0
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/61e6dcb07d6ca130866f9d0f1fabcb48
+	{'val_acc': 0.756687898089172, 'test_acc': 0.763676844783715}
+		hparams:
+			additional_losses: True
+			batch_size: 21
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 3.25301517026644e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.1
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 0.007328859252981211
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/02276e69a11639c558317bba7636935d
+	{'val_acc': 0.7477707006369426, 'test_acc': 0.7541348600508906}
+		hparams:
+			additional_losses: True
+			batch_size: 24
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 2.259509333895171e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.1
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 0.0038093795402535276
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/4ea2ec50289aeb4e139829da540e8577
+	{'val_acc': 0.7477707006369426, 'test_acc': 0.7436386768447837}
+		hparams:
+			additional_losses: True
+			batch_size: 37
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 2.95623643291898e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.0
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 0.0002016579493930936
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/8e1ac4240b83b06bbc326b010abdd345
+	{'val_acc': 0.7464968152866241, 'test_acc': 0.7452290076335878}
+		hparams:
+			additional_losses: True
+			batch_size: 22
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 4.451235671690321e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.1
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 7.61339855085641e-06
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/e9ee3dcaefbd4158f2111fc724cb99ac
+	{'val_acc': 0.7464968152866241, 'test_acc': 0.7372773536895675}
+		hparams:
+			additional_losses: True
+			batch_size: 8
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 5.9943608091645206e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.5
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 0.00048345143761565696
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/64cfbfa0203632b42625ca1d27deab9f
+	{'val_acc': 0.7337579617834394, 'test_acc': 0.7172391857506362}
+		hparams:
+			additional_losses: True
+			batch_size: 24
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 2.1059719178287245e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.5
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 1.0226894592810383e-06
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/b7808b46777f17c4ad78d0a26d90841d
+	{'val_acc': 0.7337579617834394, 'test_acc': 0.7111959287531806}
+		hparams:
+			additional_losses: True
+			batch_size: 10
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 6.456280188921339e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.0
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 0.005463379786545902
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/0cd17d4207dbc572e5e7c5c96c53443a
+	{'val_acc': 0.7286624203821656, 'test_acc': 0.712468193384224}
+		hparams:
+			additional_losses: True
+			batch_size: 39
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 1.6979523566141523e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.0
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 2.7644358744009473e-05
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/f12f51a073d7bc28202b3c61f3aa4c69
+	{'val_acc': 0.7248407643312101, 'test_acc': 0.7181933842239185}
+		hparams:
+			additional_losses: True
+			batch_size: 15
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 6.768725917122619e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.5
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 2.692204119563736e-06
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/56bb2a7bc4adce7f8182d0564b1655e7
+	{'val_acc': 0.7159235668789808, 'test_acc': 0.7325063613231552}
+		hparams:
+			additional_losses: True
+			batch_size: 10
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 7.625215427542097e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.1
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 0.00047223799345445756
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/4a7ab21106effe142f259f510c1151d1
+	{'val_acc': 0.70828025477707, 'test_acc': 0.7045165394402035}
+		hparams:
+			additional_losses: True
+			batch_size: 35
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 5.203148467315319e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.0
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 1.5941595326730853e-05
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/d35a50c7ec080946dcb3fff6d100d126
+	{'val_acc': 0.6840764331210191, 'test_acc': 0.6886132315521628}
+		hparams:
+			additional_losses: True
+			batch_size: 13
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 3.5948054187960416e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.5
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 3.2409030903340844e-06
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/7efcf7b348a5acf5d769a84a30097fdc
+	{'val_acc': 0.6687898089171974, 'test_acc': 0.6574427480916031}
+		hparams:
+			additional_losses: True
+			batch_size: 18
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 1.3982210782681486e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.0
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 0.0002915412147288415
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/e249af807da7cd5d57488b94320b218c
+	{'val_acc': 0.6611464968152866, 'test_acc': 0.6587150127226463}
+		hparams:
+			additional_losses: True
+			batch_size: 29
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 2.3636153892690768e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.0
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 3.365802104690301e-05
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/a52dbefdc7b18428556f886ac0c8699c
+	{'val_acc': 0.643312101910828, 'test_acc': 0.6278625954198473}
+		hparams:
+			additional_losses: True
+			batch_size: 10
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 0.00021342049430752089
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.5
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 3.621412012322581e-05
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/07674526a8e2da89bc0b09c408bd7e5c
+	{'val_acc': 0.6140127388535032, 'test_acc': 0.5795165394402035}
+		hparams:
+			additional_losses: True
+			batch_size: 9
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 4.151959487063697e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.5
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 5.08174262971335e-05
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/e885b5001c0c16e4227b560bc6832e93
+	{'val_acc': 0.5961783439490446, 'test_acc': 0.5995547073791349}
+		hparams:
+			additional_losses: True
+			batch_size: 25
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 1.0061945703598755e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.0
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 0.0003150750110930775
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/3ca99dd8e52b4eff2ac083ed4ba31b03
+	{'val_acc': 0.5834394904458599, 'test_acc': 0.5715648854961832}
+		hparams:
+			additional_losses: True
+			batch_size: 9
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 0.00015197093111758464
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.5
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 1.0329604555494109e-06
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/cf3ea516c4141e4b2b6a5e1965a5d02b
+trial_seed: 1
+	{'val_acc': 0.7656050955414013, 'test_acc': 0.7865776081424937}
+		hparams:
+			additional_losses: True
+			batch_size: 32
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 5e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.0
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 0.0
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/670e5f42ef692e8805557038e455c6d7
+	{'val_acc': 0.7439490445859872, 'test_acc': 0.7375954198473282}
+		hparams:
+			additional_losses: True
+			batch_size: 13
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 5.410293091771717e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.0
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 1.63495416553105e-06
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/dc0b0829d102d2905dd18539969f6820
+	{'val_acc': 0.7375796178343949, 'test_acc': 0.7293256997455471}
+		hparams:
+			additional_losses: True
+			batch_size: 10
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 5.079846025444368e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.1
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 4.634713155314057e-05
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/b768ea81bf4b8952685749dc54de8596
+	{'val_acc': 0.7210191082802547, 'test_acc': 0.7296437659033079}
+		hparams:
+			additional_losses: True
+			batch_size: 21
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 0.00011281359420053416
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.1
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 5.000446907120253e-05
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/5535b36c5370c106f9e3facc251112e2
+	{'val_acc': 0.7146496815286624, 'test_acc': 0.7312340966921119}
+		hparams:
+			additional_losses: True
+			batch_size: 9
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 3.800456552908177e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.0
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 1.447522981440824e-05
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/ea64d1349e796866dd5b6cc90496bd6e
+	{'val_acc': 0.7070063694267515, 'test_acc': 0.7143765903307888}
+		hparams:
+			additional_losses: True
+			batch_size: 14
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 4.166942477516309e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.1
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 0.001044686433104056
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/6be8ae22e677765c4fd25b2a01c3545c
+	{'val_acc': 0.7070063694267515, 'test_acc': 0.7220101781170484}
+		hparams:
+			additional_losses: True
+			batch_size: 33
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 9.123844754558304e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.5
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 0.00023343984082907065
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/4b59f4d069c079f29d65b4d7b2354aa7
+	{'val_acc': 0.7057324840764331, 'test_acc': 0.7194656488549618}
+		hparams:
+			additional_losses: True
+			batch_size: 33
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 4.057057661309337e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.1
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 4.206907223916248e-05
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/44ff2af393c8c637b11984b654ece8a7
+	{'val_acc': 0.6955414012738853, 'test_acc': 0.6886132315521628}
+		hparams:
+			additional_losses: True
+			batch_size: 12
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 9.698409695305606e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.0
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 0.00979495527815601
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/08b854f6277286ea701d15123e90b9bc
+	{'val_acc': 0.6942675159235668, 'test_acc': 0.7064249363867684}
+		hparams:
+			additional_losses: True
+			batch_size: 8
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 1.3826168925328977e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.0
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 3.615900325399353e-06
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/e476732a42411992ab7e230cfae8d028
+	{'val_acc': 0.686624203821656, 'test_acc': 0.6924300254452926}
+		hparams:
+			additional_losses: True
+			batch_size: 8
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 2.2352558725944602e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.5
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 1.9967320578799288e-06
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/3954c9cd8cfb0aa16905d598def57188
+	{'val_acc': 0.6675159235668789, 'test_acc': 0.6809796437659033}
+		hparams:
+			additional_losses: True
+			batch_size: 16
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 1.8411898397443895e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.1
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 0.0016077694551523362
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/285f371d935b571650c8c213676a5804
+	{'val_acc': 0.6331210191082802, 'test_acc': 0.642175572519084}
+		hparams:
+			additional_losses: True
+			batch_size: 35
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 0.0003107262669977512
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.5
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 5.072722794666653e-06
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/b301069687258dfc6d6ab231c0af287f
+	{'val_acc': 0.6267515923566879, 'test_acc': 0.6450381679389313}
+		hparams:
+			additional_losses: True
+			batch_size: 11
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 5.323285967621206e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.5
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 2.046120234156778e-06
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/382eb903b7dc1a1dff19e429ee213bf5
+	{'val_acc': 0.5439490445859873, 'test_acc': 0.556615776081425}
+		hparams:
+			additional_losses: True
+			batch_size: 10
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 0.0002383446436179699
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.1
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 6.431270010222042e-05
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/bea801a7257a7c257b16df3005f89d62
+	{'val_acc': 0.5210191082802548, 'test_acc': 0.5260814249363868}
+		hparams:
+			additional_losses: True
+			batch_size: 16
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 0.00026243770328490603
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.5
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 4.1401051799998815e-06
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/9ed61fe0b3b70ea6d5ce3ba679cb2a01
+	{'val_acc': 0.5031847133757962, 'test_acc': 0.5292620865139949}
+		hparams:
+			additional_losses: True
+			batch_size: 18
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 0.0002692684204277505
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.5
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 3.539788355410888e-06
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/f414d3313d297e70fd8b6b8190133e17
+	{'val_acc': 0.48152866242038217, 'test_acc': 0.48982188295165396}
+		hparams:
+			additional_losses: True
+			batch_size: 17
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 0.00030305970528800703
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.5
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 1.033510591502665e-05
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/8b62d1b75c2bb2d080c4dda662ab9f0d
+	{'val_acc': 0.2535031847133758, 'test_acc': 0.2700381679389313}
+		hparams:
+			additional_losses: True
+			batch_size: 8
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 0.00028242988155030726
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.0
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 1.0915251755880437e-06
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/c3ae0e0253c32355fb5672607cb3e11d
+	{'val_acc': 0.045859872611464965, 'test_acc': 0.06583969465648855}
+		hparams:
+			additional_losses: True
+			batch_size: 19
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 0.0002748180350891229
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.0
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 1.9000025480760227e-05
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/94dae9ff0ede0f987f71863f7ab7aabd
+trial_seed: 0
+	{'val_acc': 0.7503184713375797, 'test_acc': 0.7538167938931297}
+		hparams:
+			additional_losses: True
+			batch_size: 40
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 0.0001653813153854724
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.5
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 2.7643974709171963e-05
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/e4218df01484c43556c481a89bf3be70
+	{'val_acc': 0.7401273885350318, 'test_acc': 0.732824427480916}
+		hparams:
+			additional_losses: True
+			batch_size: 17
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 0.00013965806120050562
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.0
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 0.007283936884822311
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/fe7e3f6bbddfd58a7a6d646abcccfd28
+	{'val_acc': 0.7235668789808917, 'test_acc': 0.7067430025445293}
+		hparams:
+			additional_losses: True
+			batch_size: 32
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 0.00016629177873519647
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.5
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 1.1975155295174919e-06
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/b48d1dae7f5d6fd93e88369aa68839a8
+	{'val_acc': 0.7222929936305732, 'test_acc': 0.7213740458015268}
+		hparams:
+			additional_losses: True
+			batch_size: 15
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 4.568050316192287e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.5
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 7.934460670892474e-06
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/a4ec5f1f5ac3fa9d6f4efd22cc07bb44
+	{'val_acc': 0.7210191082802547, 'test_acc': 0.7188295165394402}
+		hparams:
+			additional_losses: True
+			batch_size: 13
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 2.827610691196775e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.5
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 2.240269970837554e-05
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/9d56554d504d9b8761239bc2ab764463
+	{'val_acc': 0.7171974522292993, 'test_acc': 0.7216921119592875}
+		hparams:
+			additional_losses: True
+			batch_size: 18
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 3.1375153221880086e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.0
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 6.326696718610415e-06
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/557a46bf87ca3814901717b9e8fad784
+	{'val_acc': 0.7159235668789808, 'test_acc': 0.7076972010178118}
+		hparams:
+			additional_losses: True
+			batch_size: 34
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 6.801736841150391e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.0
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 1.046949588651311e-05
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/247cff20d4550905153a5e29bab5b35b
+	{'val_acc': 0.7133757961783439, 'test_acc': 0.7073791348600509}
+		hparams:
+			additional_losses: True
+			batch_size: 14
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 6.238845035844661e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.0
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 0.0038261244966893123
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/ca518baae2c805660d42576424df00b5
+	{'val_acc': 0.7133757961783439, 'test_acc': 0.7433206106870229}
+		hparams:
+			additional_losses: True
+			batch_size: 25
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 5.6841898471378446e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.5
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 0.005100223533962902
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/76ec6aa7a816a8715858459286b2f072
+	{'val_acc': 0.710828025477707, 'test_acc': 0.7108778625954199}
+		hparams:
+			additional_losses: True
+			batch_size: 32
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 5e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.0
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 0.0
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/f2f2f63a951a7197259e7e0416c88220
+	{'val_acc': 0.6993630573248407, 'test_acc': 0.7032442748091603}
+		hparams:
+			additional_losses: True
+			batch_size: 39
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 2.7028930742148706e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.5
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 0.00044832883881609976
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/6d29a2e34218cacb54b466fad15d2d81
+	{'val_acc': 0.6980891719745222, 'test_acc': 0.712468193384224}
+		hparams:
+			additional_losses: True
+			batch_size: 19
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 6.641171042858528e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.0
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 0.0010784038403040138
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/21cfb4e577ae1b57371e21d70d8057fc
+	{'val_acc': 0.6878980891719745, 'test_acc': 0.691793893129771}
+		hparams:
+			additional_losses: True
+			batch_size: 9
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 5.160583788372758e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.5
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 3.538451007661713e-05
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/105c91c1b034b3e56e689031bb6af050
+	{'val_acc': 0.6828025477707006, 'test_acc': 0.6733460559796438}
+		hparams:
+			additional_losses: True
+			batch_size: 12
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 0.0001336817295222666
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.1
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 1.696474495087739e-05
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/759e0622f99c780ee435bea1e9b5f78d
+	{'val_acc': 0.6828025477707006, 'test_acc': 0.666030534351145}
+		hparams:
+			additional_losses: True
+			batch_size: 27
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 0.000211416337488096
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.1
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 2.812885384798702e-06
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/0cf9887a16aa5e701d586717d9164dd7
+	{'val_acc': 0.6522292993630573, 'test_acc': 0.6574427480916031}
+		hparams:
+			additional_losses: True
+			batch_size: 20
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 0.00019308401339890416
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.1
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 1.4236172918593402e-05
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/d393c4d2cd03c8c09a60a8d9ff5dad33
+	{'val_acc': 0.640764331210191, 'test_acc': 0.6304071246819338}
+		hparams:
+			additional_losses: True
+			batch_size: 37
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 0.0002870784006422287
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.5
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 0.0006183744461455339
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/74425823da8f3a3a956c6e14c4b7c34d
+	{'val_acc': 0.6343949044585987, 'test_acc': 0.6253180661577609}
+		hparams:
+			additional_losses: True
+			batch_size: 17
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 1.1153365745631524e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.1
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 2.9162717441192257e-05
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/d9003b1f3a5630761e3d4ecb4e746e57
+	{'val_acc': 0.6331210191082802, 'test_acc': 0.6377226463104325}
+		hparams:
+			additional_losses: True
+			batch_size: 43
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 1.164032944108835e-05
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.0
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 0.0008766809489187495
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/2c38e22ee5231ed2a37c645ab858c464
+	{'val_acc': 0.5210191082802548, 'test_acc': 0.5082697201017812}
+		hparams:
+			additional_losses: True
+			batch_size: 8
+			ce_factor: 1
+			cl_factor: 0.7
+			cl_lr: 0.0001
+			class_balanced: False
+			cooldown_steps: 100
+			data_augmentation: True
+			drop_b: 0.3333333333333333
+			drop_f: 0.5
+			end_to_end: False
+			freeze_classifier: True
+			lr: 0.00024427949008037697
+			negative_weight: -1.0
+			num_prototypes_per_class: 10
+			optimize_classifier: False
+			pp_lr: 0.003
+			pp_weight_decay: 0.001
+			prototype_height: 1
+			prototype_width: 1
+			resnet18: True
+			resnet_dropout: 0.0
+			self_challenging: True
+			sep_factor: -0.08
+			warmup_steps: 100
+			weight_decay: 0.0001792475881200468
+		output_dirs:
+			experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/827c96561c9d85dd65b45b077a5f1f5d

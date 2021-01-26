@@ -131,9 +131,9 @@ class ProDrop(ERM):
         self.ce_factor = hparams['ce_factor']
         self.cl_factor = hparams['cl_factor']
         self.sep_factor = hparams['sep_factor']
-        self.l1_factor = hparams['l1_factor']
-        self.cpt_factor = hparams['cpt_factor']
-        self.intra_factor = hparams['intra_factor']
+        #self.l1_factor = hparams['l1_factor']
+        #self.cpt_factor = hparams['cpt_factor']
+        #self.intra_factor = hparams['intra_factor']
         self.end_to_end = hparams['end_to_end']
         self.negative_weight = hparams['negative_weight']
 
