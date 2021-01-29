@@ -201,7 +201,7 @@ class ProDrop(ERM):
         for domain, domain_activation in enumerate(prot_activations):
             masked_activation = domain_activation * self.pplayer.prototype_domain_identity[:,domain]
             outputs = self.classifier(masked_activation) 
-            ce_loss += F.cross_entropy(outputs, y[domain])
+            ce_loss += F.cross_entropy(outputs, y[domain]) * (1 / self.num_domains)
 
         # Decision on whether we want to add other losses to the CE loss
         if self.additional_losses:
@@ -215,13 +215,13 @@ class ProDrop(ERM):
                 prototypes_of_correct_domain = torch.t(self.pplayer.prototype_domain_identity[:, domain]).cuda().repeat(prototypes_of_correct_class.shape[0], 1)
                 correct_prototypes = prototypes_of_correct_class * prototypes_of_correct_domain
                 inverted_distances, _ = torch.max((max_dist - self.pplayer.min_distances) * correct_prototypes, dim=1) # [N]
-                cluster_loss += torch.mean(max_dist - inverted_distances)
+                cluster_loss += torch.mean(max_dist - inverted_distances) * (1 / self.num_domains)
 
                 # calculate separation cost
                 wrong_prototypes = 1 - correct_prototypes
                 incorrect_prototypes_domain = wrong_prototypes * prototypes_of_correct_domain # Currently only cosiders the other classes of that domain as wrong prototypes
                 inverted_distances_to_nontarget_prototypes, _ = torch.max((max_dist - self.pplayer.min_distances) * incorrect_prototypes_domain, dim=1)
-                separation_loss += torch.mean(max_dist - inverted_distances_to_nontarget_prototypes)
+                separation_loss += torch.mean(max_dist - inverted_distances_to_nontarget_prototypes) * (1 / self.num_domains)
 
                 # calculate the intra class prototype distance
                 #reshaped_prototypes = self.pplayer.prototype_vectors.view(self.num_classes, self.num_prototypes_per_class, -1)
