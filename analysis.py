@@ -131,6 +131,7 @@ def generate_joint_plot(l2_distances, cosine_distances, trial_index, num_prototy
     run_name = splitted[-3] + splitted[-2] + (splitted[-1].split('.')[-2])
     file_name = run_name + f'_trial{trial_index}.pdf'
     print("Saving Figure", file_name, "at", PLOT_PATH)
+    fig.tight_layout()
     fig.savefig(os.path.join(PLOT_PATH, file_name))
 
 def generate_plots(paths, args):
