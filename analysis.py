@@ -170,12 +170,10 @@ def generate_plots(paths, args):
                 torch.save(l2_distances, l2_path)
                 torch.save(cosine_distances, cosine_path)
             else:
-                with open(l2_path) as file:
-                    l2_distances = torch.load(file)
-                with open(cosine_path) as file:
-                    cosine_distances = torch.load(file)
+                l2_distances = torch.load(l2_path)
+                cosine_distances = torch.load(cosine_path)
 
-            generate_joint_plot(l2_distances, cosine_distances, trial_index, hyperparams["num_prototypes_per_class"], parameters["model_num_classes"], path)
+            #generate_joint_plot(l2_distances, cosine_distances, trial_index, hyperparams["num_prototypes_per_class"], parameters["model_num_classes"], path)
             #generate_indiv_plot(l2_distances, False, trial_index, hyperparams["num_prototypes_per_class"], parameters["model_num_classes"], path)
             #generate_indiv_plot(cosine_distances, True, trial_index, hyperparams["num_prototypes_per_class"], parameters["model_num_classes"], path)
 
