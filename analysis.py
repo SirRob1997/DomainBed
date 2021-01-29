@@ -145,7 +145,7 @@ def generate_joint_plot(l2_distances, cosine_distances, trial_index, num_prototy
     fig.tight_layout()
     fig.savefig(os.path.join(PLOT_PATH, file_name), dpi=1000, bbox_inches='tight')
 
-def generate_plots(paths, args):
+def generate_plots(paths, args, load_data=False):
     for path in paths:
         with open(path) as json_file:
             trial_seeds = json.load(json_file)
@@ -153,15 +153,28 @@ def generate_plots(paths, args):
         for trial_index in trial_seeds:
             l2_distances = {}
             cosine_distances = {}
-            for env_ind, environment_path in trial_seeds[trial_index].items():
-                parameters = torch.load(os.path.join(environment_path, "model.pkl"))
-                hyperparams = parameters["model_hparams"]
-                num_prototypes = hyperparams["num_prototypes_per_class"] * parameters["model_num_classes"] 
-                prototype_vectors = parameters["model_dict"]["pplayer.prototype_vectors"].view(num_prototypes, -1)
-                pairwise_distance_cosine = cosine_distance_torch(prototype_vectors)
-                pairwise_distance_l2 = torch.norm(prototype_vectors[:, None] - prototype_vectors, dim=2, p=2)
-                l2_distances[env_ind] = pairwise_distance_l2
-                cosine_distances[env_ind] = pairwise_distance_cosine
+            l2_path = os.path.splitext(path)[0] + f"_l2_distances_trial{trial_index}.pt"
+            cosine_path = os.path.splitext(path)[0] + f"_cosine_distances_trial{trial_index}.pt"
+            if load_data:
+                for env_ind, environment_path in trial_seeds[trial_index].items():
+                    parameters = torch.load(os.path.join(environment_path, "model.pkl"))
+                    hyperparams = parameters["model_hparams"]
+                    num_prototypes = hyperparams["num_prototypes_per_class"] * parameters["model_num_classes"] 
+                    prototype_vectors = parameters["model_dict"]["pplayer.prototype_vectors"].view(num_prototypes, -1)
+                    pairwise_distance_cosine = cosine_distance_torch(prototype_vectors)
+                    pairwise_distance_l2 = torch.norm(prototype_vectors[:, None] - prototype_vectors, dim=2, p=2)
+                    l2_distances[env_ind] = pairwise_distance_l2
+                    cosine_distances[env_ind] = pairwise_distance_cosine
+                print("Saved", l2_path)
+                print("Saved", cosine_path)
+                torch.save(l2_distances, l2_path)
+                torch.save(cosine_distances, cosine_path)
+            else:
+                with open(l2_path) as file:
+                    l2_distances = torch.load(file)
+                with open(cosine_path) as file:
+                    cosine_distances = torch.load(file)
+
             generate_joint_plot(l2_distances, cosine_distances, trial_index, hyperparams["num_prototypes_per_class"], parameters["model_num_classes"], path)
             #generate_indiv_plot(l2_distances, False, trial_index, hyperparams["num_prototypes_per_class"], parameters["model_num_classes"], path)
             #generate_indiv_plot(cosine_distances, True, trial_index, hyperparams["num_prototypes_per_class"], parameters["model_num_classes"], path)
@@ -215,5 +228,5 @@ if __name__ == "__main__":
     records = reporting.load_records(args.input_dir)
     print("Total records:", len(records))
     records = reporting.get_grouped_records(records)
-    paths = generate_jsons(records, args)
+    #paths = generate_jsons(records, args)
     generate_plots(paths, args)
