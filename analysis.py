@@ -133,10 +133,10 @@ def generate_joint_plot(l2_distances, cosine_distances, trial_index, num_prototy
                 axes[height_i, width_i].add_patch(Rectangle((x, y), num_prototypes_per_class, num_prototypes_per_class, fill=False, edgecolor='red', lw=0.2))
 
     for ax, col in zip(axes[0], MAPPING_DICT.keys()):
-        ax.set_title(col, size='small')
+        ax.set_title(col, fontweight='bold', fontsize=25)
 
     for ax, row in zip(axes[:,0], ROWS):
-        ax.set_ylabel(row, size='small')
+        ax.set_ylabel(row, fontweight='bold', fontsize=25)
 
     splitted = path.split('/')
     run_name = splitted[-3] + splitted[-2] + (splitted[-1].split('.')[-2])
@@ -173,7 +173,7 @@ def generate_plots(paths, args):
                 l2_distances = torch.load(l2_path)
                 cosine_distances = torch.load(cosine_path)
 
-            #generate_joint_plot(l2_distances, cosine_distances, trial_index, hyperparams["num_prototypes_per_class"], parameters["model_num_classes"], path)
+            generate_joint_plot(l2_distances, cosine_distances, trial_index, 10, 7, path)
             #generate_indiv_plot(l2_distances, False, trial_index, hyperparams["num_prototypes_per_class"], parameters["model_num_classes"], path)
             #generate_indiv_plot(cosine_distances, True, trial_index, hyperparams["num_prototypes_per_class"], parameters["model_num_classes"], path)
 
@@ -224,11 +224,11 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    records = reporting.load_records(args.input_dir)
-    print("Total records:", len(records))
-    records = reporting.get_grouped_records(records)
     if args.skip_data_load:
 	    paths = [os.path.join(args.input_dir, SELECTION_METHODS[selection_method] + "_validation.json") for selection_method in SELECTION_METHODS.keys()]
     else:
         paths = generate_jsons(records, args)
+        records = reporting.load_records(args.input_dir)
+        print("Total records:", len(records))
+        records = reporting.get_grouped_records(records)
     generate_plots(paths, args)
