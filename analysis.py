@@ -145,7 +145,7 @@ def generate_joint_plot(l2_distances, cosine_distances, trial_index, num_prototy
     fig.tight_layout()
     fig.savefig(os.path.join(PLOT_PATH, file_name), dpi=1000, bbox_inches='tight')
 
-def generate_plots(paths, args, load_data=False):
+def generate_plots(paths, args):
     for path in paths:
         with open(path) as json_file:
             trial_seeds = json.load(json_file)
@@ -155,7 +155,7 @@ def generate_plots(paths, args, load_data=False):
             cosine_distances = {}
             l2_path = os.path.splitext(path)[0] + f"_l2_distances_trial{trial_index}.pt"
             cosine_path = os.path.splitext(path)[0] + f"_cosine_distances_trial{trial_index}.pt"
-            if load_data:
+            if not args.skip_data_load:
                 for env_ind, environment_path in trial_seeds[trial_index].items():
                     parameters = torch.load(os.path.join(environment_path, "model.pkl"))
                     hyperparams = parameters["model_hparams"]
@@ -222,11 +222,15 @@ if __name__ == "__main__":
     parser.add_argument("--input_dir", required=True)
     parser.add_argument('--dataset', required=True)
     parser.add_argument('--algorithm', required=True)
+    parser.add_argument('--skip_data_load', action='store_true', default=False)
 
     args = parser.parse_args()
 
     records = reporting.load_records(args.input_dir)
     print("Total records:", len(records))
     records = reporting.get_grouped_records(records)
-    #paths = generate_jsons(records, args)
+    if args.skip_data_load:
+	    paths = [os.path.join(args.input_dir, SELECTION_METHODS[selection_method] + "_validation.json") for selection_method in SELECTION_METHODS.keys()]
+    else:
+        paths = generate_jsons(records, args)
     generate_plots(paths, args)
