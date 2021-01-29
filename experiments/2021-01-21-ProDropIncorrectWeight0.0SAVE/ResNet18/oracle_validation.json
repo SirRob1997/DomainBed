@@ -1,0 +1,20 @@
+{
+    "0": {
+        "A": "experiments/2021-01-21-ProDropIncorrectWeight0.0SAVE/ResNet18/009557c1ae85b8470953c4e7455a0d47",
+        "C": "experiments/2021-01-21-ProDropIncorrectWeight0.0SAVE/ResNet18/e746adeea9fa17757fa1fe9004704510",
+        "P": "experiments/2021-01-21-ProDropIncorrectWeight0.0SAVE/ResNet18/b6d2f2c3bf977a9e23bafa3161ed8a29",
+        "S": "experiments/2021-01-21-ProDropIncorrectWeight0.0SAVE/ResNet18/187278492c288496b12f02ce3947e35f"
+    },
+    "1": {
+        "A": "experiments/2021-01-21-ProDropIncorrectWeight0.0SAVE/ResNet18/b3d2ffe03252bf35b7268e9778188238",
+        "C": "experiments/2021-01-21-ProDropIncorrectWeight0.0SAVE/ResNet18/6093ba1c5d1355405957cf0e6239d282",
+        "P": "experiments/2021-01-21-ProDropIncorrectWeight0.0SAVE/ResNet18/87a7ad2c579605721c184f172ba4390c",
+        "S": "experiments/2021-01-21-ProDropIncorrectWeight0.0SAVE/ResNet18/f5151f0282eb1b2ba89517d3eb04dcf7"
+    },
+    "2": {
+        "A": "experiments/2021-01-21-ProDropIncorrectWeight0.0SAVE/ResNet18/87cc0f103ba52ee20634b71a747b43a1",
+        "C": "experiments/2021-01-21-ProDropIncorrectWeight0.0SAVE/ResNet18/80eb94749bbc35632b39b45b7a2510f8",
+        "P": "experiments/2021-01-21-ProDropIncorrectWeight0.0SAVE/ResNet18/c4c01fc0af97d3a5f2e5e22c7c9cf120",
+        "S": "experiments/2021-01-21-ProDropIncorrectWeight0.0SAVE/ResNet18/638fe7140f5946e12ff1ca6ac97976d1"
+    }
+}

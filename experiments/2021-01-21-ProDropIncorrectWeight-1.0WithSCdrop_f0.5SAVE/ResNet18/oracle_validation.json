@@ -1,0 +1,20 @@
+{
+    "1": {
+        "A": "experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/5b24bba6f2228ac932a6f59b84d68754",
+        "C": "experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/20b7280e54cc24709282a8d94369fcf1",
+        "P": "experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/293b30a6c3ae2b2cdacc8c0fede96f39",
+        "S": "experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/670e5f42ef692e8805557038e455c6d7"
+    },
+    "0": {
+        "A": "experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/7609bc8f85548cb374a6b95a7684b9ad",
+        "C": "experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/7f7a5c15d19940ff984a0c9872d52704",
+        "P": "experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/590fd098a57c181d272c9364363a7311",
+        "S": "experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/e4218df01484c43556c481a89bf3be70"
+    },
+    "2": {
+        "A": "experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/4750b762f72e0207dc692c84b4ecad9e",
+        "C": "experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/1d1b1ce375ec01167d917536109caf73",
+        "P": "experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/a99ddcabfaf4a92f6d99ee330f958340",
+        "S": "experiments/2021-01-21-ProDropIncorrectWeight-1.0WithSCdrop_f0.5SAVE/ResNet18/cc31628ce13bc119a0506c370c798e58"
+    }
+}

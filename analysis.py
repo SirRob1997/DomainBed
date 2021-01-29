@@ -22,6 +22,7 @@ from matplotlib.collections import QuadMesh
 from matplotlib.text import Text
 from matplotlib.patches import Rectangle
 
+
 from domainbed import datasets
 from domainbed import algorithms
 from domainbed.lib import misc, reporting
@@ -90,6 +91,16 @@ def generate_indiv_plot(distances, cosine, trial_index, num_prototypes_per_class
 
 
 def generate_joint_plot(l2_distances, cosine_distances, trial_index, num_prototypes_per_class, num_classes, path):
+    #Options
+    params = {'text.usetex' : True,
+          'font.size' : 11,
+          'font.family' : 'lmodern',
+          'axes.labelsize': 11,
+          'legend.fontsize': 11,
+          'text.latex.preamble': r"\usepackage{lmodern}" 
+          }
+    plt.rcParams.update(params) 
+
     MAPPING_DICT = {"P": 0, "A": 1, "C": 2, "S": 3}
     ROWS = ['L2 Distance', 'Cosine Distance']
     fig, axes = plt.subplots(nrows=2, ncols=5, sharex=False, sharey=False, figsize=(16, 8),
@@ -132,7 +143,7 @@ def generate_joint_plot(l2_distances, cosine_distances, trial_index, num_prototy
     file_name = run_name + f'_trial{trial_index}.pdf'
     print("Saving Figure", file_name, "at", PLOT_PATH)
     fig.tight_layout()
-    fig.savefig(os.path.join(PLOT_PATH, file_name))
+    fig.savefig(os.path.join(PLOT_PATH, file_name), dpi=1000, bbox_inches='tight')
 
 def generate_plots(paths, args):
     for path in paths:
