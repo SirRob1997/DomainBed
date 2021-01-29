@@ -116,7 +116,7 @@ def generate_joint_plot(l2_distances, cosine_distances, trial_index, num_prototy
         mask = torch.tril(l2_dist_matrix)
         cbar_flag = True if MAPPING_DICT[env_name] == 3 else False
         sns.heatmap(l2_dist_matrix, ax=axes[0, MAPPING_DICT[env_name]], mask=mask.numpy(), linewidths=0.2, square=True,
-                        cbar=cbar_flag, cbar_ax=axes[0, -1], cmap="Blues", xticklabels=False, yticklabels=False)
+                        cbar=cbar_flag, cbar_ax=axes[0, -1], cmap="Blues", xticklabels=False, yticklabels=False, vmin=0, vmax=14)
 
     for env_name in cosine_distances:
         cosine_dist_matrix = cosine_distances[env_name]
