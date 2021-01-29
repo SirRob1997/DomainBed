@@ -31,7 +31,7 @@ from domainbed.lib.query import Q
 
 
 SELECTION_METHODS = {
-        model_selection.IIDAccuracySelectionMethod: "train",
+        #model_selection.IIDAccuracySelectionMethod: "train",
         #model_selection.LeaveOneOutSelectionMethod: "leave_out",
         model_selection.OracleSelectionMethod: "oracle"
     }
@@ -47,47 +47,96 @@ def cosine_distance_torch(x1, x2=None, eps=1e-8):
     w2 = w1 if x2 is x1 else x2.norm(p=2, dim=1, keepdim=True)
     return 1 - torch.mm(x1, x2.t()) / (w1 * w2.t()).clamp(min=eps)
 
-def generate_plot(l2_distances, cosine_distances, trial_index, num_prototypes_per_class, num_classes, path):
+def generate_indiv_plot(distances, cosine, trial_index, num_prototypes_per_class, num_classes, path):
 
         MAPPING_DICT = {"P": 0, "A": 1, "C": 2, "S": 3}
-        ROWS = ['L2 Distance', 'Cosine Distance']
+        if cosine:
+            vmin = 0
+            vmax = 2
+        else:
+            vmin = 2
+            vmax = 15
 
-        fig, axes = plt.subplots(2,5, sharex=True, sharey=True)
-        for env_name in l2_distances:
-            l2_dist_matrix = l2_distances[env_name]
-            cbar_flag = True if MAPPING_DICT[env_name]==3 else False
-            mask = torch.tril(l2_dist_matrix)
-            sns.heatmap(l2_dist_matrix, ax=axes[0, MAPPING_DICT[env_name]], mask=mask.numpy(), linewidths=0.2, square=True, cbar=cbar_flag, cbar_ax=axes[0,4], cmap="Blues", xticklabels=False, yticklabels=False, robust=True)
+        # PLOTS
+        fig, axes = plt.subplots(2, 2, sharex=True, sharey=True)
+        cbar_ax = fig.add_axes([.86, 0.1, .03, 0.8])
+        for env_name in distances:
+            dist_matrix = distances[env_name]
+            cbar_flag = True if MAPPING_DICT[env_name]==0 else False
+            mask = torch.tril(dist_matrix)
+            sns.heatmap(dist_matrix, ax=axes[MAPPING_DICT[env_name]//2, MAPPING_DICT[env_name]%2], mask=mask.numpy(), linewidths=0.2, square=True, cbar=cbar_flag, cbar_ax=cbar_ax if cbar_flag else None, cmap="Blues", xticklabels=False, yticklabels=False, vmin=vmin, vmax=vmax)
         
-        for env_name in cosine_distances:
-            cosine_dist_matrix = cosine_distances[env_name]
-            cbar_flag = False
-            mask = torch.tril(cosine_dist_matrix)
-            sns.heatmap(cosine_dist_matrix, ax=axes[1, MAPPING_DICT[env_name]], mask=mask.numpy(), linewidths=0.2, square=True, cbar=cbar_flag, cmap="Blues", xticklabels=False, yticklabels=False)
-
         for height_i in range(2):
-            for width_i in range(4):
+            for width_i in range(2):
                 for class_index in range(num_classes):
                     x = class_index * num_prototypes_per_class
                     y = class_index * num_prototypes_per_class
                     axes[height_i, width_i].add_patch(Rectangle((x, y), num_prototypes_per_class, num_prototypes_per_class, fill=False, edgecolor='red', lw=0.2))
 
-        for ax, col in zip(axes[0], MAPPING_DICT.keys()):
+        for ax, col in zip(axes.flat, MAPPING_DICT.keys()):
             ax.set_title(col, size='small')
 
-        for ax, row in zip(axes[:,0], ROWS):
-            ax.set_ylabel(row, size='small')
         splitted = path.split('/')
         run_name = splitted[-3] + splitted[-2] + (splitted[-1].split('.')[-2])
-        file_name = run_name + f'_trial{trial_index}.pdf'
+        if cosine:
+            fig.text(0.04, 0.5, 'Cosine Distance', va='center', rotation='vertical')
+            file_name = run_name + f'_trial{trial_index}_cosine.pdf'
+        else:
+            fig.text(0.04, 0.5, 'L2 Distance', va='center', rotation='vertical')
+            file_name = run_name + f'_trial{trial_index}_l2.pdf'
+        fig.tight_layout(rect=[0, 0, .9, 1])
         print("Saving Figure", file_name, "at", PLOT_PATH)
         fig.savefig(os.path.join(PLOT_PATH, file_name))
-    
+
+
+def generate_joint_plot(l2_distances, cosine_distances, trial_index, num_prototypes_per_class, num_classes, path):
+    MAPPING_DICT = {"P": 0, "A": 1, "C": 2, "S": 3}
+    ROWS = ['L2 Distance', 'Cosine Distance']
+    fig, axes = plt.subplots(nrows=2, ncols=5, sharex=False, sharey=False, figsize=(16, 8),
+                             gridspec_kw={'width_ratios': [10, 10, 10, 10, 1]})
+    shax = axes[0, 0].get_shared_x_axes()
+    shay = axes[0, 0].get_shared_y_axes()
+    for ax in axes[:, :-1].ravel():
+        shax.join(axes[0, 0], ax)
+        shay.join(axes[0, 0], ax)
+
+    for env_name in l2_distances:
+        l2_dist_matrix = l2_distances[env_name]
+        mask = torch.tril(l2_dist_matrix)
+        cbar_flag = True if MAPPING_DICT[env_name] == 3 else False
+        sns.heatmap(l2_dist_matrix, ax=axes[0, MAPPING_DICT[env_name]], mask=mask.numpy(), linewidths=0.2, square=True,
+                        cbar=cbar_flag, cbar_ax=axes[0, -1], cmap="Blues", xticklabels=False, yticklabels=False)
+
+    for env_name in cosine_distances:
+        cosine_dist_matrix = cosine_distances[env_name]
+        mask = torch.tril(cosine_dist_matrix)
+        cbar_flag = True if MAPPING_DICT[env_name] == 3 else False
+        sns.heatmap(cosine_dist_matrix, mask=mask.numpy(), ax=axes[1, MAPPING_DICT[env_name]], linewidths=0.2, square=True,
+                        cbar=cbar_flag, cbar_ax=axes[1, -1], cmap="Blues", xticklabels=False, yticklabels=False, vmin=0, vmax=1)
+
+    for height_i in range(2):
+        for width_i in range(4):
+            for class_index in range(num_classes):
+                x = class_index * num_prototypes_per_class
+                y = class_index * num_prototypes_per_class
+                axes[height_i, width_i].add_patch(Rectangle((x, y), num_prototypes_per_class, num_prototypes_per_class, fill=False, edgecolor='red', lw=0.2))
+
+    for ax, col in zip(axes[0], MAPPING_DICT.keys()):
+        ax.set_title(col, size='small')
+
+    for ax, row in zip(axes[:,0], ROWS):
+        ax.set_ylabel(row, size='small')
+
+    splitted = path.split('/')
+    run_name = splitted[-3] + splitted[-2] + (splitted[-1].split('.')[-2])
+    file_name = run_name + f'_trial{trial_index}.pdf'
+    print("Saving Figure", file_name, "at", PLOT_PATH)
+    fig.savefig(os.path.join(PLOT_PATH, file_name))
 
 def generate_plots(paths, args):
-    for path in paths: 
+    for path in paths:
         with open(path) as json_file:
-            trial_seeds = json.load(json_file) 
+            trial_seeds = json.load(json_file)
 
         for trial_index in trial_seeds:
             l2_distances = {}
@@ -101,7 +150,10 @@ def generate_plots(paths, args):
                 pairwise_distance_l2 = torch.norm(prototype_vectors[:, None] - prototype_vectors, dim=2, p=2)
                 l2_distances[env_ind] = pairwise_distance_l2
                 cosine_distances[env_ind] = pairwise_distance_cosine
-            generate_plot(l2_distances, cosine_distances, trial_index, hyperparams["num_prototypes_per_class"], parameters["model_num_classes"], path)
+            generate_joint_plot(l2_distances, cosine_distances, trial_index, hyperparams["num_prototypes_per_class"], parameters["model_num_classes"], path)
+            #generate_indiv_plot(l2_distances, False, trial_index, hyperparams["num_prototypes_per_class"], parameters["model_num_classes"], path)
+            #generate_indiv_plot(cosine_distances, True, trial_index, hyperparams["num_prototypes_per_class"], parameters["model_num_classes"], path)
+
 
 def generate_jsons(records, args):
     TEST_ENV_LOOKUP = {0: 'A', 1: 'C', 2: 'P', 3: 'S'}
@@ -120,6 +172,10 @@ def generate_jsons(records, args):
                 best_hparams = selection_method.hparams_accs(group['records'])[0]
                 run_acc = best_hparams[0]
                 used_parameters = best_hparams[1]
+                #if test_env == 1 and group['trial_seed']==2:
+                #    print(used_parameters[14])
+                #    print("\n")
+                #    input()
                 #for k, v in sorted(used_parameters[0]['hparams'].items()):
                 #    print('\t\t\t{}: {}'.format(k, v))
                 output_dirs = used_parameters.select('args.output_dir').unique()
