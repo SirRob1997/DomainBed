@@ -11,7 +11,7 @@ import numpy as np
 
 from domainbed import datasets
 from domainbed import networks
-from domainbed.lib.misc import random_pairs_of_minibatches
+from domainbed.lib.misc import random_pairs_of_minibatches, cosine_distance_torch
 
 ALGORITHMS = [
     'ERM',
@@ -133,7 +133,7 @@ class ProDrop(ERM):
         self.sep_factor = hparams['sep_factor']
         #self.l1_factor = hparams['l1_factor']
         #self.cpt_factor = hparams['cpt_factor']
-        #self.intra_factor = hparams['intra_factor']
+        self.intra_factor = hparams['intra_factor']
         self.end_to_end = hparams['end_to_end']
         self.negative_weight = hparams['negative_weight']
 
@@ -208,13 +208,21 @@ class ProDrop(ERM):
 
         self.set_last_layer_incorrect_connection(incorrect_strength=self.negative_weight)
  
-    def calculate_intra_loss(self, prototypes):
-        # takes as input a tensor of shape [num_classes, num_prototypes_per_class, K] which has all prototypes associated with that class
+    def calculate_intra_loss_l2(self, prototypes):
         loss = 0
-        for class_i in range(prototypes.shape[0]):
-            distances = F.pdist(prototypes[class_i, :], p=2)
-            similarities = -distances # this uses the same similarity as the pplayer, default log
-            loss += similarities.sum() / len(similarities)
+        for class_i in range(self.num_classes):
+            curr_prototypes = prototypes[self.pplayer.prototype_class_identity[:, class_i].bool(), :]
+            distances = F.pdist(prototypes, p=2)
+            loss += torch.mean(distances)
+        return loss
+
+
+    def calculate_intra_loss_cosine(self, prototypes):
+        loss = 0
+        for class_i in range(self.num_classes):
+            curr_prototypes = prototypes[self.pplayer.prototype_class_identity[:, class_i].bool(), :]
+            distances = cosine_distance_torch(prototypes)
+            loss += torch.mean(distances)
         return loss
 
 
@@ -258,8 +266,8 @@ class ProDrop(ERM):
             separation_loss = torch.mean(max_dist - inverted_distances_to_nontarget_prototypes)
 
             # calculate the intra class prototype distance
-            #reshaped_prototypes = self.pplayer.prototype_vectors.view(self.num_classes, self.num_prototypes_per_class, -1)
-            #intra_loss = self.calculate_intra_loss(reshaped_prototypes)
+            reshaped_prototypes = self.pplayer.prototype_vectors.view(self.num_prototypes, -1)
+            intra_loss = self.calculate_intra_loss_l2(reshaped_prototypes) + self.calculate_intra_loss_cosine(reshaped_prototypes)
 
             # get the current cpt loss
             #cpt_loss = self.pplayer.cpt_loss
@@ -269,7 +277,7 @@ class ProDrop(ERM):
             #l1 = (self.classifier.weight * l1_mask).norm(p=1)
 
             # Overall loss
-            loss = self.ce_factor * ce_loss + self.cl_factor * cluster_loss + self.sep_factor * separation_loss 
+            loss = self.ce_factor * ce_loss + self.cl_factor * cluster_loss + self.sep_factor * separation_loss + self.intra_factor * intra_loss 
         else:
             loss = ce_loss
 

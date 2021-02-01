@@ -62,7 +62,7 @@ def _hparams(algorithm, dataset, random_seed):
         _hparam('sep_factor', -0.08, lambda r: -0.08)
         #_hparam('l1_factor', 1e-4, lambda r: 1e-4)
         #_hparam('cpt_factor', 1e-4, lambda r: 1e-1)
-        #_hparam('intra_factor', 1e-4, lambda r: 1e-4)
+        _hparam('intra_factor', -0.1, lambda r: -0.1)
         _hparam('end_to_end', False, lambda r: False)
         _hparam('pp_lr', 3e-3, lambda r: 3e-3)
         _hparam('pp_weight_decay', 1e-3, lambda r: 1e-3)
