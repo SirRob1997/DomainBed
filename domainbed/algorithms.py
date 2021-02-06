@@ -214,7 +214,7 @@ class ProDrop(ERM):
             curr_prototypes = prototypes[self.pplayer.prototype_class_identity[:, class_i].bool(), :]
             distances = F.pdist(prototypes, p=2)
             loss += torch.mean(distances)
-        return loss
+        return loss / self.num_classes
 
 
     def calculate_intra_loss_cosine(self, prototypes):
@@ -223,7 +223,7 @@ class ProDrop(ERM):
             curr_prototypes = prototypes[self.pplayer.prototype_class_identity[:, class_i].bool(), :]
             distances = cosine_distance_torch(prototypes)
             loss += torch.mean(distances)
-        return loss
+        return loss / self.num_classes
 
 
     def update(self, minibatches):
@@ -305,7 +305,7 @@ class ProDrop(ERM):
                 loss.backward()
                 self.optimizer.step()
 
-        return {'loss': loss.item()}
+        return {'loss': loss.item(), 'w_intra_loss': intra_loss.item() * self.intra_factor, 'w_ce_loss': self.ce_factor * ce_loss.item(), "w_cl_loss": self.cl_factor * cluster_loss.item(), "w_sep_loss": self.sep_factor * separation_loss.item()}
 
     def predict(self, x):
         return self.network(x)
