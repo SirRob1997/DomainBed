@@ -51,16 +51,9 @@ def _hparams(algorithm, dataset, random_seed):
     elif algorithm in ["ProDrop", "ProDropEnsamble"]:
         _hparam('num_images_per_class', 1, lambda r: 1)
         _hparam('freeze_classifier', True, lambda r: True)
-        _hparam('end_to_end', False, lambda r: False)
-        _hparam('pp_lr', 3e-3, lambda r: 3e-3)
-        _hparam('pp_weight_decay', 1e-3, lambda r: 1e-3)
-        _hparam('warmup_steps', 100, lambda r: 100)
-        _hparam('optimize_classifier', False, lambda r: False)
-        _hparam('cooldown_steps', 100, lambda r: 100)
-        _hparam('cl_lr', 1e-4, lambda r: 1e-4)
         _hparam('negative_weight', -0.5, lambda r: -0.5)
-        _hparam('replacement_interval', 10, lambda r: 10)
-        _hparam('replacement_factor', 0.5, lambda r: 0.5)
+        _hparam('replacement_interval', 50, lambda r: 50)
+        _hparam('replacement_factor', 1, lambda r: 1)
 
     elif algorithm == "SagNet":
         _hparam('sag_w_adv', 0.1, lambda r: 10**r.uniform(-2, 1))

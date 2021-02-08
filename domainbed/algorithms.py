@@ -122,7 +122,6 @@ class ProDrop(ERM):
         self.num_images_per_class = hparams['num_images_per_class'] 
         self.num_images = self.num_images_per_class  * num_classes * num_domains
         self.prototype_shape = (self.num_domains, self.num_classes, self.num_images_per_class, self.featurizer.n_outputs, 7, 7)
-        self.end_to_end = hparams['end_to_end']
         self.replacement_interval = hparams['replacement_interval']
         self.replacement_factor = hparams['replacement_factor']
         self.negative_weight = hparams['negative_weight']
@@ -144,26 +143,10 @@ class ProDrop(ERM):
             self.freeze_parameters(self.classifier)
             self.frozen_classifier = True
 
-        if self.end_to_end:
-            self.optimizer = torch.optim.Adam(
+        self.optimizer = torch.optim.Adam(
                 self.network.parameters(),
                 lr=self.hparams["lr"],
                 weight_decay=self.hparams['weight_decay'])
-        else:
-            self.warmup_steps = self.hparams['warmup_steps']
-            self.optimize_classifier = self.hparams['optimize_classifier']
-            self.cooldown_steps = self.hparams['cooldown_steps']
-            self.optimizer = torch.optim.Adam(
-                self.network.parameters(),
-                lr=self.hparams["lr"],
-                weight_decay=self.hparams['weight_decay'])
-            self.pplayer_optimizer = torch.optim.Adam(
-                self.pplayer.parameters(),
-                lr=self.hparams["pp_lr"],
-                weight_decay=self.hparams['pp_weight_decay'])
-            self.classifier_optimizer = torch.optim.Adam(
-                self.classifier.parameters(),
-                lr=self.hparams["cl_lr"])
 
     def freeze_parameters(self, module):
         for param in module.parameters():
@@ -215,35 +198,15 @@ class ProDrop(ERM):
                 self.sample_cache_mask_zeros()
             if torch.nonzero(self.pplayer.cache_mask == 0, as_tuple=False).shape[0] > 0:
                 self.fill_cache_zeros_with_images(features, all_y)
+        
         prot_activations = self.pplayer(features)
         outputs = self.classifier(prot_activations)
 
         loss = F.cross_entropy(outputs, all_y)
 
-        # Decision on whether to train end-to-end or with warmup steps
-        if self.end_to_end:
-            self.optimizer.zero_grad()
-            loss.backward()
-            self.optimizer.step()
-        else:
-            if self.update_count.item() <= self.warmup_steps:
-                self.pplayer_optimizer.zero_grad()
-                loss.backward()
-                self.pplayer_optimizer.step()
-            elif (self.update_count.item() >= 5001 - self.cooldown_steps) and self.optimize_classifier:
-                if self.frozen_classifier:
-                    self.unfreeze_parameters(self.classifier)
-                    self.frozen_classifier = False
-                    self.freeze_parameters(self.featurizer)
-                    self.freeze_parameters(self.pplayer)
-                self.classifier_optimizer.zero_grad()
-                loss.backward()
-                self.classifier_optimizer.step()
-            else:
-                self.optimizer.zero_grad()
-                loss.backward()
-                self.optimizer.step()
-
+        self.optimizer.zero_grad()
+        loss.backward()
+        self.optimizer.step()
         return {'loss': loss.item()}
 
     def predict(self, x):

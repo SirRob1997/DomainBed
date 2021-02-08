@@ -200,7 +200,15 @@ class PPLayer(nn.Module):
         self.cache_mask = nn.Parameter(torch.zeros(self.num_domains, self.num_classes, self.num_images_per_class), requires_grad=False)
 
         self.image_class_identity = self.gen_class_identity()
-        self.image_domain_identity = self.gen_domain_identity()
+        print(self.image_class_identity)
+        input()
+
+
+    def gen_class_identity(self):
+        class_identity = torch.zeros(self.num_images, self.num_classes)
+        for j in range(self.num_images):
+            class_identity[j, j // (self.num_images_per_class * self.num_domains)] = 1
+        return class_identity
 
     def forward(self, x):
         similarity_per_location = self.prototype_similarities(x)
@@ -208,31 +216,6 @@ class PPLayer(nn.Module):
         proto_scores = F.max_pool2d(pooled_similarity, kernel_size=(pooled_similarity.size()[2], pooled_similarity.size()[3])) # Maximum similarity per image [B, self.num_images, 1, 1]
         prototype_activations = proto_scores.view(-1, self.num_images) # has shape [B, self.num_images]
         return prototype_activations
-
-    def gen_class_identity(self):
-        """
-        Generates the one-hots for prototype class correspondence
-        """
-        assert(self.num_images % self.num_classes == 0)
-
-        num_images_per_class = self.num_images // self.num_classes
-        class_identity = torch.zeros(self.num_images, self.num_classes)
-        for j in range(self.num_images):
-            class_identity[j, j // num_images_per_class] = 1
-        return class_identity
-
-    def gen_domain_identity(self):
-        """
-        Generates the one-hots for prototype domain correspondence
-        """
-        assert(self.num_images % self.num_domains == 0)
-
-        num_images_per_class = self.num_images // self.num_classes
-        domain_identity = torch.zeros(num_images_per_class, self.num_domains).cuda()
-        for j in range(num_images_per_class):
-            domain_identity[j, (j // (num_images_per_class // self.num_domains))] = 1
-        domain_identity = domain_identity.repeat(self.num_classes, 1)
-        return domain_identity
 
     def input_features(self, x):
         """
