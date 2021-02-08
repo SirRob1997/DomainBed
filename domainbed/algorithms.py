@@ -190,13 +190,15 @@ class ProDrop(ERM):
         features_per_domain = all_features.view(self.num_domains, -1,  self.featurizer.n_outputs, 7, 7)
         labels_per_domain = all_y.view(self.num_domains, -1)
         indices_to_fill = torch.nonzero(self.pplayer.cache_mask == 0, as_tuple=False)
+        counter = [[0 for _ in range(self.num_classes)] for _ in range(self.num_domains)]
         for indeces in indices_to_fill:
             domain_idx = indeces[0]
             class_indeces = torch.nonzero(labels_per_domain[domain_idx] == indeces[1], as_tuple=False).squeeze(-1)
-            if class_indeces.size(0) > 0:
-                random_choice = class_indeces[torch.randint(0, class_indeces.size(0), (1,))]
+            if class_indeces.size(0) > counter[domain_idx][indeces[1]]:
+                random_choice = class_indeces[counter[domain_idx][indeces[1]]] # Exploits the inherit randomness of the minibatches
                 self.pplayer.cache[indeces[0], indeces[1], indeces[2]] = features_per_domain[domain_idx, random_choice].clone().detach()
                 self.pplayer.cache_mask[indeces[0], indeces[1], indeces[2]] = 1
+                counter[domain_idx][indeces[1]]+=1
 
     def sample_cache_mask_zeros(self):
         random_mask = torch.cuda.FloatTensor(self.pplayer.cache_mask.shape).uniform_() > self.replacement_factor
