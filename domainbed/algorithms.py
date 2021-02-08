@@ -193,10 +193,10 @@ class ProDrop(ERM):
         for indeces in indices_to_fill:
             domain_idx = indeces[0]
             class_indeces = torch.nonzero(labels_per_domain[domain_idx] == indeces[1], as_tuple=False).squeeze(-1)
-            random_choice = class_indeces[torch.randint(0, class_indeces.size(0), (1,))]
-            self.pplayer.cache[indeces[0], indeces[1], indeces[2]] = features_per_domain[domain_idx, random_choice]
-            self.pplayer.cache_mask[indeces[0], indeces[1], indeces[2]] = 1
-
+            if class_indeces.size(0) > 0:
+                random_choice = class_indeces[torch.randint(0, class_indeces.size(0), (1,))]
+                self.pplayer.cache[indeces[0], indeces[1], indeces[2]] = features_per_domain[domain_idx, random_choice]
+                self.pplayer.cache_mask[indeces[0], indeces[1], indeces[2]] = 1
 
     def sample_cache_mask_zeros(self):
         random_mask = torch.cuda.FloatTensor(self.pplayer.cache_mask.shape).uniform_() > self.replacement_factor
