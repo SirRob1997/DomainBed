@@ -197,7 +197,8 @@ class PPLayer(nn.Module):
         self.num_domains = num_domains
 
         self.prototype_vectors = nn.Parameter(torch.rand(self.prototype_shape), requires_grad=True)
-        self.cache =  nn.Parameter(torch.zeros(num_domains, num_classes, self.num_images_per_class), requires_grad=True) # TODO: Do we want gradients here?
+        self.cache =  nn.Parameter(torch.zeros(num_domains, num_classes, self.num_images_per_class, prototype_shape[1], prototype_shape[2], prototype_shape[3]), requires_grad=False) 
+        self.cache_mask = nn.Parameter(torch.zeros(num_domains, num_classes, self.num_images_per_class), requires_grad=False)
 
         self.image_class_identity = self.gen_class_identity()
         self.image_domain_identity = self.gen_domain_identity()

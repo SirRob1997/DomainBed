@@ -189,13 +189,17 @@ class ProDrop(ERM):
     def fill_cache_zeros_with_images(self, all_features, all_y):
         features_per_domain = all_features.view(self.num_domains, -1,  self.featurizer.n_outputs, 7, 7)
         labels_per_domain = all_y.view(self.num_domains, -1)
-        indices_to_fill = torch.nonzero(self.pplayer.cache == 0, as_tuple=False)
-        # TODO: How do we select which features to put?
-        print(indices_to_fill)
- 
-    def sample_cache_zeros(self):
-        random_mask = torch.cuda.FloatTensor(self.pplayer.cache.shape[0], self.pplayer.cache.shape[1], self.pplayer.cache.shape[2]).uniform_() > self.replacement_factor
-        self.pplayer.cache = nn.Parameter(self.pplayer.cache * random_mask)
+        indices_to_fill = torch.nonzero(self.pplayer.cache_mask == 0, as_tuple=False)
+        for indeces in indices_to_fill:
+            domain_idx = indeces[0]
+            class_indeces = torch.nonzero(labels_per_domain[domain_idx] == indeces[1], as_tuple=False).squeeze()
+            random_choice = class_indeces[torch.randperm(len(class_indeces))[:1]]
+            self.pplayer.cache[indeces] = features_per_domain[domain_idx, random_choice]
+            self.pplayer.cache_mask[indeces] = 1
+
+    def sample_cache_mask_zeros(self):
+        random_mask = torch.cuda.FloatTensor(self.pplayer.cache_mask.shape).uniform_() > self.replacement_factor
+        self.pplayer.cache_mask = nn.Parameter(self.pplayer.cache_mask * random_mask, requires_grad=False)
 
     def update(self, minibatches):
         self.update_count += 1
@@ -205,7 +209,7 @@ class ProDrop(ERM):
         features = self.featurizer(all_x)
         if self.training:
             if self.update_count.item() % self.replacement_interval == 0:
-                self.sample_cache_zeros()
+                self.sample_cache_mask_zeros()
             if torch.nonzero(self.pplayer.cache == 0, as_tuple=False).shape[0] > 0:
                 self.fill_cache_zeros_with_images(features, all_y)
         prot_activations = self.pplayer(features)
