@@ -190,19 +190,12 @@ class ProDrop(ERM):
         features_per_domain = all_features.view(self.num_domains, -1,  self.featurizer.n_outputs, 7, 7)
         labels_per_domain = all_y.view(self.num_domains, -1)
         indices_to_fill = torch.nonzero(self.pplayer.cache_mask == 0, as_tuple=False)
-        print(self.pplayer.cache_mask)
         for indeces in indices_to_fill:
-            print("Indeces", indeces, indeces.shape)
             domain_idx = indeces[0]
-            class_indeces = torch.nonzero(labels_per_domain[domain_idx] == indeces[1], as_tuple=False).squeeze()
-            print("Class indeces", class_indeces)
-            random_choice = class_indeces[torch.randperm(len(class_indeces))[:1]]
-            print("Random choice", random_choice)
-            self.pplayer.cache[indeces] = features_per_domain[domain_idx, random_choice]
-            print("Updated cache")
+            class_indeces = torch.nonzero(labels_per_domain[domain_idx] == indeces[1], as_tuple=False).squeeze(-1)
+            random_choice = class_indeces[torch.randint(0, class_indeces.size(0), (1,))]
+            self.pplayer.cache[indeces[0], indeces[1], indeces[2]] = features_per_domain[domain_idx, random_choice]
             self.pplayer.cache_mask[indeces[0], indeces[1], indeces[2]] = 1
-            print("updated cache mask", self.pplayer.cache_mask, self.pplayer.cache_mask.shape)
-            input()
 
 
     def sample_cache_mask_zeros(self):
