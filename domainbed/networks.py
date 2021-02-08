@@ -199,17 +199,6 @@ class PPLayer(nn.Module):
         self.cache =  nn.Parameter(torch.rand(prototype_shape), requires_grad=False) 
         self.cache_mask = nn.Parameter(torch.zeros(self.num_domains, self.num_classes, self.num_images_per_class), requires_grad=False)
 
-        self.image_class_identity = self.gen_class_identity()
-        print(self.image_class_identity)
-        input()
-
-
-    def gen_class_identity(self):
-        class_identity = torch.zeros(self.num_images, self.num_classes)
-        for j in range(self.num_images):
-            class_identity[j, j // (self.num_images_per_class * self.num_domains)] = 1
-        return class_identity
-
     def forward(self, x):
         similarity_per_location = self.prototype_similarities(x)
         pooled_similarity = similarity_per_location.max(2)[0] # Maximum similarity per image per location [BS, num_images, 7, 7]

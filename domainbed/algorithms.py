@@ -124,11 +124,8 @@ class ProDrop(ERM):
         self.prototype_shape = (self.num_domains, self.num_classes, self.num_images_per_class, self.featurizer.n_outputs, 7, 7)
         self.replacement_interval = hparams['replacement_interval']
         self.replacement_factor = hparams['replacement_factor']
-        self.negative_weight = hparams['negative_weight']
 
         self.pplayer = networks.PPLayer(self.prototype_shape)
-        self.classifier = nn.Linear(self.num_images, num_classes, bias=False)
-        self._initialize_weights()
 
         # Remove AvgPool, Flatten and Droput for ResNet
         if self.featurizer.__class__.__name__ == "ResNet":
@@ -136,39 +133,15 @@ class ProDrop(ERM):
             self.featurizer.flattenLayer = networks.Identity()
             self.featurizer.dropout = networks.Identity()
 
-        self.network = nn.Sequential(self.featurizer, self.pplayer, self.classifier)
+        self.network = nn.Sequential(self.featurizer, self.pplayer)
         self.register_buffer('update_count', torch.tensor([0]))
-
-        if self.hparams['freeze_classifier']: 
-            self.freeze_parameters(self.classifier)
-            self.frozen_classifier = True
 
         self.optimizer = torch.optim.Adam(
                 self.network.parameters(),
                 lr=self.hparams["lr"],
                 weight_decay=self.hparams['weight_decay'])
 
-    def freeze_parameters(self, module):
-        for param in module.parameters():
-            param.requires_grad = False
 
-    def unfreeze_parameters(self, module):
-        for param in module.parameters():
-            param.requires_grad = True
-
-    def set_last_layer_incorrect_connection(self, incorrect_strength):
-        positive_one_weights_locations = torch.t(self.pplayer.image_class_identity)
-        negative_one_weights_locations = 1 - positive_one_weights_locations
-
-        correct_class_connection = 1
-        incorrect_class_connection = incorrect_strength
-        self.classifier.weight.data.copy_(
-            correct_class_connection * positive_one_weights_locations
-            + incorrect_class_connection * negative_one_weights_locations)
-
-    def _initialize_weights(self):
-        self.set_last_layer_incorrect_connection(incorrect_strength=self.negative_weight)
- 
     def fill_cache_zeros_with_images(self, all_features, all_y):
         features_per_domain = all_features.view(self.num_domains, -1,  self.featurizer.n_outputs, 7, 7)
         labels_per_domain = all_y.view(self.num_domains, -1)
@@ -187,6 +160,11 @@ class ProDrop(ERM):
         random_mask = torch.cuda.FloatTensor(self.pplayer.cache_mask.shape).uniform_() > self.replacement_factor
         self.pplayer.cache_mask = nn.Parameter(self.pplayer.cache_mask * random_mask, requires_grad=False)
 
+    def classify(self, x):
+        final_score_per_image = x.reshape(-1, self.num_domains, self.num_classes, self.num_images_per_class).sum(-1)
+        final_score_per_class = final_score_per_image.sum(1)
+        return final_score_per_class
+
     def update(self, minibatches):
         self.update_count += 1
         all_x = torch.cat([x for x, y in minibatches])
@@ -200,7 +178,7 @@ class ProDrop(ERM):
                 self.fill_cache_zeros_with_images(features, all_y)
         
         prot_activations = self.pplayer(features)
-        outputs = self.classifier(prot_activations)
+        outputs = self.classify(prot_activations)
 
         loss = F.cross_entropy(outputs, all_y)
 
@@ -210,7 +188,8 @@ class ProDrop(ERM):
         return {'loss': loss.item()}
 
     def predict(self, x):
-        return self.network(x)
+        prot_activations = self.network(x)
+        return self.classify(prot_activations)
 
 
 class ARM(ERM):
