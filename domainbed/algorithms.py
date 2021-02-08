@@ -191,6 +191,7 @@ class ProDrop(ERM):
         labels_per_domain = all_y.view(self.num_domains, -1)
         indices_to_fill = torch.nonzero(self.pplayer.cache == 0, as_tuple=False)
         # TODO: How do we select which features to put?
+        print(indices_to_fill)
  
     def sample_cache_zeros(self):
         random_mask = torch.cuda.FloatTensor(self.pplayer.cache.shape[0], self.pplayer.cache.shape[1], self.pplayer.cache.shape[2]).uniform_() > self.replacement_factor
@@ -205,7 +206,8 @@ class ProDrop(ERM):
         if self.training:
             if self.update_count.item() % self.replacement_interval == 0:
                 self.sample_cache_zeros()
-            self.fill_cache_zeros_with_images(features, all_y)
+            if torch.nonzero(self.pplayer.cache == 0, as_tuple=False).shape[0] > 0:
+                self.fill_cache_zeros_with_images(features, all_y)
         prot_activations = self.pplayer(features)
         outputs = self.classifier(prot_activations)
 
