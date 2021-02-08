@@ -187,18 +187,17 @@ class CosineClassifier(nn.Module):
 
 
 class PPLayer(nn.Module):
-    def __init__(self, prototype_shape, num_classes, num_domains):
+    def __init__(self, prototype_shape):
         super(PPLayer, self).__init__()
         self.prototype_shape = prototype_shape
-        self.num_images = prototype_shape[0]
-        self.num_images_per_class = prototype_shape[0] // num_classes // num_domains
-        self.num_prototypes = prototype_shape[0] * prototype_shape[2] * prototype_shape[3]
-        self.num_classes = num_classes
-        self.num_domains = num_domains
+        self.num_domains = prototype_shape[0]
+        self.num_classes = prototype_shape[1]
+        self.num_images_per_class = prototype_shape[2]
+        self.num_images = self.num_domains *  self.num_classes * self.num_images_per_class
+        self.num_prototypes = self.num_images  * prototype_shape[4] * prototype_shape[5]
 
-        self.prototype_vectors = nn.Parameter(torch.rand(self.prototype_shape), requires_grad=True)
-        self.cache =  nn.Parameter(torch.zeros(num_domains, num_classes, self.num_images_per_class, prototype_shape[1], prototype_shape[2], prototype_shape[3]), requires_grad=False) 
-        self.cache_mask = nn.Parameter(torch.zeros(num_domains, num_classes, self.num_images_per_class), requires_grad=False)
+        self.cache =  nn.Parameter(torch.rand(prototype_shape), requires_grad=False) 
+        self.cache_mask = nn.Parameter(torch.zeros(self.num_domains, self.num_classes, self.num_images_per_class), requires_grad=False)
 
         self.image_class_identity = self.gen_class_identity()
         self.image_domain_identity = self.gen_domain_identity()
@@ -242,9 +241,9 @@ class PPLayer(nn.Module):
         return x
 
     def _dot_similarity(self,x):
-        reshaped_prots = self.prototype_vectors.permute(0, 2, 3, 1).reshape(-1, self.prototype_vectors.shape[1], 1, 1)
+        reshaped_prots = self.cache.permute(0, 1, 2, 4, 5, 3).reshape(-1, self.cache.shape[3], 1, 1)
         similarity = F.conv2d(input=x, weight=reshaped_prots)
-        similarity_per_location = similarity.view(-1, self.num_images, self.prototype_vectors.shape[2] * self.prototype_vectors.shape[3], x.shape[2], x.shape[3])
+        similarity_per_location = similarity.view(-1, self.num_images, self.cache.shape[4] * self.cache.shape[5], x.shape[2], x.shape[3])
         return similarity_per_location
 
     def prototype_similarities(self, x):
