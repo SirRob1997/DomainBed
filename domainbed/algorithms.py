@@ -29,7 +29,6 @@ ALGORITHMS = [
     'VREx',
     'RSC',
     'ProDrop',
-    'ProDropEnsamble'
 ]
 
 def get_algorithm_class(algorithm_name):
@@ -119,26 +118,15 @@ class ProDrop(ERM):
         super(ProDrop, self).__init__(input_shape, num_classes, num_domains, hparams)
 
         self.num_classes = num_classes
-        self.num_prototypes_per_class = hparams['num_prototypes_per_class'] 
-        self.num_prototypes = self.num_prototypes_per_class  * num_classes
-        self.prototype_width = hparams['prototype_width']
-        self.prototype_height = hparams['prototype_height']
-        self.prototype_shape = (self.num_prototypes, self.featurizer.n_outputs, self.prototype_height, self.prototype_width)
-        self.additional_losses = hparams['additional_losses']
-        self.self_challenging = hparams['self_challenging']
-        self.drop_b = hparams['drop_b']
-        self.drop_f = hparams['drop_f']
-        self.ce_factor = hparams['ce_factor']
-        self.cl_factor = hparams['cl_factor']
-        self.sep_factor = hparams['sep_factor']
-        #self.l1_factor = hparams['l1_factor']
-        #self.cpt_factor = hparams['cpt_factor']
-        self.intra_factor = hparams['intra_factor']
+        self.num_images_per_class = hparams['num_images_per_class'] 
+        self.num_images = self.num_images_per_class  * num_classes * num_domains
+        self.prototype_shape = (self.num_images, self.featurizer.n_outputs, 7, 7)
         self.end_to_end = hparams['end_to_end']
+        self.replacement_interval = hparams['replacement_interval']
         self.negative_weight = hparams['negative_weight']
 
-        self.pplayer = networks.PPLayer(self.prototype_shape, num_classes)
-        self.classifier = nn.Linear(self.num_prototypes, num_classes, bias=False)
+        self.pplayer = networks.PPLayer(self.prototype_shape, num_classes, num_domains)
+        self.classifier = nn.Linear(self.num_images, num_classes, bias=False)
         self._initialize_weights()
 
         # Remove AvgPool, Flatten and Droput for ResNet
@@ -148,6 +136,7 @@ class ProDrop(ERM):
             self.featurizer.dropout = networks.Identity()
 
         self.network = nn.Sequential(self.featurizer, self.pplayer, self.classifier)
+        self.register_buffer('update_count', torch.tensor([0]))
 
         if self.hparams['freeze_classifier']: 
             self.freeze_parameters(self.classifier)
@@ -159,7 +148,6 @@ class ProDrop(ERM):
                 lr=self.hparams["lr"],
                 weight_decay=self.hparams['weight_decay'])
         else:
-            self.register_buffer('update_count', torch.tensor([0]))
             self.warmup_steps = self.hparams['warmup_steps']
             self.optimize_classifier = self.hparams['optimize_classifier']
             self.cooldown_steps = self.hparams['cooldown_steps']
@@ -184,7 +172,7 @@ class ProDrop(ERM):
             param.requires_grad = True
 
     def set_last_layer_incorrect_connection(self, incorrect_strength):
-        positive_one_weights_locations = torch.t(self.pplayer.prototype_class_identity)
+        positive_one_weights_locations = torch.t(self.pplayer.image_class_identity)
         negative_one_weights_locations = 1 - positive_one_weights_locations
 
         correct_class_connection = 1
@@ -194,37 +182,13 @@ class ProDrop(ERM):
             + incorrect_class_connection * negative_one_weights_locations)
 
     def _initialize_weights(self):
-        for m in self.pplayer.add_on_layers.modules():
-            if isinstance(m, nn.Conv2d):
-                # every init technique has an underscore _ in the name
-                nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
-
-                if m.bias is not None:
-                    nn.init.constant_(m.bias, 0)
-
-            elif isinstance(m, nn.BatchNorm2d):
-                nn.init.constant_(m.weight, 1)
-                nn.init.constant_(m.bias, 0)
-
         self.set_last_layer_incorrect_connection(incorrect_strength=self.negative_weight)
  
-    def calculate_intra_loss_l2(self, prototypes):
-        loss = 0
-        for class_i in range(self.num_classes):
-            curr_prototypes = prototypes[self.pplayer.prototype_class_identity[:, class_i].bool(), :]
-            distances = F.pdist(prototypes, p=2)
-            loss += torch.mean(distances)
-        return loss / self.num_classes
+    def fill_cache_zeros_with_images(self, x):
+        cache = self.pplayer.cache
 
-
-    def calculate_intra_loss_cosine(self, prototypes):
-        loss = 0
-        for class_i in range(self.num_classes):
-            curr_prototypes = prototypes[self.pplayer.prototype_class_identity[:, class_i].bool(), :]
-            distances = cosine_distance_torch(prototypes)
-            loss += torch.mean(distances)
-        return loss / self.num_classes
-
+    def sample_cache_zeros(self):
+        pass
 
     def update(self, minibatches):
         self.update_count += 1
@@ -232,54 +196,14 @@ class ProDrop(ERM):
         all_y = torch.cat([y for x, y in minibatches])
         all_o = F.one_hot(all_y, self.num_classes)
         features = self.featurizer(all_x)
+        if self.training:
+            if self.update_count.item() % self.replacement_interval == 0:
+                sample_cache_zeros()
+            fill_cache_zeros_with_images(x)
         prot_activations = self.pplayer(features)
         outputs = self.classifier(prot_activations)
-        if self.self_challenging:
-            mask_p = torch.t(self.pplayer.prototype_class_identity[:, all_y]).cuda().bool() # prototypes which correspond to the class
-            reduced_activations = prot_activations * mask_p
-            quantile_f = torch.quantile(reduced_activations, 1 - (self.drop_f * (self.num_prototypes_per_class / self.num_prototypes)), dim=1, keepdim=True)
-            mask_f = reduced_activations.lt(quantile_f) # 0 for prototype activations to apply masking, highest values in prot_activations, i.e. the highest similarity prototypes
-            all_s = F.softmax(outputs, dim=1)
-            before_vector = (all_s * all_o).sum(1)
-            before_vector = torch.where(before_vector > 0, before_vector, torch.zeros(before_vector.shape).cuda())
-            quantile_b = torch.quantile(before_vector, 1 - self.drop_b)
-            mask_b = before_vector.lt(quantile_b).view(-1,1).repeat(1, prot_activations.shape[1]) # 0 for samples to apply masking, highest values in before_vector i.e. highest confidence on correct class 
-            mask = torch.logical_or(mask_f, mask_b).float()
-            muted_outputs = self.classifier(prot_activations * mask)
-            #print("Masked out values for this batch:", (mask.shape[1]) - torch.count_nonzero(mask, dim=1))
-            ce_loss = F.cross_entropy(muted_outputs, all_y)
-        else:
-            ce_loss = F.cross_entropy(outputs, all_y)
 
-        # Decision on whether we want to add other losses to the CE loss
-        if self.additional_losses:
-            max_dist = (self.prototype_shape[1] * self.prototype_shape[2] * self.prototype_shape[3])
-
-            # calculate cluster cost
-            prototypes_of_correct_class = torch.t(self.pplayer.prototype_class_identity[:, all_y]).cuda() # [N, num_prototypes]
-            inverted_distances, _ = torch.max((max_dist - self.pplayer.min_distances) * prototypes_of_correct_class, dim=1) # [N]
-            cluster_loss = torch.mean(max_dist - inverted_distances)
-
-            # calculate separation cost
-            prototypes_of_wrong_class = 1 - prototypes_of_correct_class
-            inverted_distances_to_nontarget_prototypes, _ = torch.max((max_dist - self.pplayer.min_distances) * prototypes_of_wrong_class, dim=1)
-            separation_loss = torch.mean(max_dist - inverted_distances_to_nontarget_prototypes)
-
-            # calculate the intra class prototype distance
-            reshaped_prototypes = self.pplayer.prototype_vectors.view(self.num_prototypes, -1)
-            intra_loss = self.calculate_intra_loss_l2(reshaped_prototypes) + self.calculate_intra_loss_cosine(reshaped_prototypes)
-
-            # get the current cpt loss
-            #cpt_loss = self.pplayer.cpt_loss
-
-            # L1 mask
-            #l1_mask = 1 - torch.t(self.pplayer.prototype_class_identity).cuda()
-            #l1 = (self.classifier.weight * l1_mask).norm(p=1)
-
-            # Overall loss
-            loss = self.ce_factor * ce_loss + self.cl_factor * cluster_loss + self.sep_factor * separation_loss + self.intra_factor * intra_loss 
-        else:
-            loss = ce_loss
+        loss = F.cross_entropy(outputs, all_y)
 
         # Decision on whether to train end-to-end or with warmup steps
         if self.end_to_end:
@@ -305,209 +229,10 @@ class ProDrop(ERM):
                 loss.backward()
                 self.optimizer.step()
 
-        return {'loss': loss.item(), 'w_intra_loss': intra_loss.item() * self.intra_factor, 'w_ce_loss': self.ce_factor * ce_loss.item(), "w_cl_loss": self.cl_factor * cluster_loss.item(), "w_sep_loss": self.sep_factor * separation_loss.item()}
-
-    def predict(self, x):
-        return self.network(x)
-
-
-
-class ProDropEnsamble(ERM):
-    def __init__(self, input_shape, num_classes, num_domains, hparams):
-        super(ProDropEnsamble, self).__init__(input_shape, num_classes, num_domains, hparams)
-
-
-        self.num_classes = num_classes
-        self.num_domains = num_domains
-        self.num_prototypes_per_class = hparams['num_prototypes_per_class']
-        self.num_prototypes = self.num_prototypes_per_class * num_classes
-        self.prototype_width = hparams['prototype_width']
-        self.prototype_height = hparams['prototype_height']
-        self.prototype_shape = (
-        self.num_prototypes, self.featurizer.n_outputs, self.prototype_height, self.prototype_width)
-        self.additional_losses = hparams['additional_losses']
-        self.ce_factor = hparams['ce_factor']
-        self.cl_factor = hparams['cl_factor']
-        self.sep_factor = hparams['sep_factor']
-        self.l1_factor = hparams['l1_factor']
-        self.cpt_factor = hparams['cpt_factor']
-        self.intra_factor = hparams['intra_factor']
-        self.end_to_end = hparams['end_to_end']
-
-        # Remove AvgPool, Flatten and Droput for ResNet
-        if self.featurizer.__class__.__name__ == "ResNet":
-            self.featurizer.network.avgpool = networks.Identity()
-            self.featurizer.flattenLayer = networks.Identity()
-            self.featurizer.dropout = networks.Identity()
-
-        self.pplayers = [networks.PPLayer(self.prototype_shape, num_classes).cuda() for _ in range(num_domains)]
-        self.classifiers = [nn.Linear(self.num_prototypes, num_classes, bias=False).cuda() for _ in range(num_domains)]
-        self.aggregation_layer = nn.Linear(num_domains * num_classes, num_classes, bias=False).cuda()
-
-        self._initialize_ensamble_weights()
-
-        if self.hparams['freeze_classifier']:
-            for classifier in self.classifiers: 
-                self.freeze_parameters(classifier)
-                self.frozen_classifier = True
-
-        pplayers_params = list()
-        for pplayer in self.pplayers:
-            pplayers_params += list(pplayer.parameters()) 
-
-        classifiers_params = list()
-        for classifier in self.classifiers:
-            classifiers_params += list(classifier.parameters())
-
-        if self.end_to_end:
-            self.optimizer = torch.optim.Adam(
-                (list(self.featurizer.parameters()) +
-                 pplayers_params +
-                 classifiers_params) ,
-                lr=self.hparams["lr"],
-                weight_decay=self.hparams['weight_decay'])
-        else:
-            self.register_buffer('update_count', torch.tensor([0]))
-            self.warmup_steps = self.hparams['warmup_steps']
-            self.optimize_classifier = self.hparams['optimize_classifier']
-            self.cooldown_steps = self.hparams['cooldown_steps']
-            self.optimizer = torch.optim.Adam(
-                (list(self.featurizer.parameters()) +
-                 pplayers_params +
-                classifiers_params),
-                lr=self.hparams["lr"],
-                weight_decay=self.hparams['weight_decay'])
-            self.pplayer_optimizer = torch.optim.Adam(
-                pplayers_params,
-                lr=self.hparams["pp_lr"],
-                weight_decay=self.hparams['pp_weight_decay'])
-            self.classifier_optimizer = torch.optim.Adam(
-                classifiers_params,
-                lr=self.hparams["cl_lr"])
-
-    def _initialize_ensamble_weights(self):
-        for domain_layer, classifier in zip(self.pplayers, self.classifiers):
-            for m in domain_layer.add_on_layers.modules():
-                if isinstance(m, nn.Conv2d):
-                    # every init technique has an underscore _ in the name
-                    nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
-
-                    if m.bias is not None:
-                        nn.init.constant_(m.bias, 0)
-
-                elif isinstance(m, nn.BatchNorm2d):
-                    nn.init.constant_(m.weight, 1)
-                    nn.init.constant_(m.bias, 0)
-
-            self.set_ensemble_classifier_incorrect_connection(domain_layer, classifier, incorrect_strength=-0.5)
-
-    def set_ensemble_classifier_incorrect_connection(self, domain_layer, classifier, incorrect_strength):
-        positive_one_weights_locations = torch.t(domain_layer.prototype_class_identity)
-        negative_one_weights_locations = 1 - positive_one_weights_locations
-
-        correct_class_connection = 1
-        incorrect_class_connection = incorrect_strength
-        classifier.weight.data.copy_(
-            correct_class_connection * positive_one_weights_locations
-            + incorrect_class_connection * negative_one_weights_locations)
-
-    def freeze_parameters(self, module):
-        for param in module.parameters():
-            param.requires_grad = False
-
-    def unfreeze_parameters(self, module):
-        for param in module.parameters():
-            param.requires_grad = True
-
-    def set_aggregation_weights(self, correct_strength = 1, incorrect_strength = 0, domain=None):
-        if domain is not None:
-            b_non_selected = torch.zeros(self.num_classes, self.num_classes).repeat(1, domain)
-            a_non_selected = torch.zeros(self.num_classes, self.num_classes).repeat(1, self.num_domains - domain - 1)
-            weights = torch.eye(self.num_classes)
-            weights = torch.cat((b_non_selected, weights, a_non_selected), 1)
-        else:
-            weights = torch.eye(self.num_classes).repeat(1,self.num_domains)
-
-        if correct_strength != 1:
-            weights[weights==1] = correct_strength
-        if incorrect_strength != 0:
-            weights[weights==0] = incorrect_strength
-        self.aggregation_layer.weight.data.copy_(weights)
-
-    def update(self, minibatches):
-        features = [self.featurizer(xi) for xi, _ in minibatches]
-        targets = [yi for _, yi in minibatches]
-        prot_activations = [domain_pplayer(features[domain]) for domain, domain_pplayer in enumerate(self.pplayers)]
-        domain_outputs = [classifier(prot_activations[domain]) for domain, classifier in enumerate(self.classifiers)]
-
-        ce_loss = 0
-        cluster_loss = 0 
-        separation_loss = 0
-        for domain, domain_output in enumerate(domain_outputs):
-            self.set_aggregation_weights(correct_strength=1, domain=domain)
-
-            # Fill the domain_output vectors up to size num_classes * num_domains by setting all other domain predictions to 0
-            b_domain_class = torch.zeros(domain_output.shape[0], self.num_classes * domain).cuda() 
-            a_domain_class = torch.zeros(domain_output.shape[0], self.num_classes * (self.num_domains - domain - 1)).cuda() 
-            domain_output = torch.cat((b_domain_class, domain_output, a_domain_class), 1)
-            output = self.aggregation_layer(domain_output)
-            ce_loss += F.cross_entropy(output, targets[domain])
-
-            # Decision on whether we want to add other losses to the CE loss
-            if self.additional_losses:
-                max_dist = (self.prototype_shape[1] * self.prototype_shape[2] * self.prototype_shape[3])
-            
-                # calculate cluster cost
-                prototypes_of_correct_class = torch.t(self.pplayers[domain].prototype_class_identity[:, targets[domain]]).cuda() 
-                inverted_distances, _ = torch.max((max_dist - self.pplayers[domain].min_distances) * prototypes_of_correct_class, dim=1)
-                cluster_loss += torch.mean(max_dist - inverted_distances)
-
-                # calculate separation cost
-                prototypes_of_wrong_class = 1 - prototypes_of_correct_class
-                inverted_distances_to_nontarget_prototypes, _ = torch.max((max_dist - self.pplayers[domain].min_distances) * prototypes_of_wrong_class, dim=1)
-                separation_loss += torch.mean(max_dist - inverted_distances_to_nontarget_prototypes)
-
-
-        if self.additional_losses:
-            loss = self.ce_factor * ce_loss + self.cl_factor * cluster_loss + self.sep_factor * separation_loss
-        else:
-            loss = ce_loss
-
-        # Decision on whether to train end-to-end or with warmup steps
-        if self.end_to_end:
-            self.optimizer.zero_grad()
-            loss.backward()
-            self.optimizer.step()
-        else:
-            self.update_count += 1
-            if self.update_count.item() <= self.warmup_steps:
-                self.pplayer_optimizer.zero_grad()
-                loss.backward()
-                self.pplayer_optimizer.step()
-            elif (self.update_count.item() >= 5001 - self.cooldown_steps) and self.optimize_classifier:
-                if self.frozen_classifier:
-                    self.unfreeze_parameters(self.classifier)
-                    self.frozen_classifier = False
-                    self.freeze_parameters(self.featurizer)
-                    self.freeze_parameters(self.pplayer)
-                self.classifier_optimizer.zero_grad()
-                loss.backward()
-                self.classifier_optimizer.step()
-            else:
-                self.optimizer.zero_grad()
-                loss.backward()
-                self.optimizer.step()
         return {'loss': loss.item()}
 
     def predict(self, x):
-        self.set_aggregation_weights(correct_strength=1/self.num_domains)
-        features = self.featurizer(x)
-        prot_activations = [domain_pplayer(features) for domain_pplayer in self.pplayers]
-        domain_outputs = [classifier(prot_activations[domain]) for domain, classifier in enumerate(self.classifiers)]
-        domain_outputs = torch.cat(domain_outputs, 1)
-        return self.aggregation_layer(domain_outputs)
-        
-
+        return self.network(x)
 
 
 class ARM(ERM):

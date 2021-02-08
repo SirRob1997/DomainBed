@@ -187,106 +187,72 @@ class CosineClassifier(nn.Module):
 
 
 class PPLayer(nn.Module):
-    """
-    Input:
-        - prototype_shape: Input shape used for the prototypes [AMOUNT, C, PROTO_H, PROTO_W]
-        - num_classes: Number of classes, used for determining the number of prototypes for each class
-        - prototype_activation_function: can be 'log', 'linear', or any other function that converts distance to similarity score
-        - epsilon: used for conversion from distance to similarity to avoid division by 0
-    """
-
-    def __init__(self, prototype_shape, num_classes, prototype_activation_function='log', epsilon=1e-4):
+    def __init__(self, prototype_shape, num_classes, num_domains):
         super(PPLayer, self).__init__()
         self.prototype_shape = prototype_shape
-        self.num_prototypes = prototype_shape[0]
+        self.num_images = prototype_shape[0]
+        self.num_images_per_class = prototype_shape[0] // num_classes // num_domains
+        self.num_prototypes = prototype_shape[0] * prototype_shape[2] * prototype_shape[3]
         self.num_classes = num_classes
-        self.epsilon = epsilon
-        self.prototype_activation_function = prototype_activation_function
+        self.num_domains = num_domains
 
         self.prototype_vectors = nn.Parameter(torch.rand(self.prototype_shape), requires_grad=True)
-        self.ones = nn.Parameter(torch.ones(self.prototype_shape), requires_grad=False)
+        self.cache = nn.Parameter(torch.zeros(num_domains, num_classes, self.num_images_per_class), requires_grad=False)
 
-        self.prototype_class_identity = self.gen_class_identity()
-        self.add_on_layers = nn.Sequential(
-                nn.Conv2d(in_channels=self.prototype_shape[1], out_channels=self.prototype_shape[1], kernel_size=1),
-                nn.ReLU(),
-                nn.Conv2d(in_channels=self.prototype_shape[1], out_channels=self.prototype_shape[1], kernel_size=1),
-                nn.Sigmoid(),
-         )
-        self.min_distances = 0
-        self.cpt_loss = 0
+        self.image_class_identity = self.gen_class_identity()
+        self.image_domain_identity = self.gen_domain_identity()
 
     def forward(self, x):
-        distances = self.prototype_distances(x)
-        #self.cpt_loss = self.calculate_compactness_loss(distances)
-        min_distances = -F.max_pool2d(-distances, kernel_size=(distances.size()[2], distances.size()[3]))
-        min_distances = min_distances.view(-1, self.num_prototypes)
-        prototype_activations = self.distance_to_similarity(min_distances)
-        self.min_distances = min_distances
+        similarity_per_location = self.prototype_similarities(x)
+        pooled_similarity = similarity_per_location.max(2)[0] # Maximum similarity per image per location [BS, num_images, 7, 7]
+        proto_scores = F.max_pool2d(pooled_similarity, kernel_size=(pooled_similarity.size()[2], pooled_similarity.size()[3])) # Maximum similarity per image [B, self.num_images, 1, 1]
+        prototype_activations = proto_scores.view(-1, self.num_images) # has shape [B, self.num_images]
         return prototype_activations
-
-    def calculate_compactness_loss(self, distances):
-        sim = self.distance_to_similarity(distances)
-        num_samples, num_prototypes, rows, cols = sim.shape
-        values, indeces = torch.topk(sim.view(num_samples, num_prototypes, -1), 1, dim=2)
-        correct_indeces = misc.unravel_index(indeces, sim.shape).squeeze()
-        max_row_indeces = correct_indeces[:, :, 2].unsqueeze(-1).unsqueeze(-1).repeat(1, 1, rows, cols)
-        max_column_indeces = correct_indeces[:, :, 3].unsqueeze(-1).unsqueeze(-1).repeat(1, 1, rows, cols)
-        column_tensor = torch.arange(0, rows).cuda().repeat(num_samples, num_prototypes, rows, 1)
-        row_tensor = torch.arange(0, cols).view(-1,1).cuda().repeat(num_samples, num_prototypes, 1, cols)
-        factor_mask = (row_tensor - max_row_indeces)**2 + (column_tensor - max_column_indeces)**2
-        return (sim * factor_mask).sum() / num_samples
 
     def gen_class_identity(self):
         """
         Generates the one-hots for prototype class correspondence
         """
-        assert(self.num_prototypes % self.num_classes == 0)
+        assert(self.num_images % self.num_classes == 0)
 
-        num_prototypes_per_class = self.num_prototypes // self.num_classes
-        class_identity = torch.zeros(self.num_prototypes, self.num_classes)
-        for j in range(self.num_prototypes):
-            class_identity[j, j // num_prototypes_per_class] = 1
+        num_images_per_class = self.num_images // self.num_classes
+        class_identity = torch.zeros(self.num_images, self.num_classes)
+        for j in range(self.num_images):
+            class_identity[j, j // num_images_per_class] = 1
         return class_identity
+
+    def gen_domain_identity(self):
+        """
+        Generates the one-hots for prototype domain correspondence
+        """
+        assert(self.num_images % self.num_domains == 0)
+
+        num_images_per_class = self.num_images // self.num_classes
+        domain_identity = torch.zeros(num_images_per_class, self.num_domains).cuda()
+        for j in range(num_images_per_class):
+            domain_identity[j, (j // (num_images_per_class // self.num_domains))] = 1
+        domain_identity = domain_identity.repeat(self.num_classes, 1)
+        return domain_identity
 
     def input_features(self, x):
         """
         Input features to the prototype layer, the original ProtoPNet uses some add_on_layers after the feature extractor
         """
-        x = self.add_on_layers(x)
         return x
 
-    def _l2_convolution(self, x):
-        '''
-        apply self.prototype_vectors as l2-convolution filters on input x
-        '''
-        x2 = x ** 2
-        x2_patch_sum = F.conv2d(input=x2, weight=self.ones)
-        p2 = self.prototype_vectors ** 2
-        p2 = torch.sum(p2, dim=(1, 2, 3))                       # p2 is a vector of shape (num_prototypes,)
-        p2_reshape = p2.view(-1, 1, 1)                          # then we reshape it to (num_prototypes, 1, 1)
-        xp = F.conv2d(input=x, weight=self.prototype_vectors)
-        intermediate_result = - 2 * xp + p2_reshape             # use broadcast
-        distances = F.relu(x2_patch_sum + intermediate_result)  # x2_patch_sum and intermediate_result are of the same shape
-        return distances
+    def _dot_similarity(self,x):
+        reshaped_prots = self.prototype_vectors.permute(0, 2, 3, 1).reshape(-1, self.prototype_vectors.shape[1], 1, 1)
+        similarity = F.conv2d(input=x, weight=reshaped_prots)
+        similarity_per_location = similarity.view(-1, self.num_images, self.prototype_vectors.shape[2] * self.prototype_vectors.shape[3], x.shape[2], x.shape[3])
+        return similarity_per_location
 
-    def prototype_distances(self, x):
+    def prototype_similarities(self, x):
         """
         x are the features from the feature extractor, we call input_features to possibly pass additional layers in between
         """
         features = self.input_features(x)
-        distances = self._l2_convolution(features)
+        distances = self._dot_similarity(features)
         return distances
-
-    def distance_to_similarity(self, distances):
-        if self.prototype_activation_function == 'log':
-            return torch.log((distances + 1) / (distances + self.epsilon))
-        elif self.prototype_activation_function == 'linear':
-            return -distances
-        else:
-            return self.prototype_activation_function(distances)
-
-
 
 
 
