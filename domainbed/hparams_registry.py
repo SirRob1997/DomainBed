@@ -60,6 +60,7 @@ def _hparams(algorithm, dataset, random_seed):
         _hparam('cl_lr', 1e-4, lambda r: 1e-4)
         _hparam('negative_weight', -0.5, lambda r: -0.5)
         _hparam('replacement_interval', 10, lambda r: 10)
+        _hparam('replacement_factor', 0.5, lambda r: 0.5)
 
     elif algorithm == "SagNet":
         _hparam('sag_w_adv', 0.1, lambda r: 10**r.uniform(-2, 1))

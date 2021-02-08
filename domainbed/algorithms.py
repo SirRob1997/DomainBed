@@ -118,11 +118,13 @@ class ProDrop(ERM):
         super(ProDrop, self).__init__(input_shape, num_classes, num_domains, hparams)
 
         self.num_classes = num_classes
+        self.num_domains = num_domains
         self.num_images_per_class = hparams['num_images_per_class'] 
         self.num_images = self.num_images_per_class  * num_classes * num_domains
         self.prototype_shape = (self.num_images, self.featurizer.n_outputs, 7, 7)
         self.end_to_end = hparams['end_to_end']
         self.replacement_interval = hparams['replacement_interval']
+        self.replacement_factor = hparams['replacement_factor']
         self.negative_weight = hparams['negative_weight']
 
         self.pplayer = networks.PPLayer(self.prototype_shape, num_classes, num_domains)
@@ -184,11 +186,15 @@ class ProDrop(ERM):
     def _initialize_weights(self):
         self.set_last_layer_incorrect_connection(incorrect_strength=self.negative_weight)
  
-    def fill_cache_zeros_with_images(self, x):
-        cache = self.pplayer.cache
-
+    def fill_cache_zeros_with_images(self, all_features, all_y):
+        features_per_domain = all_features.view(self.num_domains, -1,  self.featurizer.n_outputs, 7, 7)
+        labels_per_domain = all_y.view(self.num_domains, -1)
+        indices_to_fill = torch.nonzero(self.pplayer.cache == 0, as_tuple=False)
+        # TODO: How do we select which features to put?
+ 
     def sample_cache_zeros(self):
-        pass
+        random_mask = torch.cuda.FloatTensor(self.pplayer.cache.shape[0], self.pplayer.cache.shape[1], self.pplayer.cache.shape[2]).uniform_() > self.replacement_factor
+        self.pplayer.cache = nn.Parameter(self.pplayer.cache * random_mask)
 
     def update(self, minibatches):
         self.update_count += 1
@@ -198,8 +204,8 @@ class ProDrop(ERM):
         features = self.featurizer(all_x)
         if self.training:
             if self.update_count.item() % self.replacement_interval == 0:
-                sample_cache_zeros()
-            fill_cache_zeros_with_images(x)
+                self.sample_cache_zeros()
+            self.fill_cache_zeros_with_images(features, all_y)
         prot_activations = self.pplayer(features)
         outputs = self.classifier(prot_activations)
 
