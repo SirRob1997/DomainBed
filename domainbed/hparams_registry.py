@@ -50,7 +50,7 @@ def _hparams(algorithm, dataset, random_seed):
 
     elif algorithm in ["ProDrop", "ProDropEnsamble"]:
         _hparam('num_images_per_class', 1, lambda r: 1)
-        _hparam('replacement_interval', 50, lambda r: 50)
+        _hparam('replacement_interval', 1, lambda r: 1)
         _hparam('replacement_factor', 1, lambda r: 1)
 
     elif algorithm == "SagNet":

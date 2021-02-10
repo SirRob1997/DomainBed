@@ -171,17 +171,17 @@ class ProDrop(ERM):
         all_y = torch.cat([y for x, y in minibatches])
         all_o = F.one_hot(all_y, self.num_classes)
         features = self.featurizer(all_x)
+        
+        prot_activations = self.pplayer(features)
+        outputs = self.classify(prot_activations)
+
         if self.training:
             if self.update_count.item() % self.replacement_interval == 0:
                 self.sample_cache_mask_zeros()
             if torch.nonzero(self.pplayer.cache_mask == 0, as_tuple=False).shape[0] > 0:
                 self.fill_cache_zeros_with_images(features, all_y)
-        
-        prot_activations = self.pplayer(features)
-        outputs = self.classify(prot_activations)
 
-        loss = F.cross_entropy(outputs, all_y)
-
+        loss = F.cross_entropy(outputs, all_y)        
         self.optimizer.zero_grad()
         loss.backward()
         self.optimizer.step()
