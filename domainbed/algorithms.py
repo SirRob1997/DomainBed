@@ -160,7 +160,7 @@ class ProDrop(ERM):
         random_mask = torch.cuda.FloatTensor(self.pplayer.cache_mask.shape).uniform_() > self.replacement_factor
         self.pplayer.cache_mask = nn.Parameter(self.pplayer.cache_mask * random_mask, requires_grad=False)
 
-    def classify(self, x, domain_labels):
+    def classify(self, x, domain_labels=None):
         final_score_per_image = x.reshape(-1, self.num_domains, self.num_classes, self.num_images_per_class).max(-1)[0]
         
         # Only during training mask the own training domain
