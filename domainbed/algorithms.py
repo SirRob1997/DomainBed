@@ -160,8 +160,16 @@ class ProDrop(ERM):
         random_mask = torch.cuda.FloatTensor(self.pplayer.cache_mask.shape).uniform_() > self.replacement_factor
         self.pplayer.cache_mask = nn.Parameter(self.pplayer.cache_mask * random_mask, requires_grad=False)
 
-    def classify(self, x):
-        final_score_per_image = x.reshape(-1, self.num_domains, self.num_classes, self.num_images_per_class).max(-1)
+    def classify(self, x, domain_labels):
+        final_score_per_image = x.reshape(-1, self.num_domains, self.num_classes, self.num_images_per_class).max(-1)[0]
+        
+        # Only during training mask the own training domain
+        if self.training:
+            mask = torch.ones(final_score_per_image.shape).cuda()
+            for sample, domain in enumerate(domain_labels):
+                mask[sample, domain, :] = 0
+            final_score_per_image = final_score_per_image * mask
+
         final_score_per_class = final_score_per_image.sum(1)
         return final_score_per_class
 
@@ -169,11 +177,11 @@ class ProDrop(ERM):
         self.update_count += 1
         all_x = torch.cat([x for x, y in minibatches])
         all_y = torch.cat([y for x, y in minibatches])
-        all_o = F.one_hot(all_y, self.num_classes)
+        domain_labels = torch.LongTensor([domain for domain in range(len(minibatches)) for _ in range(len(minibatches[domain][0]))])
         features = self.featurizer(all_x)
         
         prot_activations = self.pplayer(features)
-        outputs = self.classify(prot_activations)
+        outputs = self.classify(prot_activations, domain_labels)
 
         if self.training:
             if self.update_count.item() % self.replacement_interval == 0:
