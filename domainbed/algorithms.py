@@ -161,7 +161,7 @@ class ProDrop(ERM):
         self.pplayer.cache_mask = nn.Parameter(self.pplayer.cache_mask * random_mask, requires_grad=False)
 
     def classify(self, x):
-        final_score_per_image = x.reshape(-1, self.num_domains, self.num_classes, self.num_images_per_class).sum(-1)
+        final_score_per_image = x.reshape(-1, self.num_domains, self.num_classes, self.num_images_per_class).max(-1)
         final_score_per_class = final_score_per_image.sum(1)
         return final_score_per_class
 
