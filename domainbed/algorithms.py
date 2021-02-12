@@ -123,6 +123,7 @@ class ProDrop(ERM):
         self.num_images = self.num_images_per_class  * num_classes * num_domains
         self.prototype_shape = (self.num_domains, self.num_classes, self.num_images_per_class, self.featurizer.n_outputs, 7, 7)
         self.replacement_interval = hparams['replacement_interval']
+        self.warmup_period = hparams['warmup_period']
         self.replacement_factor = hparams['replacement_factor']
 
         self.pplayer = networks.PPLayer(self.prototype_shape)
@@ -184,7 +185,7 @@ class ProDrop(ERM):
         outputs = self.classify(prot_activations, domain_labels)
 
         if self.training:
-            if self.update_count.item() % self.replacement_interval == 0:
+            if (self.update_count.item() % self.replacement_interval == 0) and (self.update_count.item() > self.warmup_period):
                 self.sample_cache_mask_zeros()
             if torch.nonzero(self.pplayer.cache_mask == 0, as_tuple=False).shape[0] > 0:
                 self.fill_cache_zeros_with_images(features, all_y)
