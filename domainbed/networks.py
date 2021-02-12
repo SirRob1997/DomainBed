@@ -185,7 +185,6 @@ class CosineClassifier(nn.Module):
         return self.scaler * F.conv2d(x, F.normalize(self.cls.weight, dim=1, p=2))
 
 
-
 class PPLayer(nn.Module):
     def __init__(self, prototype_shape):
         super(PPLayer, self).__init__()
@@ -194,13 +193,13 @@ class PPLayer(nn.Module):
         self.num_classes = prototype_shape[1]
         self.num_images_per_class = prototype_shape[2]
         self.num_images = self.num_domains *  self.num_classes * self.num_images_per_class
-        self.num_prototypes = self.num_images  * prototype_shape[4] * prototype_shape[5]
 
         self.cache =  nn.Parameter(torch.rand(prototype_shape), requires_grad=False) 
         self.cache_mask = nn.Parameter(torch.zeros(self.num_domains, self.num_classes, self.num_images_per_class), requires_grad=False)
 
-    def forward(self, x):
-        similarity_per_location = self.prototype_similarities(x)
+    def forward(self, x, featurizer):
+        prototypes = self.get_prototypes(featurizer)
+        similarity_per_location = self.prototype_similarities(x, prototypes)
         pooled_similarity = similarity_per_location.max(2)[0] # Maximum similarity per image per location [BS, num_images, 7, 7]
         proto_scores = F.max_pool2d(pooled_similarity, kernel_size=(pooled_similarity.size()[2], pooled_similarity.size()[3])) # Maximum similarity per image [B, self.num_images, 1, 1]
         prototype_activations = proto_scores.view(-1, self.num_images) # has shape [B, self.num_images]
@@ -212,18 +211,23 @@ class PPLayer(nn.Module):
         """
         return x
 
-    def _dot_similarity(self,x):
-        reshaped_prots = self.cache.permute(0, 1, 2, 4, 5, 3).reshape(-1, self.cache.shape[3], 1, 1)
+    def get_prototypes(self, featurizer): 
+        prototypes = featurizer(self.cache.view(self.num_images, self.prototype_shape[3], self.prototype_shape[4], self.prototype_shape[5])).clone().detach()
+        prototypes = prototypes.view(self.num_domains, self.num_classes, self.num_images_per_class, featurizer.n_outputs, 7, 7)
+        return prototypes
+
+    def _dot_similarity(self, x, prototypes):
+        reshaped_prots = prototypes.permute(0, 1, 2, 4, 5, 3).reshape(-1, prototypes.shape[3], 1, 1)
         similarity = F.conv2d(input=x, weight=reshaped_prots)
-        similarity_per_location = similarity.view(-1, self.num_images, self.cache.shape[4] * self.cache.shape[5], x.shape[2], x.shape[3])
+        similarity_per_location = similarity.view(-1, self.num_images, prototypes.shape[4] * prototypes.shape[5], x.shape[2], x.shape[3])
         return similarity_per_location
 
-    def prototype_similarities(self, x):
+    def prototype_similarities(self, x, prototypes):
         """
         x are the features from the feature extractor, we call input_features to possibly pass additional layers in between
         """
         features = self.input_features(x)
-        distances = self._dot_similarity(features)
+        distances = self._dot_similarity(features, prototypes)
         return distances
 
 

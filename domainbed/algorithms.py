@@ -117,13 +117,15 @@ class ProDrop(ERM):
     def __init__(self, input_shape, num_classes, num_domains, hparams):
         super(ProDrop, self).__init__(input_shape, num_classes, num_domains, hparams)
 
+        self.input_shape = input_shape
         self.num_classes = num_classes
         self.num_domains = num_domains
         self.num_images_per_class = hparams['num_images_per_class'] 
         self.num_images = self.num_images_per_class  * num_classes * num_domains
-        self.prototype_shape = (self.num_domains, self.num_classes, self.num_images_per_class, self.featurizer.n_outputs, 7, 7)
+        self.prototype_shape = (self.num_domains, self.num_classes, self.num_images_per_class, input_shape[0], input_shape[1], input_shape[2])
         self.replacement_interval = hparams['replacement_interval']
         self.warmup_period = hparams['warmup_period']
+        self.cooldown_period = hparams['cooldown_period']
         self.replacement_factor = hparams['replacement_factor']
 
         self.pplayer = networks.PPLayer(self.prototype_shape)
@@ -143,8 +145,8 @@ class ProDrop(ERM):
                 weight_decay=self.hparams['weight_decay'])
 
 
-    def fill_cache_zeros_with_images(self, all_features, all_y):
-        features_per_domain = all_features.view(self.num_domains, -1,  self.featurizer.n_outputs, 7, 7)
+    def fill_cache_zeros_with_images(self, x, all_y):
+        images_per_domain = x.view(self.num_domains, -1,  self.input_shape[0], self.input_shape[1], self.input_shape[2])
         labels_per_domain = all_y.view(self.num_domains, -1)
         indices_to_fill = torch.nonzero(self.pplayer.cache_mask == 0, as_tuple=False)
         counter = [[0 for _ in range(self.num_classes)] for _ in range(self.num_domains)]
@@ -153,7 +155,7 @@ class ProDrop(ERM):
             class_indeces = torch.nonzero(labels_per_domain[domain_idx] == indeces[1], as_tuple=False).squeeze(-1)
             if class_indeces.size(0) > counter[domain_idx][indeces[1]]:
                 random_choice = class_indeces[counter[domain_idx][indeces[1]]] # Exploits the inherit randomness of the minibatches
-                self.pplayer.cache[indeces[0], indeces[1], indeces[2]] = features_per_domain[domain_idx, random_choice].clone().detach()
+                self.pplayer.cache[indeces[0], indeces[1], indeces[2]] = images_per_domain[domain_idx, random_choice].clone().detach()
                 self.pplayer.cache_mask[indeces[0], indeces[1], indeces[2]] = 1
                 counter[domain_idx][indeces[1]]+=1
 
@@ -165,7 +167,7 @@ class ProDrop(ERM):
         final_score_per_image = x.reshape(-1, self.num_domains, self.num_classes, self.num_images_per_class).max(-1)[0]
         
         # Only during training mask the own training domain
-        if self.training:
+        if self.training and domain_labels is not None:
             mask = torch.ones(final_score_per_image.shape).cuda()
             for sample, domain in enumerate(domain_labels):
                 mask[sample, domain, :] = 0
@@ -181,14 +183,14 @@ class ProDrop(ERM):
         domain_labels = torch.LongTensor([domain for domain in range(len(minibatches)) for _ in range(len(minibatches[domain][0]))])
         features = self.featurizer(all_x)
         
-        prot_activations = self.pplayer(features)
+        prot_activations = self.pplayer(features, self.featurizer)
         outputs = self.classify(prot_activations, domain_labels)
 
         if self.training:
-            if (self.update_count.item() % self.replacement_interval == 0) and (self.update_count.item() > self.warmup_period):
+            if (self.update_count.item() % self.replacement_interval == 0) and (self.update_count.item() > self.warmup_period) and (self.update_count.item() <= 5001 - self.cooldown_period):
                 self.sample_cache_mask_zeros()
             if torch.nonzero(self.pplayer.cache_mask == 0, as_tuple=False).shape[0] > 0:
-                self.fill_cache_zeros_with_images(features, all_y)
+                self.fill_cache_zeros_with_images(all_x, all_y)
 
         loss = F.cross_entropy(outputs, all_y)        
         self.optimizer.zero_grad()
@@ -197,7 +199,8 @@ class ProDrop(ERM):
         return {'loss': loss.item()}
 
     def predict(self, x):
-        prot_activations = self.network(x)
+        features = self.featurizer(x)
+        prot_activations = self.pplayer(features, self.featurizer)
         return self.classify(prot_activations)
 
 
