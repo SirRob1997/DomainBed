@@ -199,6 +199,8 @@ class PPLayer(nn.Module):
 
     def forward(self, x, featurizer):
         prototypes = self.get_prototypes(featurizer)
+        prototypes = prototypes.mean(-1, keepdim=True).mean(-1, keepdim=True)
+        x = x.mean(-1, keepdim=True).mean(-1, keepdim=True)
         similarity_per_location = self.prototype_similarities(x, prototypes)
         pooled_similarity = similarity_per_location.max(2)[0] # Maximum similarity per image per location [BS, num_images, 7, 7]
         proto_scores = F.max_pool2d(pooled_similarity, kernel_size=(pooled_similarity.size()[2], pooled_similarity.size()[3])) # Maximum similarity per image [B, self.num_images, 1, 1]
