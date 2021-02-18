@@ -127,8 +127,11 @@ class ProDrop(ERM):
         self.warmup_period = hparams['warmup_period']
         self.cooldown_period = hparams['cooldown_period']
         self.replacement_factor = hparams['replacement_factor']
+        self.use_eval_cache = hparams['use_eval_cache']
+        self.num_images_per_class_eval = hparams['num_images_per_class_eval']
+        self.prototype_shape_eval = (self.num_domains, self.num_classes, self.num_images_per_class_eval, input_shape[0], input_shape[1], input_shape[2])
 
-        self.pplayer = networks.PPLayer(self.prototype_shape)
+        self.pplayer = networks.PPLayer(self.prototype_shape, self.use_eval_cache, self.prototype_shape_eval)
 
         # Remove AvgPool, Flatten and Droput for ResNet
         if self.featurizer.__class__.__name__ == "ResNet":
@@ -145,21 +148,21 @@ class ProDrop(ERM):
                 weight_decay=self.hparams['weight_decay'])
 
 
-    def fill_cache_zeros_with_images(self, x, all_y):
+    def fill_cache_zeros_with_images(self, x, all_y, cache, cache_mask):
         images_per_domain = x.view(self.num_domains, -1,  self.input_shape[0], self.input_shape[1], self.input_shape[2])
         labels_per_domain = all_y.view(self.num_domains, -1)
-        indices_to_fill = torch.nonzero(self.pplayer.cache_mask == 0, as_tuple=False)
+        indices_to_fill = torch.nonzero(cache_mask == 0, as_tuple=False)
         counter = [[0 for _ in range(self.num_classes)] for _ in range(self.num_domains)]
         for indeces in indices_to_fill:
             domain_idx = indeces[0]
             class_indeces = torch.nonzero(labels_per_domain[domain_idx] == indeces[1], as_tuple=False).squeeze(-1)
             if class_indeces.size(0) > counter[domain_idx][indeces[1]]:
                 random_choice = class_indeces[counter[domain_idx][indeces[1]]] # Exploits the inherit randomness of the minibatches
-                new_entry = images_per_domain[domain_idx, random_choice]
-                new_entry.requires_grad = True
-                with torch.no_grad():
-                    self.pplayer.cache[indeces[0], indeces[1], indeces[2]] = new_entry
-                self.pplayer.cache_mask[indeces[0], indeces[1], indeces[2]] = 1
+                new_entry = images_per_domain[domain_idx, random_choice].clone().detach()
+                if self.use_eval_cache:
+                    # TODO: Check if the image is already in the eval cache the current counter approach only secures sampling without replacement within each batch!
+                cache[indeces[0], indeces[1], indeces[2]] = new_entry
+                cache_mask[indeces[0], indeces[1], indeces[2]] = 1
                 counter[domain_idx][indeces[1]]+=1
 
     def sample_cache_mask_zeros(self):
@@ -198,13 +201,18 @@ class ProDrop(ERM):
             if (self.update_count.item() % self.replacement_interval == 0) and (self.update_count.item() > self.warmup_period) and (self.update_count.item() <= 5001 - self.cooldown_period):
                 self.sample_cache_mask_zeros()
             if torch.nonzero(self.pplayer.cache_mask == 0, as_tuple=False).shape[0] > 0:
-                self.fill_cache_zeros_with_images(all_x, all_y)
+                self.fill_cache_zeros_with_images(all_x, all_y, self.pplayer.cache, self.pplayer.cache_mask)
+            if self.use_eval_cache:
+                self.fill_cache_zeros_with_images(all_x, all_y, self.pplayer.cache_eval, self.pplayer.cache_mask_eval)
 
         return {'loss': loss.item()}
 
     def predict(self, x):
         features = self.featurizer(x)
-        prot_activations = self.pplayer(features, self.featurizer)
+        if self.use_eval_cache:
+            prot_activations = self.pplayer.forward_eval(features, self.featurizer)
+        else:
+            prot_activations = self.pplayer(features, self.featurizer)
         return self.classify(prot_activations)
 
 

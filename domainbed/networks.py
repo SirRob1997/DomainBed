@@ -186,7 +186,7 @@ class CosineClassifier(nn.Module):
 
 
 class PPLayer(nn.Module):
-    def __init__(self, prototype_shape):
+    def __init__(self, prototype_shape, use_eval_cache, prototype_shape_eval):
         super(PPLayer, self).__init__()
         self.prototype_shape = prototype_shape
         self.num_domains = prototype_shape[0]
@@ -194,8 +194,13 @@ class PPLayer(nn.Module):
         self.num_images_per_class = prototype_shape[2]
         self.num_images = self.num_domains *  self.num_classes * self.num_images_per_class
 
-        self.cache =  nn.Parameter(torch.rand(prototype_shape), requires_grad=True) 
+        self.cache =  nn.Parameter(torch.rand(prototype_shape), requires_grad=False) 
         self.cache_mask = nn.Parameter(torch.zeros(self.num_domains, self.num_classes, self.num_images_per_class), requires_grad=False)
+
+        if use_eval_cache:
+            self.num_images_per_class_eval = prototype_shape_eval[2]
+            self.cache_eval =  torch.FloatTensor(torch.rand(prototype_shape_eval)).cpu()
+            self.cache_mask_eval = torch.FloatTensor(torch.zeros(self.num_domains, self.num_classes, self.num_images_per_class_eval)).cpu()
 
     def forward(self, x, featurizer):
         prototypes = self.get_prototypes(featurizer)
@@ -207,6 +212,10 @@ class PPLayer(nn.Module):
         prototype_activations = proto_scores.view(-1, self.num_images) # has shape [B, self.num_images]
         return prototype_activations
 
+    def forward_eval(self, x, featurizer):
+        with torch.no_grad():
+            pass # TODO: Batch the eval cache here and compute all the prototypes / forward pass
+
     def input_features(self, x):
         """
         Input features to the prototype layer, the original ProtoPNet uses some add_on_layers after the feature extractor
@@ -214,7 +223,7 @@ class PPLayer(nn.Module):
         return x
 
     def get_prototypes(self, featurizer):
-        prototypes = featurizer(self.cache.view(self.num_images, self.prototype_shape[3], self.prototype_shape[4], self.prototype_shape[5]))
+        prototypes = featurizer(self.cache.view(self.num_images, self.prototype_shape[3], self.prototype_shape[4], self.prototype_shape[5])).clone().detach()
         prototypes = prototypes.view(self.num_domains, self.num_classes, self.num_images_per_class, featurizer.n_outputs, 7, 7)
         return prototypes
 
