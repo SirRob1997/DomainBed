@@ -155,7 +155,10 @@ class ProDrop(ERM):
             class_indeces = torch.nonzero(labels_per_domain[domain_idx] == indeces[1], as_tuple=False).squeeze(-1)
             if class_indeces.size(0) > counter[domain_idx][indeces[1]]:
                 random_choice = class_indeces[counter[domain_idx][indeces[1]]] # Exploits the inherit randomness of the minibatches
-                self.pplayer.cache[indeces[0], indeces[1], indeces[2]] = images_per_domain[domain_idx, random_choice].clone().detach()
+                new_entry = images_per_domain[domain_idx, random_choice]
+                new_entry.requires_grad = True
+                with torch.no_grad():
+                    self.pplayer.cache[indeces[0], indeces[1], indeces[2]] = new_entry
                 self.pplayer.cache_mask[indeces[0], indeces[1], indeces[2]] = 1
                 counter[domain_idx][indeces[1]]+=1
 
@@ -186,16 +189,17 @@ class ProDrop(ERM):
         prot_activations = self.pplayer(features, self.featurizer)
         outputs = self.classify(prot_activations, domain_labels)
 
+        loss = F.cross_entropy(outputs, all_y)        
+        self.optimizer.zero_grad()
+        loss.backward(retain_graph=False)
+        self.optimizer.step()
+
         if self.training:
             if (self.update_count.item() % self.replacement_interval == 0) and (self.update_count.item() > self.warmup_period) and (self.update_count.item() <= 5001 - self.cooldown_period):
                 self.sample_cache_mask_zeros()
             if torch.nonzero(self.pplayer.cache_mask == 0, as_tuple=False).shape[0] > 0:
                 self.fill_cache_zeros_with_images(all_x, all_y)
 
-        loss = F.cross_entropy(outputs, all_y)        
-        self.optimizer.zero_grad()
-        loss.backward()
-        self.optimizer.step()
         return {'loss': loss.item()}
 
     def predict(self, x):

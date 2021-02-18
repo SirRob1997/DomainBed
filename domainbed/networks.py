@@ -194,7 +194,7 @@ class PPLayer(nn.Module):
         self.num_images_per_class = prototype_shape[2]
         self.num_images = self.num_domains *  self.num_classes * self.num_images_per_class
 
-        self.cache =  nn.Parameter(torch.rand(prototype_shape), requires_grad=False) 
+        self.cache =  nn.Parameter(torch.rand(prototype_shape), requires_grad=True) 
         self.cache_mask = nn.Parameter(torch.zeros(self.num_domains, self.num_classes, self.num_images_per_class), requires_grad=False)
 
     def forward(self, x, featurizer):
@@ -213,8 +213,8 @@ class PPLayer(nn.Module):
         """
         return x
 
-    def get_prototypes(self, featurizer): 
-        prototypes = featurizer(self.cache.view(self.num_images, self.prototype_shape[3], self.prototype_shape[4], self.prototype_shape[5])).clone().detach()
+    def get_prototypes(self, featurizer):
+        prototypes = featurizer(self.cache.view(self.num_images, self.prototype_shape[3], self.prototype_shape[4], self.prototype_shape[5]))
         prototypes = prototypes.view(self.num_domains, self.num_classes, self.num_images_per_class, featurizer.n_outputs, 7, 7)
         return prototypes
 
