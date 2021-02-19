@@ -160,7 +160,8 @@ class ProDrop(ERM):
                 random_choice = class_indeces[counter[domain_idx][indeces[1]]] # Exploits the inherit randomness of the minibatches
                 new_entry = images_per_domain[domain_idx, random_choice].clone().detach()
                 if self.use_eval_cache:
-                    # TODO: Check if the image is already in the eval cache the current counter approach only secures sampling without replacement within each batch!
+                    # TODO: Potentially check if the image is already in the eval cache the current counter approach only secures sampling without replacement within each batch!
+                    pass
                 cache[indeces[0], indeces[1], indeces[2]] = new_entry
                 cache_mask[indeces[0], indeces[1], indeces[2]] = 1
                 counter[domain_idx][indeces[1]]+=1
@@ -169,9 +170,9 @@ class ProDrop(ERM):
         random_mask = torch.cuda.FloatTensor(self.pplayer.cache_mask.shape).uniform_() > self.replacement_factor
         self.pplayer.cache_mask = nn.Parameter(self.pplayer.cache_mask * random_mask, requires_grad=False)
 
-    def classify(self, x, domain_labels=None):
-        final_score_per_image = x.reshape(-1, self.num_domains, self.num_classes, self.num_images_per_class).max(-1)[0]
-        
+    def classify(self, x, num_images_per_class, domain_labels=None):
+        final_score_per_image = x.reshape(-1, self.num_domains, self.num_classes, num_images_per_class).max(-1)[0]
+
         # Only during training mask the own training domain
         if self.training and domain_labels is not None:
             mask = torch.ones(final_score_per_image.shape).cuda()
@@ -190,7 +191,7 @@ class ProDrop(ERM):
         features = self.featurizer(all_x)
         
         prot_activations = self.pplayer(features, self.featurizer)
-        outputs = self.classify(prot_activations, domain_labels)
+        outputs = self.classify(prot_activations, self.num_images_per_class, domain_labels)
 
         loss = F.cross_entropy(outputs, all_y)        
         self.optimizer.zero_grad()
@@ -211,9 +212,10 @@ class ProDrop(ERM):
         features = self.featurizer(x)
         if self.use_eval_cache:
             prot_activations = self.pplayer.forward_eval(features, self.featurizer)
+            return self.classify(prot_activations, self.num_images_per_class_eval)
         else:
             prot_activations = self.pplayer(features, self.featurizer)
-        return self.classify(prot_activations)
+            return self.classify(prot_activations, self.num_images_per_class)
 
 
 class ARM(ERM):
