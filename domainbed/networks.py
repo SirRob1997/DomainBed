@@ -227,9 +227,9 @@ class PPLayer(nn.Module):
                 similarity_per_location = self.prototype_similarities(x, prototype_subset, num_images_subset)
                 pooled_similarity = similarity_per_location.max(2)[0]
                 proto_scores = F.max_pool2d(pooled_similarity, kernel_size=(pooled_similarity.size()[2], pooled_similarity.size()[3]))
-                prototype_activations = proto_scores.view(-1, num_images_subset)
+                prototype_activations = proto_scores.view(x.shape[0], self.num_domains, self.num_classes, -1)
                 output.append(prototype_activations)
-            return torch.cat(output, dim=1)
+            return torch.cat(output, dim=3).view(x.shape[0], -1)
 
 
     def input_features(self, x):
