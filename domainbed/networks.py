@@ -8,6 +8,7 @@ import torchvision.models
 from domainbed.lib import misc
 from domainbed.lib import wide_resnet
 
+from einops import rearrange
 
 class Identity(nn.Module):
     """An identity layer"""
@@ -186,16 +187,23 @@ class CosineClassifier(nn.Module):
 
 
 class PPLayer(nn.Module):
-    def __init__(self, prototype_shape, use_eval_cache, prototype_shape_eval):
+    def __init__(self, prototype_shape, use_eval_cache, prototype_shape_eval, use_attention):
         super(PPLayer, self).__init__()
         self.prototype_shape = prototype_shape
         self.num_domains = prototype_shape[0]
         self.num_classes = prototype_shape[1]
         self.num_images_per_class = prototype_shape[2]
         self.num_images = self.num_domains *  self.num_classes * self.num_images_per_class
+        self.use_attention = use_attention
 
         self.cache =  nn.Parameter(torch.rand(prototype_shape), requires_grad=False) 
         self.cache_mask = nn.Parameter(torch.zeros(self.num_domains, self.num_classes, self.num_images_per_class), requires_grad=False)
+
+        if use_attention:
+            self.dim_key = 128
+            self.dim_value = 128
+            self.to_qk = nn.Conv2d(512, self.dim_key, 1, bias = False)
+            self.to_v = nn.Conv2d(512, self.dim_value, 1, bias = False)
 
         if use_eval_cache:
             self.num_images_per_class_eval = prototype_shape_eval[2]
@@ -204,32 +212,61 @@ class PPLayer(nn.Module):
             self.cache_mask_eval = torch.FloatTensor(torch.zeros(self.num_domains, self.num_classes, self.num_images_per_class_eval)).cpu()
 
     def forward(self, x, featurizer):
-        prototypes = self.get_prototypes(featurizer)
-        prototypes = prototypes.mean(-1).mean(-1).unsqueeze(-1).unsqueeze(-1)                                                  # TODO: AVERAGING, TAKE THIS OUT LATER
-        x = x.mean(-1).mean(-1).unsqueeze(-1).unsqueeze(-1)                                                                    # TODO: AVERAGING, TAKE THIS OUT LATER
-        similarity_per_location = self.prototype_similarities(x, prototypes, self.num_images)
-        pooled_similarity = similarity_per_location.max(2)[0]                                                                  # Maximum similarity per image per location [BS, num_images, 7, 7]
-        proto_scores = F.max_pool2d(pooled_similarity, kernel_size=(pooled_similarity.size()[2], pooled_similarity.size()[3])) # Maximum similarity per image [B, self.num_images, 1, 1]
-        prototype_activations = proto_scores.view(-1, self.num_images)                                                         # has shape [B, self.num_images]
-        return prototype_activations
+        prototypes = self.get_prototypes(featurizer, self.cache)
+        if self.use_attention:
+            """
+            dimensions names:
+        
+            b - batch size
+            c - num classes
+            d - num domains
+            n - num images in a support class
+            f - feature dim
+            h, i - height prototypes, latent
+            w, j - width  prototypes, latent
+            """
+            query_q, query_v = self.to_qk(x), self.to_v(x)
+            reshaped_prots = rearrange(prototypes, 'd c n f h w -> (d c n) f h w', d = self.num_domains)
+            prot_k, prot_v = self.to_qk(reshaped_prots), self.to_v(reshaped_prots)
+            prot_k, prot_v = map(lambda t: rearrange(t, '(d c n) f h w -> d c n f h w', d = self.num_domains, c = self.num_classes), (prot_k, prot_v))
+            similarity_per_location = self.prototype_similarities(query_q, prot_k, self.num_images)
+            sim = rearrange(similarity_per_location, 'b (d c n) (h w) i j -> b c h w (d n i j)', d = self.num_domains, c = self.num_classes, h = prototypes.shape[-2], w = prototypes.shape[-1])
+            attn = sim.softmax(dim = -1)
+            attn = rearrange(attn, 'b c h w (d n i j) -> b d c h w n i j', i = query_q.shape[-2], j = query_q.shape[-1], d = self.num_domains)
+            out = torch.einsum('b d c h w n i j, d c n f i j -> b d c f h w', attn, prot_v)
+            out = rearrange(out, 'b d c f h w -> b d c (f h w)')
+            query_v = rearrange(query_v, 'b f h w -> b () () (f h w)')
+            euclidean_distance = ((query_v - out) ** 2).sum(dim = -1) / (prototypes.shape[-2] * prototypes.shape[-1])
+            return -euclidean_distance # has shape [B, num_domains, num_classes]
+
+        else:
+            prototypes = prototypes.mean(-1).mean(-1).unsqueeze(-1).unsqueeze(-1)                                                           # AVERAGING
+            x = x.mean(-1).mean(-1).unsqueeze(-1).unsqueeze(-1)                                                                             # AVERAGING
+            similarity_per_location = self.prototype_similarities(x, prototypes, self.num_images)
+            pooled_similarity = similarity_per_location.max(2)[0]                                                                           # Maximum similarity per image per location [BS, num_images, 7, 7]
+            proto_scores = F.max_pool2d(pooled_similarity, kernel_size=(pooled_similarity.size()[2], pooled_similarity.size()[3]))          # Maximum similarity per image [B, num_images, 1, 1]
+            prototype_activations = proto_scores.view(-1, self.num_domains, self.num_classes, self.num_images_per_class).max(-1)[0]         # has shape [B, num_domains, num_classes]
+            return prototype_activations
 
     def forward_eval(self, x, featurizer):
         with torch.no_grad():
             batch_size = 25
             output = []
-            x = x.mean(-1).mean(-1).unsqueeze(-1).unsqueeze(-1)                                                                 # TODO: AVERAGING, TAKE THIS OUT LATER
+            x = x.mean(-1).mean(-1).unsqueeze(-1).unsqueeze(-1)                                                                 # AVERAGING
             for batch in range(math.ceil(self.num_images_per_class_eval / batch_size)):
                 cache_subset = self.cache_eval[:, :, batch * batch_size : (batch+1) * batch_size, :, :, :].cuda()
                 num_images_subset = cache_subset.shape[0] * cache_subset.shape[1] * cache_subset.shape[2]
-                prototype_subset = featurizer(cache_subset.view(-1, self.prototype_shape[3], self.prototype_shape[4], self.prototype_shape[5])).clone().detach()
-                prototype_subset = prototype_subset.view(self.num_domains, self.num_classes, -1, featurizer.n_outputs, 7, 7)
-                prototype_subset = prototype_subset.mean(-1).mean(-1).unsqueeze(-1).unsqueeze(-1)                               # TODO: AVERAGING, TAKE THIS OUT LATER
+                prototype_subset = self.get_prototypes(featurizer, cache_subset)
+                prototype_subset = prototype_subset.mean(-1).mean(-1).unsqueeze(-1).unsqueeze(-1)                               # AVERAGING
                 similarity_per_location = self.prototype_similarities(x, prototype_subset, num_images_subset)
                 pooled_similarity = similarity_per_location.max(2)[0]
                 proto_scores = F.max_pool2d(pooled_similarity, kernel_size=(pooled_similarity.size()[2], pooled_similarity.size()[3]))
                 prototype_activations = proto_scores.view(x.shape[0], self.num_domains, self.num_classes, -1)
                 output.append(prototype_activations)
-            return torch.cat(output, dim=3).view(x.shape[0], -1)
+            proto_scores = torch.cat(output, dim=3).view(x.shape[0], -1)
+            prototype_activations = proto_scores.view(-1, self.num_domains, self.num_classes, self.num_images_per_class_eval).max(-1)[0]
+            return prototype_activations
+
 
 
     def input_features(self, x):
@@ -238,9 +275,9 @@ class PPLayer(nn.Module):
         """
         return x
 
-    def get_prototypes(self, featurizer):
-        prototypes = featurizer(self.cache.view(self.num_images, self.prototype_shape[3], self.prototype_shape[4], self.prototype_shape[5])).clone().detach()
-        prototypes = prototypes.view(self.num_domains, self.num_classes, self.num_images_per_class, featurizer.n_outputs, 7, 7)
+    def get_prototypes(self, featurizer, cache):
+        prototypes = featurizer(cache.view(-1, self.prototype_shape[3], self.prototype_shape[4], self.prototype_shape[5])).clone().detach()
+        prototypes = prototypes.view(self.num_domains, self.num_classes, -1, featurizer.n_outputs, 7, 7)
         return prototypes
 
     def _dot_similarity(self, x, prototypes, num_images):

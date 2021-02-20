@@ -127,11 +127,12 @@ class ProDrop(ERM):
         self.warmup_period = hparams['warmup_period']
         self.cooldown_period = hparams['cooldown_period']
         self.replacement_factor = hparams['replacement_factor']
+        self.use_attention = hparams['use_attention']
         self.use_eval_cache = hparams['use_eval_cache']
         self.num_images_per_class_eval = hparams['num_images_per_class_eval']
         self.prototype_shape_eval = (self.num_domains, self.num_classes, self.num_images_per_class_eval, input_shape[0], input_shape[1], input_shape[2])
 
-        self.pplayer = networks.PPLayer(self.prototype_shape, self.use_eval_cache, self.prototype_shape_eval)
+        self.pplayer = networks.PPLayer(self.prototype_shape, self.use_eval_cache, self.prototype_shape_eval, self.use_attention)
 
         # Remove AvgPool, Flatten and Droput for ResNet
         if self.featurizer.__class__.__name__ == "ResNet":
@@ -170,18 +171,16 @@ class ProDrop(ERM):
         random_mask = torch.cuda.FloatTensor(self.pplayer.cache_mask.shape).uniform_() > self.replacement_factor
         self.pplayer.cache_mask = nn.Parameter(self.pplayer.cache_mask * random_mask, requires_grad=False)
 
-    def classify(self, x, num_images_per_class, domain_labels=None):
-        final_score_per_image = x.reshape(-1, self.num_domains, self.num_classes, num_images_per_class).max(-1)[0]
-
+    def classify(self, x, domain_labels=None):
         # Only during training mask the own training domain
         if self.training and domain_labels is not None:
-            mask = torch.ones(final_score_per_image.shape).cuda()
+            mask = torch.ones(x.shape).cuda()
             for sample, domain in enumerate(domain_labels):
                 mask[sample, domain, :] = 0
-            final_score_per_image = final_score_per_image * mask
+            x = x * mask
 
-        final_score_per_class = final_score_per_image.sum(1)
-        return final_score_per_class
+        final_score_per_class = x.sum(1)
+        return final_score_per_class        
 
     def update(self, minibatches):
         self.update_count += 1
@@ -191,9 +190,9 @@ class ProDrop(ERM):
         features = self.featurizer(all_x)
         
         prot_activations = self.pplayer(features, self.featurizer)
-        outputs = self.classify(prot_activations, self.num_images_per_class, domain_labels)
+        outputs = self.classify(prot_activations, domain_labels)
 
-        loss = F.cross_entropy(outputs, all_y)        
+        loss = F.cross_entropy(outputs, all_y)
         self.optimizer.zero_grad()
         loss.backward(retain_graph=False)
         self.optimizer.step()
