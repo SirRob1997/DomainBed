@@ -231,7 +231,7 @@ class PPLayer(nn.Module):
             prot_k, prot_v = map(lambda t: rearrange(t, '(d c n) f h w -> d c n f h w', d = self.num_domains, c = self.num_classes), (prot_k, prot_v))
             similarity_per_location = self.prototype_similarities(query_q, prot_k, self.num_images)
             sim = rearrange(similarity_per_location, 'b (d c n) (h w) i j -> b c h w (d n i j)', d = self.num_domains, c = self.num_classes, h = prototypes.shape[-2], w = prototypes.shape[-1])
-            attn = sim.softmax(dim = -1)
+            attn = (sim / math.sqrt(self.dim_key)).softmax(dim = -1) 
             attn = rearrange(attn, 'b c h w (d n i j) -> b d c h w n i j', i = query_q.shape[-2], j = query_q.shape[-1], d = self.num_domains)
             out = torch.einsum('b d c h w n i j, d c n f i j -> b d c f h w', attn, prot_v)
             out = rearrange(out, 'b d c f h w -> b d c (f h w)')
