@@ -222,20 +222,20 @@ class PPLayer(nn.Module):
             d - num domains
             n - num images in a support class
             f - feature dim
-            h, i - height prototypes, latent
-            w, j - width  prototypes, latent
+            h, i - height latent support, height latent query
+            w, j - width  latent support, width latent query
             """
             query_q, query_v = self.to_qk(x), self.to_v(x)
             reshaped_prots = rearrange(prototypes, 'd c n f h w -> (d c n) f h w', d = self.num_domains)
             prot_k, prot_v = self.to_qk(reshaped_prots), self.to_v(reshaped_prots)
             prot_k, prot_v = map(lambda t: rearrange(t, '(d c n) f h w -> d c n f h w', d = self.num_domains, c = self.num_classes), (prot_k, prot_v))
             similarity_per_location = self.prototype_similarities(query_q, prot_k, self.num_images)
-            sim = rearrange(similarity_per_location, 'b (d c n) (h w) i j -> b c h w (d n i j)', d = self.num_domains, c = self.num_classes, h = prototypes.shape[-2], w = prototypes.shape[-1])
+            sim = rearrange(similarity_per_location, 'b (d c n) (h w) i j -> b c i j (d n h w)', d = self.num_domains, c = self.num_classes, h = prototypes.shape[-2], w = prototypes.shape[-1])
             attn = (sim / math.sqrt(self.dim_key)).softmax(dim = -1) 
-            attn = rearrange(attn, 'b c h w (d n i j) -> b d c h w n i j', i = query_q.shape[-2], j = query_q.shape[-1], d = self.num_domains)
-            out = torch.einsum('b d c h w n i j, d c n f i j -> b d c f h w', attn, prot_v)
-            out = rearrange(out, 'b d c f h w -> b d c (f h w)')
-            query_v = rearrange(query_v, 'b f h w -> b () () (f h w)')
+            attn = rearrange(attn, 'b c i j (d n h w) -> b d c h w n i j', h = prototypes.shape[-2], w = prototypes.shape[-1], d = self.num_domains)
+            out = torch.einsum('b d c h w n i j, d c n f i j -> b d c f i j', attn, prot_v)
+            out = rearrange(out, 'b d c f i j -> b d c (f i j)')
+            query_v = rearrange(query_v, 'b f i j -> b () () (f i j)')
             euclidean_distance = ((query_v - out) ** 2).sum(dim = -1) / (prototypes.shape[-2] * prototypes.shape[-1])
             return -euclidean_distance # has shape [B, num_domains, num_classes]
 
