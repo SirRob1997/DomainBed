@@ -236,7 +236,7 @@ class PPLayer(nn.Module):
             attn = rearrange(attn, 'b d k h w (n i j) -> b d k n i j h w', i = 7, j = 7)
             out = torch.einsum('b d k n i j h w, d k n c h w -> b d k c h w', attn, prot_v)
             out = out.reshape(query_q.shape[0], self.num_domains, self.num_classes, -1)
-            query_v = rearrange(query_v, 'b c h w -> b () () (c h w)')
+            query_v = query_v.view(query_v.shape[0], -1).unsqueeze(1).unsqueeze(1)
             euclidean_distance = ((query_v - out) ** 2).sum(dim = -1) / (x.shape[-2] * x.shape[-1])
             return -euclidean_distance # has shape [B, num_domains, num_classes]
 
