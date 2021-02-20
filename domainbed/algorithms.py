@@ -122,7 +122,7 @@ class ProDrop(ERM):
         self.num_domains = num_domains
         self.num_images_per_class = hparams['num_images_per_class'] 
         self.num_images = self.num_images_per_class  * num_classes * num_domains
-        self.prototype_shape = (self.num_domains, self.num_classes, self.num_images_per_class, input_shape[0], input_shape[1], input_shape[2])
+        self.support_set_shape = (self.num_domains, self.num_classes, self.num_images_per_class, input_shape[0], input_shape[1], input_shape[2])
         self.replacement_interval = hparams['replacement_interval']
         self.warmup_period = hparams['warmup_period']
         self.cooldown_period = hparams['cooldown_period']
@@ -130,9 +130,9 @@ class ProDrop(ERM):
         self.use_attention = hparams['use_attention']
         self.use_eval_cache = hparams['use_eval_cache']
         self.num_images_per_class_eval = hparams['num_images_per_class_eval']
-        self.prototype_shape_eval = (self.num_domains, self.num_classes, self.num_images_per_class_eval, input_shape[0], input_shape[1], input_shape[2])
+        self.support_set_shape_eval = (self.num_domains, self.num_classes, self.num_images_per_class_eval, input_shape[0], input_shape[1], input_shape[2])
 
-        self.pplayer = networks.PPLayer(self.prototype_shape, self.use_eval_cache, self.prototype_shape_eval, self.use_attention)
+        self.pplayer = networks.PPLayer(self.support_set_shape, self.use_eval_cache, self.support_set_shape_eval, self.use_attention)
 
         # Remove AvgPool, Flatten and Droput for ResNet
         if self.featurizer.__class__.__name__ == "ResNet":
