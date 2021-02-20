@@ -187,16 +187,16 @@ class CosineClassifier(nn.Module):
 
 
 class PPLayer(nn.Module):
-    def __init__(self, prototype_shape, use_eval_cache, prototype_shape_eval, use_attention):
+    def __init__(self, support_set_shape, use_eval_cache, support_set_shape_eval, use_attention):
         super(PPLayer, self).__init__()
-        self.prototype_shape = prototype_shape
-        self.num_domains = prototype_shape[0]
-        self.num_classes = prototype_shape[1]
-        self.num_images_per_class = prototype_shape[2]
+        self.support_set_shape = support_set_shape
+        self.num_domains = support_set_shape[0]
+        self.num_classes = support_set_shape[1]
+        self.num_images_per_class = support_set_shape[2]
         self.num_images = self.num_domains *  self.num_classes * self.num_images_per_class
         self.use_attention = use_attention
 
-        self.cache =  nn.Parameter(torch.rand(prototype_shape), requires_grad=False) 
+        self.cache =  nn.Parameter(torch.rand(support_set_shape), requires_grad=False) 
         self.cache_mask = nn.Parameter(torch.zeros(self.num_domains, self.num_classes, self.num_images_per_class), requires_grad=False)
 
         if use_attention:
@@ -206,9 +206,9 @@ class PPLayer(nn.Module):
             self.to_v = nn.Conv2d(512, self.dim_value, 1, bias = False)
 
         if use_eval_cache:
-            self.num_images_per_class_eval = prototype_shape_eval[2]
+            self.num_images_per_class_eval = support_set_shape_eval[2]
             self.num_images_eval = self.num_domains *  self.num_classes * self.num_images_per_class_eval
-            self.cache_eval =  torch.FloatTensor(torch.rand(prototype_shape_eval)).cpu()
+            self.cache_eval =  torch.FloatTensor(torch.rand(support_set_shape_eval)).cpu()
             self.cache_mask_eval = torch.FloatTensor(torch.zeros(self.num_domains, self.num_classes, self.num_images_per_class_eval)).cpu()
 
     def forward(self, x, featurizer):
@@ -218,24 +218,24 @@ class PPLayer(nn.Module):
             dimensions names:
         
             b - batch size
-            c - num classes
+            k - num classes
             d - num domains
             n - num images in a support class
-            f - feature dim
-            h, i - height latent support, height latent query
-            w, j - width  latent support, width latent query
+            c - num channels
+            h, i - height
+            w, j - width
             """
             query_q, query_v = self.to_qk(x), self.to_v(x)
-            reshaped_prots = rearrange(prototypes, 'd c n f h w -> (d c n) f h w', d = self.num_domains)
+            reshaped_prots = prototypes.view(self.num_images, featurizer.n_outputs, 7, 7)
             prot_k, prot_v = self.to_qk(reshaped_prots), self.to_v(reshaped_prots)
-            prot_k, prot_v = map(lambda t: rearrange(t, '(d c n) f h w -> d c n f h w', d = self.num_domains, c = self.num_classes), (prot_k, prot_v))
+            prot_k, prot_v = map(lambda t: t.view(self.num_domains, self.num_classes, self.num_images_per_class, self.dim_key, 7, 7), (prot_k, prot_v))
             similarity_per_location = self.prototype_similarities(query_q, prot_k, self.num_images)
-            sim = rearrange(similarity_per_location, 'b (d c n) (h w) i j -> b c i j (d n h w)', d = self.num_domains, c = self.num_classes, h = prototypes.shape[-2], w = prototypes.shape[-1])
-            attn = (sim / math.sqrt(self.dim_key)).softmax(dim = -1) 
-            attn = rearrange(attn, 'b c i j (d n h w) -> b d c h w n i j', h = prototypes.shape[-2], w = prototypes.shape[-1], d = self.num_domains)
-            out = torch.einsum('b d c h w n i j, d c n f i j -> b d c f i j', attn, prot_v)
-            out = rearrange(out, 'b d c f i j -> b d c (f i j)')
-            query_v = rearrange(query_v, 'b f i j -> b () () (f i j)')
+            sim = rearrange(similarity_per_location, 'b (d k n) (i j) h w -> b d k h w (n i j)', d = self.num_domains, k = self.num_classes, i = 7, j = 7)
+            attn = (sim / math.sqrt(self.dim_key)).softmax(dim = -1)
+            attn = rearrange(attn, 'b d k h w (n i j) -> b d k n h w i j', i = 7, j = 7)
+            out = torch.einsum('b d k n h w i j, d k n c i j -> b d k c h w', attn, prot_v)
+            out = out.reshape(query_q.shape[0], self.num_domains, self.num_classes, -1)
+            query_v = rearrange(query_v, 'b c h w -> b () () (c h w)')
             euclidean_distance = ((query_v - out) ** 2).sum(dim = -1) / (x.shape[-2] * x.shape[-1])
             return -euclidean_distance # has shape [B, num_domains, num_classes]
 
@@ -276,7 +276,7 @@ class PPLayer(nn.Module):
         return x
 
     def get_prototypes(self, featurizer, cache):
-        prototypes = featurizer(cache.view(-1, self.prototype_shape[3], self.prototype_shape[4], self.prototype_shape[5])).clone().detach()
+        prototypes = featurizer(cache.view(-1, self.support_set_shape[3], self.support_set_shape[4], self.support_set_shape[5])).clone().detach()
         prototypes = prototypes.view(self.num_domains, self.num_classes, -1, featurizer.n_outputs, 7, 7)
         return prototypes
 

@@ -180,7 +180,7 @@ class ProDrop(ERM):
             x = x * mask
 
         final_score_per_class = x.sum(1)
-        return final_score_per_class        
+        return final_score_per_class
 
     def update(self, minibatches):
         self.update_count += 1
