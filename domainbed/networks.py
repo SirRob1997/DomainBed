@@ -240,7 +240,7 @@ class PPLayer(nn.Module):
 
             query_v = query_v.unsqueeze(1).unsqueeze(1)
             cosine_distance_per_location = (query_v * out).sum(dim = 3)
-            cosine_distance_global = euclidean_distance_per_location.mean(-1).mean(-1)
+            cosine_distance_global = cosine_distance_per_location.mean(-1).mean(-1)
             return cosine_distance_global
 
 
