@@ -229,16 +229,20 @@ class PPLayer(nn.Module):
             reshaped_prots = prototypes.view(self.num_images, featurizer.n_outputs, 7, 7)
             prot_k, prot_v = self.to_qk(reshaped_prots), self.to_v(reshaped_prots)
             prot_k, prot_v = map(lambda t: t.view(self.num_domains, self.num_classes, self.num_images_per_class, self.dim_key, 7, 7), (prot_k, prot_v))
+
             similarity_per_location = self._dot_similarity(query_q, prot_k, self.num_images)
             similarity_per_location = similarity_per_location.view(-1, self.num_domains, self.num_classes, self.num_images_per_class, prot_k.shape[-2], prot_k.shape[-1], query_q.shape[-2], query_q.shape[-1])
             sim = rearrange(similarity_per_location, 'b d k n i j h w -> b d k h w (n i j)')
+
             attn = (sim / math.sqrt(self.dim_key)).softmax(dim = -1)
             attn = rearrange(attn, 'b d k h w (n i j) -> b d k n i j h w', i = 7, j = 7)
-            out = torch.einsum('b d k n i j h w, d k n c h w -> b d k c h w', attn, prot_v)
-            out = out.reshape(query_q.shape[0], self.num_domains, self.num_classes, -1)
-            query_v = query_v.view(query_v.shape[0], -1).unsqueeze(1).unsqueeze(1)
-            euclidean_distance = ((query_v - out) ** 2).sum(dim = -1) / (x.shape[-2] * x.shape[-1])
-            return -euclidean_distance # has shape [B, num_domains, num_classes]
+            out = torch.einsum('b d k n i j h w, d k n c i j -> b d k c h w', attn, prot_v)
+
+            query_v = query_v.unsqueeze(1).unsqueeze(1)
+            euclidean_distance_per_location = (query_v * out).sum(dim = 3)
+            euclidean_distance_global = euclidean_distance_per_location.mean(-1).mean(-1)
+            return euclidean_distance_global
+
 
         else:
             prototypes = prototypes.mean(-1).mean(-1).unsqueeze(-1).unsqueeze(-1)                                                           # AVERAGING
@@ -248,6 +252,7 @@ class PPLayer(nn.Module):
             proto_scores = F.max_pool2d(pooled_similarity, kernel_size=(pooled_similarity.size()[2], pooled_similarity.size()[3]))          # Maximum similarity per image [B, num_images, 1, 1]
             prototype_activations = proto_scores.view(-1, self.num_domains, self.num_classes, self.num_images_per_class).max(-1)[0]         # has shape [B, num_domains, num_classes]
             return prototype_activations
+
 
     def forward_eval(self, x, featurizer):
         with torch.no_grad():
@@ -265,7 +270,7 @@ class PPLayer(nn.Module):
                 prototype_activations = proto_scores.view(x.shape[0], self.num_domains, self.num_classes, -1)
                 output.append(prototype_activations)
             proto_scores = torch.cat(output, dim=3).view(x.shape[0], -1)
-            prototype_activations = proto_scores.view(-1, self.num_domains, self.num_classes, self.num_images_per_class_eval).max(-1)[0]
+            prototype_activations = proto_scores.view(-1, self.num_domains, self.num_classes, self.num_images_per_class_eval).mean(-1)
             return prototype_activations
 
 
