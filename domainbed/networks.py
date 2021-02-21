@@ -239,8 +239,8 @@ class PPLayer(nn.Module):
             out = torch.einsum('b d k n i j h w, d k n c i j -> b d k c h w', attn, prot_v)
 
             query_v = query_v.unsqueeze(1).unsqueeze(1)
-            euclidean_distance_per_location = (query_v * out).sum(dim = 3)
-            euclidean_distance_global = euclidean_distance_per_location.mean(-1).mean(-1)
+            cosine_distance_per_location = (query_v * out).sum(dim = 3)
+            cosine_distance_global = euclidean_distance_per_location.mean(-1).mean(-1)
             return euclidean_distance_global
 
 
