@@ -132,7 +132,7 @@ class ProDrop(ERM):
         self.num_images_per_class_eval = hparams['num_images_per_class_eval']
         self.support_set_shape_eval = (self.num_domains, self.num_classes, self.num_images_per_class_eval, input_shape[0], input_shape[1], input_shape[2])
 
-        self.pplayer = networks.PPLayer(self.support_set_shape, self.use_eval_cache, self.support_set_shape_eval, self.use_attention)
+        self.pplayer = networks.PPLayer(self.support_set_shape, self.support_set_shape_eval, hparams)
 
         # Remove AvgPool, Flatten and Droput for ResNet
         if self.featurizer.__class__.__name__ == "ResNet":
@@ -173,11 +173,11 @@ class ProDrop(ERM):
 
     def classify(self, x, domain_labels=None):
         # Only during training mask the own training domain
-        if self.training and domain_labels is not None:
-            mask = torch.ones(x.shape).cuda()
-            for sample, domain in enumerate(domain_labels):
-                mask[sample, domain, :] = 0
-            x = x * mask
+        #if self.training and domain_labels is not None:
+        #    mask = torch.ones(x.shape).cuda()
+        #    for sample, domain in enumerate(domain_labels):
+        #        mask[sample, domain, :] = 0
+        #    x = x * mask
 
         final_score_per_class = x.sum(1)
         return final_score_per_class
